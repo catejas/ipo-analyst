@@ -1,0 +1,958 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>IPO Analyst — Institutional Research</title>
+<meta name="description" content="Institutional-grade Indian IPO research assistant.">
+<meta name="theme-color" content="#0b0b0b">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="IPO Analyst">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
+<link rel="icon" href="icons/icon-192.png">
+<style>
+:root{
+  --bg:#0e0e0d; --surf:#1a1a19; --surf2:#232322; --line:#33332f;
+  --ink:#f5f4ef; --ink2:#b8b6ac; --ink3:#84837a;
+  --blue:#3987e5; --orange:#d95926; --aqua:#199e70; --yellow:#c98500;
+  --green:#2a9d4a; --red:#e66767; --violet:#9085e9;
+  --r:12px;
+}
+@media (prefers-color-scheme: light){
+  :root{ --bg:#f4f3ee; --surf:#ffffff; --surf2:#faf9f5; --line:#dedcd4;
+    --ink:#0b0b0b; --ink2:#4a4945; --ink3:#7c7b73;
+    --blue:#2a78d6; --orange:#eb6834; --aqua:#1baf7a; --yellow:#a87200;
+    --green:#0a7a30; --red:#cf3b3a; --violet:#4a3aa7; }
+}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent;}
+html,body{margin:0;padding:0;}
+body{
+  font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+  background:var(--bg); color:var(--ink); font-size:16px; line-height:1.5;
+  padding-bottom:env(safe-area-inset-bottom);
+  -webkit-text-size-adjust:100%;
+}
+.wrap{max-width:820px;margin:0 auto;padding:0 16px 96px;}
+
+header{
+  position:sticky;top:0;z-index:50;background:var(--bg);
+  padding:calc(env(safe-area-inset-top) + 14px) 16px 0;
+  border-bottom:1px solid var(--line);
+}
+header .in{max-width:820px;margin:0 auto;}
+.brand{display:flex;align-items:center;gap:10px;}
+.logo{width:30px;height:30px;border-radius:8px;background:linear-gradient(135deg,var(--blue),var(--violet));
+  display:flex;align-items:center;justify-content:center;color:#fff;font-weight:800;font-size:14px;flex:0 0 auto;}
+.brand h1{font-size:18px;margin:0;letter-spacing:-.02em;font-weight:800;}
+.brand .sub{font-size:11px;color:var(--ink3);margin-top:1px;}
+nav{display:flex;gap:4px;margin-top:12px;overflow-x:auto;scrollbar-width:none;}
+nav::-webkit-scrollbar{display:none}
+nav button{
+  background:none;border:0;color:var(--ink3);font:inherit;font-size:14px;font-weight:600;
+  padding:9px 12px;border-bottom:2.5px solid transparent;cursor:pointer;white-space:nowrap;
+}
+nav button.on{color:var(--ink);border-bottom-color:var(--blue);}
+
+.card{background:var(--surf);border:1px solid var(--line);border-radius:var(--r);padding:16px;margin:14px 0;}
+.card h2{font-size:15px;margin:0 0 3px;letter-spacing:-.01em;}
+.card .hint{font-size:12.5px;color:var(--ink3);margin:0 0 12px;line-height:1.45;}
+label{display:block;font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:.07em;
+  color:var(--ink3);margin:14px 0 5px;}
+label:first-of-type{margin-top:0;}
+input[type=text],input[type=password],select,textarea{
+  width:100%;font:inherit;font-size:16px;color:var(--ink);background:var(--surf2);
+  border:1px solid var(--line);border-radius:9px;padding:11px 12px;appearance:none;
+}
+textarea{min-height:120px;line-height:1.45;font-size:13px;font-family:ui-monospace,SFMono-Regular,Menlo,monospace;}
+input:focus,select:focus,textarea:focus{outline:2px solid var(--blue);outline-offset:1px;border-color:transparent;}
+.seg{display:grid;grid-template-columns:repeat(auto-fit,minmax(90px,1fr));gap:7px;}
+.seg input{position:absolute;opacity:0;pointer-events:none;}
+.seg label{margin:0;text-transform:none;letter-spacing:0;font-size:13.5px;font-weight:600;color:var(--ink2);
+  background:var(--surf2);border:1px solid var(--line);border-radius:9px;padding:10px 8px;text-align:center;cursor:pointer;}
+.seg input:checked + label{background:var(--blue);border-color:var(--blue);color:#fff;}
+
+.btn{display:flex;align-items:center;justify-content:center;gap:8px;width:100%;font:inherit;font-size:15.5px;
+  font-weight:700;padding:14px;border-radius:11px;border:1px solid var(--line);background:var(--surf2);
+  color:var(--ink);cursor:pointer;margin-top:9px;}
+.btn.pri{background:var(--blue);border-color:var(--blue);color:#fff;}
+.btn.pri2{background:var(--orange);border-color:var(--orange);color:#fff;}
+.btn:active{transform:scale(.99);}
+.btn:disabled{opacity:.5;}
+.btn.sm{padding:10px;font-size:14px;}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:9px;}
+.grid2 .btn{margin-top:0;}
+
+details{border:1px solid var(--line);border-radius:10px;background:var(--surf2);margin-top:12px;}
+summary{padding:12px 14px;font-size:13.5px;font-weight:700;cursor:pointer;color:var(--ink2);}
+details .in{padding:0 14px 14px;}
+
+.note{font-size:12.5px;color:var(--ink3);line-height:1.5;margin-top:10px;}
+.warn{border-left:3px solid var(--yellow);background:rgba(201,133,0,.09);padding:10px 12px;border-radius:0 8px 8px 0;
+  font-size:12.5px;line-height:1.5;color:var(--ink2);margin-top:12px;}
+.warn b{color:var(--ink);}
+.ok{border-left-color:var(--green);background:rgba(42,157,74,.09);}
+.bad{border-left-color:var(--red);background:rgba(230,103,103,.09);}
+
+/* worksheet */
+.wrow{display:flex;align-items:center;gap:10px;padding:9px 0;border-bottom:1px solid var(--line);}
+.wrow:last-child{border-bottom:0;}
+.wrow .nm{flex:1;font-size:13.5px;line-height:1.3;}
+.wrow .nm small{display:block;color:var(--ink3);font-size:11px;}
+.wrow input[type=range]{flex:0 0 108px;width:108px;accent-color:var(--blue);background:none;border:0;padding:0;}
+.wrow .sc{flex:0 0 52px;text-align:right;font-weight:800;font-size:14px;font-variant-numeric:tabular-nums;}
+.grp{font-size:11.5px;font-weight:800;text-transform:uppercase;letter-spacing:.09em;color:var(--ink3);
+  margin:18px 0 2px;display:flex;justify-content:space-between;}
+.total{position:sticky;bottom:0;background:var(--surf);border-top:2px solid var(--ink);
+  margin:16px -16px -16px;padding:14px 16px calc(14px + env(safe-area-inset-bottom));border-radius:0 0 var(--r) var(--r);}
+.total .big{font-size:34px;font-weight:800;letter-spacing:-.03em;line-height:1;}
+.total .band{font-size:14px;font-weight:700;margin-top:3px;}
+.bar{height:10px;background:var(--surf2);border-radius:5px;overflow:hidden;margin-top:10px;position:relative;}
+.bar i{display:block;height:100%;background:var(--blue);border-radius:0 5px 5px 0;}
+.bar u{position:absolute;top:0;bottom:0;width:2px;background:var(--ink3);}
+
+/* output */
+#out{white-space:pre-wrap;font-size:14px;line-height:1.6;word-wrap:break-word;overflow-wrap:anywhere;}
+#out h1,#out h2,#out h3{font-size:16px;margin:16px 0 4px;}
+.spin{display:inline-block;width:14px;height:14px;border:2px solid rgba(255,255,255,.35);
+  border-top-color:#fff;border-radius:50%;animation:sp .7s linear infinite;}
+@keyframes sp{to{transform:rotate(360deg)}}
+.status{font-size:12.5px;color:var(--ink3);margin-top:10px;}
+.tag{display:inline-block;font-size:10.5px;font-weight:800;padding:2px 7px;border-radius:9px;
+  background:var(--surf2);border:1px solid var(--line);color:var(--ink2);margin-left:6px;vertical-align:2px;}
+.hidden{display:none!important;}
+.footer{font-size:11.5px;color:var(--ink3);text-align:center;padding:24px 8px;line-height:1.6;}
+</style>
+</head>
+<body>
+
+<header>
+ <div class="in">
+  <div class="brand">
+    <div class="logo">IP</div>
+    <div>
+      <h1>IPO Analyst</h1>
+      <div class="sub">Institutional-grade Indian IPO research</div>
+    </div>
+  </div>
+  <nav>
+    <button class="on" data-tab="analyse">Analyse</button>
+    <button data-tab="report">Report</button>
+    <button data-tab="score">Scoring</button>
+    <button data-tab="setup">Setup</button>
+  </nav>
+ </div>
+</header>
+
+<div class="wrap">
+
+<!-- ============ ANALYSE ============ -->
+<section id="tab-analyse">
+  <div class="card">
+    <h2>New analysis</h2>
+    <p class="hint">Fills the 48-part institutional research protocol with your inputs. Run it in-app, or send it to any AI chat app.</p>
+
+    <label for="company">Company name</label>
+    <input type="text" id="company" placeholder="e.g. Behari Lal Engineering" autocomplete="off" autocapitalize="words" enterkeyhint="done">
+
+    <label>IPO type</label>
+    <div class="seg" id="segType"></div>
+
+    <label>Investment horizon</label>
+    <div class="seg" id="segHorizon"></div>
+
+    <label>Investor type</label>
+    <div class="seg" id="segInvestor"></div>
+
+    <button class="btn pri" id="btnRun">Run analysis in-app</button>
+    <div class="grid2" style="margin-top:9px;">
+      <button class="btn sm" id="btnCopy">Copy prompt</button>
+      <button class="btn sm" id="btnShare">Send to&hellip;</button>
+    </div>
+
+    <details>
+      <summary>Open directly in a chat app</summary>
+      <div class="in">
+        <p class="note" style="margin-top:0;">Copies the prompt, then opens the app. Paste into the message box. Use this if you don't have an API key.</p>
+        <div class="grid2">
+          <button class="btn sm" data-open="https://claude.ai/new">Claude</button>
+          <button class="btn sm" data-open="https://chatgpt.com/">ChatGPT</button>
+          <button class="btn sm" data-open="https://gemini.google.com/app">Gemini</button>
+          <button class="btn sm" data-open="https://www.perplexity.ai/">Perplexity</button>
+        </div>
+        <p class="note">Turn the chat app's web-search / browsing mode ON before sending, or the research protocol cannot be followed.</p>
+      </div>
+    </details>
+
+    <details>
+      <summary>Preview the generated prompt</summary>
+      <div class="in"><textarea id="preview" readonly style="min-height:220px;"></textarea></div>
+    </details>
+  </div>
+
+  <div class="card">
+    <h2>Recent</h2>
+    <p class="hint">Saved on this device only.</p>
+    <div id="recent"></div>
+  </div>
+</section>
+
+<!-- ============ REPORT ============ -->
+<section id="tab-report" class="hidden">
+  <div class="card">
+    <h2>Report <span class="tag" id="repTag">empty</span></h2>
+    <p class="hint" id="repMeta">Run an analysis to populate this tab.</p>
+    <div class="grid2">
+      <button class="btn sm" id="btnCopyOut">Copy text</button>
+      <button class="btn sm" id="btnPrint">Save as PDF</button>
+    </div>
+    <div class="status" id="status"></div>
+    <div id="out" style="margin-top:14px;"></div>
+  </div>
+</section>
+
+<!-- ============ SCORING ============ -->
+<section id="tab-score" class="hidden">
+  <div class="card">
+    <h2>100-point scoring worksheet</h2>
+    <p class="hint">Works offline. Drag each slider as you read the report. Market signals are capped at 5 points so sentiment cannot outweigh fundamentals.</p>
+    <label for="scName">Company</label>
+    <input type="text" id="scName" placeholder="Company name" autocomplete="off">
+    <div id="sheet"></div>
+    <div class="total">
+      <div style="display:flex;align-items:flex-end;justify-content:space-between;gap:12px;">
+        <div>
+          <div class="big" id="tScore">0.0</div>
+          <div class="band" id="tBand">&mdash;</div>
+        </div>
+        <div style="text-align:right;font-size:12px;color:var(--ink3);line-height:1.5;">
+          Fundamentals <b id="tFund" style="color:var(--ink)">0</b>/95<br>
+          Market signals <b id="tMkt" style="color:var(--ink)">0</b>/5
+        </div>
+      </div>
+      <div class="bar"><i id="tBar" style="width:0%"></i><u style="left:45%"></u><u style="left:55%"></u><u style="left:65%"></u><u style="left:75%"></u><u style="left:85%"></u></div>
+      <div class="grid2" style="margin-top:11px;">
+        <button class="btn sm" id="btnScReset" style="margin:0;">Reset</button>
+        <button class="btn sm" id="btnScCopy" style="margin:0;">Copy summary</button>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ SETUP ============ -->
+<section id="tab-setup" class="hidden">
+  <div class="card">
+    <h2>In-app AI</h2>
+    <p class="hint">Optional. Needed only for "Run analysis in-app". Your key is stored in this browser's local storage and sent directly to Anthropic — it never passes through any server of mine.</p>
+
+    <label for="key">Anthropic API key</label>
+    <input type="password" id="key" placeholder="sk-ant-..." autocomplete="off" spellcheck="false">
+
+    <label for="model">Model</label>
+    <select id="model">
+      <option value="claude-opus-4-5-20251101">Claude Opus — deepest analysis, slowest</option>
+      <option value="claude-sonnet-4-5-20250929" selected>Claude Sonnet — balanced (recommended)</option>
+      <option value="claude-haiku-4-5-20251001">Claude Haiku — fastest, cheapest</option>
+    </select>
+
+    <label for="searches">Max web searches per run</label>
+    <select id="searches">
+      <option value="12">12 — quick pass</option>
+      <option value="25" selected>25 — standard</option>
+      <option value="40">40 — exhaustive</option>
+    </select>
+
+    <button class="btn sm" id="btnTest">Test key</button>
+    <div class="warn"><b>Cost warning.</b> A full run makes 12&ndash;40 web searches and produces a very long report. Expect roughly &#8377;25&ndash;&#8377;150 of API usage per analysis depending on model and depth. Set a spend limit in your Anthropic console.</div>
+    <div class="warn bad"><b>Key safety.</b> Anyone with access to this device or browser profile can read the stored key. Use a dedicated key with a low monthly cap, and revoke it if the device is lost. If you would rather not store a key at all, use "Copy prompt" and paste into a chat app instead.</div>
+    <p class="note">Get a key at <b>console.anthropic.com</b> &rarr; API Keys. Model names above may need updating as new versions ship; edit the value in the dropdown if a call returns "model not found".</p>
+  </div>
+
+  <div class="card">
+    <h2>Install as an app</h2>
+    <p class="hint" id="installHint">Add this page to your home screen to get an app icon and a full-screen, address-bar-free experience.</p>
+    <button class="btn sm" id="btnInstall" style="display:none;">Install app</button>
+    <div class="warn"><b>Android (Chrome):</b> tap &#8942; menu &rarr; <b>Add to Home screen</b> &rarr; Install.<br><br>
+    <b>iPhone / iPad (Safari):</b> tap the <b>Share</b> icon &rarr; scroll down &rarr; <b>Add to Home Screen</b> &rarr; Add. This must be done in Safari, not Chrome.</div>
+  </div>
+
+  <div class="card">
+    <h2>Data &amp; privacy</h2>
+    <p class="hint">Everything lives on this device: your key, saved analyses and worksheet scores. There is no backend and no analytics.</p>
+    <button class="btn sm" id="btnWipe">Erase all local data</button>
+  </div>
+
+  <div class="footer">
+    IPO Analyst &middot; v1.0<br>
+    Research tool only. Not investment advice, not a recommendation, and not a substitute for a SEBI-registered adviser.
+    AI output can be wrong or out of date &mdash; verify every figure against the RHP, SEBI filings and the exchanges before acting.
+    Equity investment carries the risk of permanent capital loss.
+  </div>
+</section>
+
+</div>
+
+<!-- ======================= PROMPT TEMPLATE ======================= -->
+<script type="text/plain" id="tpl">
+# INSTITUTIONAL-GRADE INDIAN IPO RESEARCH
+
+## 0. YOUR ROLE
+Act as a Senior Investment Advisor and CFA-level equity research professional managing HNI/UHNI portfolios in India.
+Your primary responsibility is: capital preservation + superior risk-adjusted returns + long-term compounding.
+You are NOT a promoter, broker, investment banker, IPO marketer, financial influencer, or subscription-number commentator.
+Remain independent, skeptical, evidence-driven, valuation-conscious, risk-focused, numerically rigorous and unbiased.
+Determine whether the IPO deserves capital allocation AT THE ACTUAL IPO VALUATION, not merely whether the company is good.
+
+## 1. INPUT
+Company Name: {{COMPANY}}
+IPO Type: {{TYPE}}
+Investment Horizon: {{HORIZON}}
+Investor Type: {{INVESTOR}}
+If no horizon is given, analyse BOTH listing-gain and long-term opportunity.
+
+## 2. CORE QUESTION
+"At the IPO issue price, does this company offer a sufficiently attractive risk-adjusted return to justify allocating HNI capital versus other opportunities in the Indian equity market?"
+Do NOT answer "is this a good company". Answer "is this a good investment at this valuation".
+A high-quality company can be a poor investment if the IPO valuation is excessive. A mediocre company can be attractive if valuation gives unusually favourable risk/reward.
+
+## 3. STEP 1 - IDENTIFY THE CORRECT IPO
+Verify legal company name, CIN where available, IPO name, Mainboard/SME, exchange, DRHP/RHP/prospectus, company website, IPO Ji page. Resolve any name ambiguity before proceeding. Do not analyse the wrong company.
+
+## 4. SOURCE HIERARCHY
+TIER 1 (primary): SEBI; DRHP; RHP; final prospectus; company investor relations; NSE; BSE; official anchor allocation documents; audited financial statements; regulatory filings.
+TIER 2 (high-quality secondary): IPO Ji, Moneycontrol, Economic Times, Business Standard, Mint, Reuters, Bloomberg, CNBC-TV18, Financial Express, reputable brokerage research.
+TIER 3 (market/sentiment, use cautiously): GMP sites, forums, social media, YouTube, Telegram, unverified blogs.
+Never use Tier 3 as proof of a financial or legal fact.
+
+## 5. IPO JI RESEARCH
+Search "{{COMPANY}} IPO IPO Ji". Extract dates, price band, issue price, issue size, fresh issue, OFS, lot size, minimum investment, GMP, GMP %, subscription, financials, promoters, anchor investors, objects, business overview, strengths, risks. Then verify against primary sources. IPO Ji must never override a conflicting figure in the latest official document.
+
+## 6. DOCUMENT VERSION CONTROL
+Determine the latest document: DRHP -> updated DRHP -> RHP -> addendum/corrigendum -> prospectus. Produce a table of Document | Date | Status | Used for analysis. If still at DRHP stage with no final price, say so explicitly. Do NOT manufacture a final issue price.
+
+## 7. IPO DATA TABLE
+Produce a table: IPO Parameter | Value | Source | Verification Status, covering company, IPO type, open, close, allotment, listing, price band, final issue price, face value, total issue size, fresh issue, OFS, lot size, minimum investment, listing exchange, pre-IPO placement, post-IPO shares, market capitalisation.
+Label every figure Official / Derived / Estimated / Unofficial.
+
+## 8. GMP PROTOCOL
+Search multiple GMP sources, not one. Record date, GMP, upper price, GMP %, implied listing price.
+GMP % = GMP / upper price x 100. Implied listing = upper price + GMP.
+Assess trend, volatility, direction and cross-source consistency. GMP is unofficial and unregulated and is never guaranteed profit. GMP must contribute no more than 5 of 100 points to the overall score. If sources conflict materially, report the range.
+
+## 9. BUSINESS ANALYSIS
+In plain English: what does the company do; how does it make money; who pays it; why do customers choose it; what stops competitors taking the business.
+Analyse products, services, revenue streams, geography, customer segments, distribution, manufacturing, capacity, utilisation, order book, recurring vs non-recurring revenue, domestic vs export.
+Table: Business Segment | Description | Revenue | Revenue % | Growth | Strategic Importance.
+
+## 10. INDUSTRY ANALYSIS
+TAM, industry growth, demand drivers, structural trends, competition, market share, entry barriers, pricing power, cyclicality, regulation, government policy, technology disruption, commodity exposure, industry profitability.
+Classify: Secular Growth / Cyclical / Mature / Declining / Highly Competitive / Structurally Attractive / Structurally Weak. Explain why.
+
+## 11. COMPETITIVE ADVANTAGE
+Assess brand, cost advantage, scale, distribution, technology, IP, network effects, customer relationships, switching costs, regulatory barriers, manufacturing capability, location.
+Classify: Strong / Moderate / Weak / No identifiable moat. Do not call something a moat merely because management does.
+
+## 12. THREE-YEAR FINANCIALS
+Use the latest three completed financial years, audited/restated from the IPO documents. Table in Rs crore: Revenue, EBITDA, EBIT, PAT, Total Assets, Total Liabilities, Net Worth, Total Debt, Cash, Operating Cash Flow, Capex, Free Cash Flow, with CAGR/trend.
+Do not confuse: total liabilities is not total debt; revenue is not total income; PAT is not cash generated; EBITDA is not cash flow.
+
+## 13. FINANCIAL QUALITY
+Growth: revenue, EBITDA, PAT and EPS CAGR.
+Profitability: EBITDA margin, EBIT margin, PAT margin, ROE, ROCE.
+Balance sheet: debt/equity, net debt/equity, interest coverage, current ratio.
+Cash flow: CFO/PAT, FCF/PAT, FCF margin.
+Working capital: receivable days, inventory days, payable days, cash conversion cycle.
+Mark each Improving / Stable / Deteriorating.
+
+## 14. QUALITY OF EARNINGS TEST (mandatory)
+Compare PAT growth against operating cash flow growth. Flag: PAT rising while CFO falls; receivables rising faster than revenue; inventory rising faster than revenue; persistent negative FCF; large other income; one-off gains; capitalised expenses; unusual related-party revenue; margin expansion without economic explanation.
+Conclude: High / Moderate / Low quality earnings, or Red flag.
+
+## 15. BALANCE SHEET FORENSICS
+Debt, working capital, receivables, inventory, cash, contingent liabilities, guarantees, related-party balances, subsidiary exposure, lease liabilities, pledges, off-balance-sheet risks.
+Classify: Strong / Healthy / Moderate / Stretched / Weak.
+
+## 16. PROMOTER DUE DILIGENCE (mandatory)
+For every promoter: full name, shareholding, position, background, education where relevant, business history, other companies, previous listed companies, track record.
+Then run an independent adverse-record search for each promoter name combined with: SEBI, NSE, BSE, fraud, litigation, court, ED, CBI, Income Tax, enforcement, default, insolvency, NCLT, wilful defaulter, corporate governance, related party, pledge, investigation. Do not rely on a single search result.
+
+## 17. PROMOTER EVIDENCE STANDARD
+Classify every finding as VERIFIED (official document or reliable primary source), REPORTED (credible media, unconfirmed), ALLEGATION (claim by another party), or UNVERIFIED. Never convert an allegation into a factual statement.
+If nothing adverse is found, state: "No material adverse information was identified in the sources searched; this is not proof that no undisclosed issue exists."
+
+## 18. CORPORATE GOVERNANCE
+Promoter remuneration, related-party transactions, auditor history, auditor qualifications, auditor resignations, independent director resignations, CFO changes, KMP turnover, promoter pledging, subsidiary transactions, loans and advances, contingent liabilities, litigation. Score Governance out of 10.
+
+## 19. ANCHOR INVESTORS
+Find the official anchor allocation document; do not rely only on articles. Table the top 5 by amount: Rank | Anchor Investor | Amount | Shares | % of anchor book | Investor type, with a note on identity, institution type, reputation and long-term vs trading orientation where inferable.
+Anchor participation is a confidence signal, not proof of quality, and must contribute no more than 5 of 100 points.
+
+## 20. IPO OBJECTIVES
+Fresh issue: state exactly where the money goes (debt repayment, capex, expansion, working capital, acquisition, general corporate purposes).
+OFS: selling shareholder, shares, value, promoter vs investor selling.
+Classify the issue: Growth capital / Balance-sheet repair / Partial exit / Primarily shareholder exit / Mixed. Assess whether the stated use of proceeds is value-accretive.
+
+## 21. VALUATION (most important)
+At the issue price compute where applicable: market cap, enterprise value, P/E, EV/EBITDA, EV/Sales, P/B, PEG. State the denominator and the financial year used. If annualising a partial period, label it annualised and explain the method.
+
+## 22. PEER COMPARISON
+Identify 3-5 genuinely comparable listed Indian companies, selected on business model and end-market, not merely the same broad sector.
+Table: Company | Revenue Growth | EBITDA Margin | PAT Growth | ROE | ROCE | P/E | EV/EBITDA | Debt/Equity, with the IPO company in the first row. State the premium or discount versus peers and whether it is justified.
+
+## 23. VALUATION DISCIPLINE
+Answer five questions: is it growing faster than peers; is profitability better; is ROCE/ROE better; is the balance sheet stronger; is the competitive advantage stronger.
+If the IPO trades at a large premium it cannot justify through superior fundamentals, flag VALUATION RISK.
+Classify: Deeply Undervalued / Undervalued / Fair / Expensive / Very Expensive.
+
+## 24. SCENARIO VALUATION
+Build Bear (lower growth, margin pressure, lower multiple), Base (realistic, supported by history and industry outlook) and Bull (stronger growth, stable or improving margins, premium multiple) cases with approximate implied valuations. Label all assumptions clearly. Never present assumptions as facts.
+
+## 25. RED FLAG SEARCH
+Search specifically for: promoter controversies, auditor qualifications, auditor resignation, regulatory action, litigation, tax disputes, related-party transactions, customer concentration, supplier concentration, debt, receivables, inventory, negative cash flow, unusual accounting, promoter selling, pledge, subsidiary losses, contingent liabilities, sudden margin expansion, sudden revenue acceleration, previous failed businesses.
+Table: Red Flag | Evidence | Source | Severity (CRITICAL/HIGH/MEDIUM/LOW) | Impact.
+
+## 26. STRENGTHS
+Top 5-10 genuine strengths ranked Critical / High / Medium, each with evidence. Avoid generic phrases. Bad: "experienced management". Good: "promoter scaled revenue from Rs X crore to Rs Y crore over N years while holding ROCE above Z%".
+
+## 27. WEAKNESSES
+Top 5-10 weaknesses prioritised across structural, financial, competitive, governance and valuation. Do not hide weaknesses because the IPO looks attractive.
+
+## 28. SCORING MODEL (100 points)
+BUSINESS QUALITY 20: business model 4, competitive advantage 4, industry attractiveness 4, growth runway 4, revenue quality 4.
+FINANCIAL QUALITY 20: revenue growth 4, profit growth 4, margins 3, ROCE/ROE 3, cash flow 3, balance sheet 3.
+MANAGEMENT & GOVERNANCE 15: promoter track record 5, governance 5, capital allocation 5.
+VALUATION 20: absolute 5, peer 5, growth-adjusted 5, margin of safety 5.
+IPO STRUCTURE 10: fresh issue quality 4, use of proceeds 3, OFS/exit structure 3.
+RISK 10: business 3, financial 3, governance 2, regulatory/industry 2.
+MARKET SIGNALS 5: GMP 2, anchor quality 1, subscription/demand 2.
+Show the score for every line item with a one-line basis. Market signals must not overwhelm fundamental analysis.
+
+## 29. SCORE INTERPRETATION
+85-100 Exceptional; 75-84 Strong; 65-74 Attractive; 55-64 Selective; 45-54 Weak; below 45 Avoid.
+VALUATION OVERRIDE: if the fundamental score is high but valuation is exceptionally expensive, explicitly downgrade the final recommendation. Never let "great business" become an automatic "subscribe".
+
+## 30. LISTING-GAIN SCORE (separate, out of 100)
+GMP 30, subscription 20, market sentiment 15, sector sentiment 10, IPO scarcity/demand 10, valuation 10, anchor participation 5.
+Classify 80-100 Very Positive; 65-79 Positive; 50-64 Neutral; 35-49 Negative; below 35 Very Negative. State clearly that this is a market-sentiment assessment, not a guaranteed outcome.
+
+## 31. LONG-TERM SCORE (out of 100)
+Based on business, financials, management, governance, competitive advantage, growth, valuation and risk. GMP and subscription must not materially influence this score.
+
+## 32. DECISION MATRIX
+Build the 2x2 of Listing Positive/Negative against Long-term Positive/Negative and place the company in one quadrant.
+
+## 33. HNI DECISION
+Give exactly ONE final recommendation: STRONG SUBSCRIBE / SUBSCRIBE / SELECTIVE-SMALL ALLOCATION / WAIT FOR BETTER VALUATION / LISTING GAIN ONLY / AVOID.
+
+## 34. ALLOCATION FRAMEWORK
+Indicative category: 0% avoid; 0-1% watchlist/speculative; 1-2% small; 2-3% moderate; 3-5% high conviction; 5%+ exceptional only.
+Explain what portfolio conditions would justify it. Do not present it as personalised financial advice.
+
+## 35. CATALYSTS
+Revenue growth, new capacity, new customers, margin expansion, debt reduction, industry cycle, new products, geographic expansion, regulatory change, acquisition, operating leverage. Rank High / Medium / Low.
+
+## 36. WHAT CAN GO WRONG
+The five most realistic ways the thesis fails. Table: Failure Scenario | Probability | Potential Impact | Early Warning Indicator, using Low/Medium/High. Do not manufacture precise probabilities.
+
+## 37. MONITORING CHECKLIST
+What an HNI should monitor quarterly: revenue growth, EBITDA margin, PAT, CFO, receivables, debt, ROCE, market share, promoter holding, related-party transactions, management commentary, capex execution, IPO proceeds utilisation.
+Table: Metric | Current | Desired Trend | Warning Level.
+
+## 38. ONE-PAGE INVESTMENT MEMO
+Company; IPO (size/price/dates); Investment Rating; IPO Quality XX/100; Long-Term Score XX/100; Listing Score XX/100; Valuation; Business (2-3 sentences); Why invest (3 points); Why avoid (3 points); Biggest moat; Biggest risk; Promoter quality X/10; Governance X/10; Balance sheet; Cash flow quality; GMP; HNI view; Suggested allocation category; and a one-sentence verdict in the form:
+"[Company] is a [quality] business being offered at a [valuation] valuation, making the IPO [attractive/selective/unattractive] for an HNI investor because [main reason]."
+
+## 39. SOURCE AUDIT
+List primary sources (SEBI, DRHP, RHP, prospectus, company site, NSE/BSE, anchor document, annual reports) and secondary sources used. Give the source for every major financial number, IPO parameter, promoter issue, anchor allocation and valuation input.
+
+## 40. DATA CONFLICT PROTOCOL
+If two sources disagree, never choose silently. Table: Data Point | Source A | Source B | Your Decision | Reason.
+Prefer latest primary source > earlier primary source > reputable secondary > market source.
+
+## 41. MISSING DATA PROTOCOL
+If data is unavailable write "Not reliably available from the sources reviewed." Never guess, fabricate, infer a precise figure without labelling it derived, or present an estimate as audited data. If a calculation needs unavailable data, explain the limitation.
+
+## 42. SEARCH SEQUENCE
+Phase 1 identification: "{{COMPANY}} IPO"; "{{COMPANY}} IPO IPO Ji"; "{{COMPANY}} DRHP"; "{{COMPANY}} RHP"; "{{COMPANY}} prospectus".
+Phase 2 primary: "{{COMPANY}} site:sebi.gov.in"; site:nseindia.com; site:bseindia.com; "{{COMPANY}} investor relations".
+Phase 3 financials: "{{COMPANY}} revenue PAT FY"; "{{COMPANY}} annual report"; "{{COMPANY}} DRHP financial statements".
+Phase 4 promoters: for each promoter name run SEBI, litigation, fraud, court, NCLT, default.
+Phase 5 anchors: "{{COMPANY}} anchor investor allocation"; anchor book; anchor investors PDF.
+Phase 6 valuation: "{{COMPANY}} peers India"; P/E; EV EBITDA; valuation.
+Phase 7 GMP: "{{COMPANY}} GMP today"; IPO GMP history; grey market premium.
+Phase 8 red flags: "{{COMPANY}} controversy"; regulatory action; litigation; auditor resignation; related party; promoter pledge.
+Do not repeat searches unnecessarily.
+
+## 43. SEARCH QUALITY RULE
+Do not stop at one positive article. For every material claim, actively search for contradictory evidence. If management claims a competitive advantage, search competition, market share, competitors and pricing pressure. If management claims strong cash generation, check CFO vs PAT, receivables, working capital and free cash flow. If management claims experienced promoters, search their historical companies and regulatory records.
+
+## 44. ANTI-BIAS RULES
+Guard against confirmation bias (do not search only supporting information), recency bias (do not overvalue the latest quarter), narrative bias (a compelling story is not economic performance), GMP bias (GMP is not intrinsic value), anchor bias (institutions do not guarantee quality), subscription bias (oversubscription is not fundamental attractiveness), brand bias (fame is not investment merit) and growth bias (do not pay any price for growth).
+
+## 45. FINAL DECISION RULE
+Before the recommendation, answer: is the business genuinely high quality; is growth sustainable; are profits converting into cash; is the balance sheet healthy; are promoters and management trustworthy; is governance acceptable; does the company have a moat; is the valuation justified versus peers; what is the downside if assumptions fail; is there sufficient margin of safety.
+If several answers are "No", do not recommend the IPO merely because GMP is positive.
+
+## 46. IMPORTANT DISTINCTION
+Always distinguish a GOOD COMPANY from a GOOD STOCK AT THIS VALUATION. The conclusion must reflect the second.
+
+## 47. REPORT FORMAT
+Produce the report in this exact order:
+1 Executive Summary; 2 IPO Snapshot; 3 Business Overview; 4 Products & Services; 5 Industry Analysis; 6 Competitive Advantage; 7 Three-Year Financial Analysis; 8 Financial Quality; 9 Cash Flow Analysis; 10 Balance Sheet Analysis; 11 Promoter Background & Due Diligence; 12 Corporate Governance; 13 Anchor Investors Top 5; 14 IPO Objectives; 15 Valuation; 16 Peer Comparison; 17 GMP Analysis; 18 Strengths; 19 Weaknesses; 20 Red Flags; 21 Bull/Base/Bear Scenarios; 22 Listing-Gain Assessment; 23 Long-Term Investment Assessment; 24 HNI Allocation View; 25 Key Catalysts; 26 Key Failure Scenarios; 27 Monitoring Checklist; 28 100-Point IPO Score; 29 Final Investment Verdict; 30 Sources.
+
+## 48. FINAL INSTRUCTION
+Research FIRST, then calculate, then challenge your own conclusion, then write. Follow: Research -> Verify -> Calculate -> Compare -> Challenge -> Score -> Decide.
+Do NOT decide the answer first and then search for supporting evidence.
+Base the recommendation only on evidence available at the time of analysis.
+Begin the report with: "Analysis updated as of: {{DATE}}".
+End with a clear statement that this is research, not personalised investment advice.
+
+Now begin the complete research process for: {{COMPANY}}
+</script>
+
+<script>
+/* ============================== state ============================== */
+var LS = {
+  key:'ipo.key', model:'ipo.model', searches:'ipo.searches',
+  form:'ipo.form', recent:'ipo.recent', score:'ipo.score', report:'ipo.report'
+};
+function get(k,d){ try{ var v=localStorage.getItem(k); return v===null?d:v; }catch(e){ return d; } }
+function set(k,v){ try{ localStorage.setItem(k,v); }catch(e){} }
+function $(s){ return document.querySelector(s); }
+function $$(s){ return Array.prototype.slice.call(document.querySelectorAll(s)); }
+
+/* ============================== tabs ============================== */
+$$('nav button').forEach(function(b){
+  b.addEventListener('click', function(){
+    $$('nav button').forEach(function(x){ x.classList.remove('on'); });
+    b.classList.add('on');
+    ['analyse','report','score','setup'].forEach(function(t){
+      $('#tab-'+t).classList.toggle('hidden', t !== b.dataset.tab);
+    });
+    window.scrollTo(0,0);
+  });
+});
+function goTab(name){
+  var b = document.querySelector('nav button[data-tab="'+name+'"]');
+  if(b) b.click();
+}
+
+/* ============================== segmented controls ============== */
+var SEGS = {
+  segType:    { name:'type',     opts:['Mainboard','SME','Unknown'], def:'Mainboard' },
+  segHorizon: { name:'horizon',  opts:['Both','Listing gain','1 year','3 years','5+ years'], def:'Both' },
+  segInvestor:{ name:'investor', opts:['HNI','Retail','UHNI'], def:'HNI' }
+};
+Object.keys(SEGS).forEach(function(id){
+  var s = SEGS[id], host = $('#'+id), html='';
+  s.opts.forEach(function(o,i){
+    var uid = id+'_'+i;
+    html += '<input type="radio" name="'+s.name+'" id="'+uid+'" value="'+o+'"'+(o===s.def?' checked':'')+'>'
+          + '<label for="'+uid+'">'+o+'</label>';
+  });
+  host.innerHTML = html;
+});
+
+/* ============================== prompt build ==================== */
+function horizonText(h){
+  if(h==='Both') return 'BOTH listing gain and long term (analyse both separately)';
+  if(h==='Listing gain') return 'LISTING GAIN';
+  return h.toUpperCase();
+}
+function formVals(){
+  return {
+    company: $('#company').value.trim(),
+    type: (document.querySelector('input[name=type]:checked')||{}).value || 'Unknown',
+    horizon: (document.querySelector('input[name=horizon]:checked')||{}).value || 'Both',
+    investor: (document.querySelector('input[name=investor]:checked')||{}).value || 'HNI'
+  };
+}
+function buildPrompt(){
+  var v = formVals();
+  var name = v.company || '[COMPANY NAME]';
+  var now = new Date();
+  var date = now.toLocaleString('en-IN',{ day:'2-digit', month:'long', year:'numeric',
+                hour:'2-digit', minute:'2-digit', hour12:false }) + ' IST';
+  return $('#tpl').textContent
+    .split('{{COMPANY}}').join(name)
+    .split('{{TYPE}}').join(v.type)
+    .split('{{HORIZON}}').join(horizonText(v.horizon))
+    .split('{{INVESTOR}}').join(v.investor)
+    .split('{{DATE}}').join(date)
+    .trim();
+}
+function refresh(){
+  $('#preview').value = buildPrompt();
+  set(LS.form, JSON.stringify(formVals()));
+}
+['#company'].forEach(function(s){ $(s).addEventListener('input', refresh); });
+$$('.seg input').forEach(function(i){ i.addEventListener('change', refresh); });
+
+/* restore form */
+(function(){
+  try{
+    var f = JSON.parse(get(LS.form,'null'));
+    if(f){
+      $('#company').value = f.company||'';
+      ['type','horizon','investor'].forEach(function(k){
+        var el = document.querySelector('input[name='+k+'][value="'+f[k]+'"]');
+        if(el) el.checked = true;
+      });
+    }
+  }catch(e){}
+  refresh();
+})();
+
+/* ============================== clipboard ======================= */
+function copyText(t, okMsg){
+  function fallback(){
+    var ta=document.createElement('textarea');
+    ta.value=t; ta.style.position='fixed'; ta.style.opacity='0';
+    document.body.appendChild(ta); ta.focus(); ta.select();
+    try{ document.execCommand('copy'); }catch(e){}
+    document.body.removeChild(ta);
+  }
+  if(navigator.clipboard && window.isSecureContext){
+    return navigator.clipboard.writeText(t).catch(fallback);
+  }
+  fallback(); return Promise.resolve();
+}
+function flash(btn, msg){
+  var old = btn.textContent; btn.textContent = msg;
+  setTimeout(function(){ btn.textContent = old; }, 1600);
+}
+$('#btnCopy').addEventListener('click', function(){
+  if(!requireCompany()) return;
+  copyText(buildPrompt()).then(function(){ flash($('#btnCopy'),'Copied'); saveRecent(); });
+});
+$('#btnShare').addEventListener('click', function(){
+  if(!requireCompany()) return;
+  var t = buildPrompt();
+  if(navigator.share){ navigator.share({ title:'IPO research prompt', text:t }).catch(function(){}); }
+  else { copyText(t).then(function(){ flash($('#btnShare'),'Copied'); }); }
+  saveRecent();
+});
+$$('[data-open]').forEach(function(b){
+  b.addEventListener('click', function(){
+    if(!requireCompany()) return;
+    copyText(buildPrompt()).then(function(){
+      saveRecent();
+      window.open(b.dataset.open, '_blank', 'noopener');
+    });
+  });
+});
+function requireCompany(){
+  if(!$('#company').value.trim()){
+    $('#company').focus();
+    $('#company').style.outline='2px solid var(--red)';
+    setTimeout(function(){ $('#company').style.outline=''; },1400);
+    return false;
+  }
+  return true;
+}
+
+/* ============================== recent ========================== */
+function saveRecent(){
+  var v = formVals(); if(!v.company) return;
+  var list=[]; try{ list = JSON.parse(get(LS.recent,'[]')); }catch(e){}
+  list = list.filter(function(x){ return x.company.toLowerCase() !== v.company.toLowerCase(); });
+  list.unshift({ company:v.company, type:v.type, horizon:v.horizon, investor:v.investor, ts:Date.now() });
+  set(LS.recent, JSON.stringify(list.slice(0,12)));
+  drawRecent();
+}
+function drawRecent(){
+  var list=[]; try{ list = JSON.parse(get(LS.recent,'[]')); }catch(e){}
+  if(!list.length){ $('#recent').innerHTML = '<p class="note" style="margin:0;">Nothing yet.</p>'; return; }
+  $('#recent').innerHTML = list.map(function(x,i){
+    var d = new Date(x.ts).toLocaleDateString('en-IN',{day:'2-digit',month:'short'});
+    return '<div class="wrow"><div class="nm">'+esc(x.company)
+      +'<small>'+esc(x.type)+' &middot; '+esc(x.horizon)+' &middot; '+d+'</small></div>'
+      +'<button class="btn sm" style="flex:0 0 auto;width:auto;padding:7px 12px;margin:0;" data-re="'+i+'">Load</button></div>';
+  }).join('');
+  $$('[data-re]').forEach(function(b){
+    b.addEventListener('click', function(){
+      var x = list[+b.dataset.re];
+      $('#company').value = x.company;
+      ['type','horizon','investor'].forEach(function(k){
+        var el = document.querySelector('input[name='+k+'][value="'+x[k]+'"]');
+        if(el) el.checked=true;
+      });
+      refresh(); window.scrollTo(0,0);
+    });
+  });
+}
+function esc(s){ return String(s).replace(/[&<>"]/g,function(c){
+  return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]; }); }
+drawRecent();
+
+/* ============================== settings ======================== */
+$('#key').value = get(LS.key,'');
+$('#model').value = get(LS.model, $('#model').value);
+$('#searches').value = get(LS.searches,'25');
+$('#key').addEventListener('change', function(){ set(LS.key, this.value.trim()); });
+$('#model').addEventListener('change', function(){ set(LS.model, this.value); });
+$('#searches').addEventListener('change', function(){ set(LS.searches, this.value); });
+
+$('#btnWipe').addEventListener('click', function(){
+  if(!confirm('Erase your API key, saved analyses, report and worksheet scores from this device?')) return;
+  Object.keys(LS).forEach(function(k){ try{ localStorage.removeItem(LS[k]); }catch(e){} });
+  location.reload();
+});
+
+$('#btnTest').addEventListener('click', function(){
+  var b=this, k=$('#key').value.trim();
+  if(!k){ alert('Enter your API key first.'); return; }
+  b.disabled=true; b.textContent='Testing...';
+  fetch('https://api.anthropic.com/v1/messages',{
+    method:'POST',
+    headers:{ 'content-type':'application/json', 'x-api-key':k,
+      'anthropic-version':'2023-06-01', 'anthropic-dangerous-direct-browser-access':'true' },
+    body: JSON.stringify({ model:$('#model').value, max_tokens:16,
+      messages:[{role:'user',content:'Reply with the single word: ok'}] })
+  }).then(function(r){ return r.json().then(function(j){ return {ok:r.ok, j:j}; }); })
+   .then(function(res){
+      b.disabled=false; b.textContent='Test key';
+      if(res.ok){ alert('Key works. Model responded successfully.'); set(LS.key,k); }
+      else { alert('Failed: ' + ((res.j.error&&res.j.error.message)||JSON.stringify(res.j))); }
+   })
+   .catch(function(e){ b.disabled=false; b.textContent='Test key';
+      alert('Network error: '+e.message+'\n\nIf this says CORS or "Failed to fetch", the page must be served over HTTPS.'); });
+});
+
+/* ============================== run in-app ====================== */
+var running=false;
+$('#btnRun').addEventListener('click', function(){
+  if(running) return;
+  if(!requireCompany()) return;
+  var k = ($('#key').value||get(LS.key,'')).trim();
+  if(!k){
+    alert('No API key set.\n\nEither add one under Setup, or use "Copy prompt" and paste into Claude / ChatGPT / Gemini.');
+    goTab('setup'); return;
+  }
+  saveRecent();
+  runAnalysis(k);
+});
+
+function runAnalysis(key){
+  running = true;
+  var btn=$('#btnRun');
+  btn.innerHTML='<span class="spin"></span> Researching&hellip;';
+  btn.disabled=true;
+  goTab('report');
+  var v = formVals();
+  $('#repTag').textContent='live';
+  $('#repMeta').textContent = v.company+' · '+v.type+' · '+v.horizon+' · started '+new Date().toLocaleTimeString('en-IN');
+  $('#out').textContent='';
+  var status=$('#status'); var searches=0; var started=Date.now();
+  function tick(msg){
+    var s=Math.round((Date.now()-started)/1000);
+    status.textContent = msg+' · '+searches+' searches · '+s+'s elapsed';
+  }
+  tick('Starting');
+
+  fetch('https://api.anthropic.com/v1/messages',{
+    method:'POST',
+    headers:{ 'content-type':'application/json', 'x-api-key':key,
+      'anthropic-version':'2023-06-01', 'anthropic-dangerous-direct-browser-access':'true' },
+    body: JSON.stringify({
+      model: $('#model').value,
+      max_tokens: 16000,
+      stream: true,
+      tools: [{ type:'web_search_20250305', name:'web_search', max_uses: parseInt($('#searches').value,10) }],
+      messages: [{ role:'user', content: buildPrompt() }]
+    })
+  }).then(function(r){
+    if(!r.ok){ return r.text().then(function(t){ throw new Error(t); }); }
+    var reader = r.body.getReader(), dec = new TextDecoder(), buf='';
+    function pump(){
+      return reader.read().then(function(res){
+        if(res.done){ finish(); return; }
+        buf += dec.decode(res.value,{stream:true});
+        var lines = buf.split('\n'); buf = lines.pop();
+        lines.forEach(function(line){
+          if(line.indexOf('data: ')!==0) return;
+          var payload = line.slice(6);
+          if(payload==='[DONE]') return;
+          var ev; try{ ev = JSON.parse(payload); }catch(e){ return; }
+          if(ev.type==='content_block_start' && ev.content_block && ev.content_block.type==='server_tool_use'){
+            searches++; tick('Searching the web');
+          }
+          if(ev.type==='content_block_delta' && ev.delta){
+            if(ev.delta.type==='text_delta'){
+              $('#out').textContent += ev.delta.text;
+              tick('Writing the report');
+              window.scrollTo(0, document.body.scrollHeight);
+            }
+          }
+        });
+        return pump();
+      });
+    }
+    return pump();
+  }).catch(function(e){
+    $('#out').textContent += '\n\n--- ERROR ---\n' + e.message +
+      '\n\nCommon causes:\n• Invalid or expired API key\n• Model name no longer available (change it under Setup)\n• Insufficient credit on the Anthropic account\n• Page not served over HTTPS';
+    finish(true);
+  });
+
+  function finish(err){
+    running=false;
+    btn.disabled=false; btn.textContent='Run analysis in-app';
+    $('#repTag').textContent = err?'error':'done';
+    tick(err?'Stopped':'Complete');
+    try{ set(LS.report, JSON.stringify({ company:v.company, text:$('#out').textContent, ts:Date.now() })); }catch(e){}
+  }
+}
+
+/* restore last report */
+(function(){
+  try{
+    var r = JSON.parse(get(LS.report,'null'));
+    if(r && r.text){
+      $('#out').textContent = r.text;
+      $('#repTag').textContent = 'saved';
+      $('#repMeta').textContent = r.company+' · '+new Date(r.ts).toLocaleString('en-IN');
+    }
+  }catch(e){}
+})();
+
+$('#btnCopyOut').addEventListener('click', function(){
+  var t=$('#out').textContent;
+  if(!t.trim()){ alert('Nothing to copy yet.'); return; }
+  copyText(t).then(function(){ flash($('#btnCopyOut'),'Copied'); });
+});
+$('#btnPrint').addEventListener('click', function(){
+  var t=$('#out').textContent;
+  if(!t.trim()){ alert('Nothing to save yet.'); return; }
+  var w=window.open('','_blank');
+  if(!w){ alert('Allow pop-ups to use this.'); return; }
+  w.document.write('<!DOCTYPE html><meta charset="utf-8"><title>'+esc(formVals().company||'IPO Report')
+   +'</title><style>body{font:12px/1.55 -apple-system,Helvetica,Arial;margin:22mm 16mm;white-space:pre-wrap;}'
+   +'h1{font:700 18px/1.2 Helvetica;margin:0 0 4px}small{color:#666}</style>'
+   +'<h1>'+esc(formVals().company||'IPO Report')+'</h1><small>Generated by IPO Analyst · '
+   +new Date().toLocaleString('en-IN')+' · Research only, not investment advice</small><hr>'+esc(t));
+  w.document.close();
+  setTimeout(function(){ w.print(); }, 400);
+});
+
+/* ============================== worksheet ======================= */
+var SHEET = [
+ ['BUSINESS QUALITY',[
+   ['Business model',4],['Competitive advantage',4],['Industry attractiveness',4],
+   ['Growth runway',4],['Revenue quality',4]]],
+ ['FINANCIAL QUALITY',[
+   ['Revenue growth',4],['Profit growth',4],['Margins',3],
+   ['ROCE / ROE',3],['Cash flow',3],['Balance sheet',3]]],
+ ['MANAGEMENT & GOVERNANCE',[
+   ['Promoter track record',5],['Governance',5],['Capital allocation',5]]],
+ ['VALUATION',[
+   ['Absolute valuation',5],['Peer valuation',5],['Growth-adjusted valuation',5],['Margin of safety',5]]],
+ ['IPO STRUCTURE',[
+   ['Fresh issue quality',4],['Use of proceeds',3],['OFS / exit structure',3]]],
+ ['RISK',[
+   ['Business risks',3],['Financial risks',3],['Governance risks',2],['Regulatory / industry risks',2]]],
+ ['MARKET SIGNALS (capped)',[
+   ['GMP',2],['Anchor quality',1],['Subscription / demand',2]]]
+];
+var scoreState = {};
+try{ scoreState = JSON.parse(get(LS.score,'{}')) || {}; }catch(e){ scoreState = {}; }
+$('#scName').value = scoreState.__name || '';
+$('#scName').addEventListener('input', function(){ scoreState.__name=this.value; persistScore(); });
+
+(function buildSheet(){
+  var html='';
+  SHEET.forEach(function(grp,gi){
+    html += '<div class="grp"><span>'+esc(grp[0])+'</span><span id="g'+gi+'">0/'
+          + grp[1].reduce(function(a,b){return a+b[1];},0) + '</span></div>';
+    grp[1].forEach(function(it,ii){
+      var id='s'+gi+'_'+ii, val = scoreState[id]!==undefined ? scoreState[id] : 0;
+      html += '<div class="wrow"><div class="nm">'+esc(it[0])+'<small>max '+it[1]+'</small></div>'
+            + '<input type="range" min="0" max="'+(it[1]*2)+'" step="1" value="'+(val*2)+'" data-id="'+id+'" data-g="'+gi+'">'
+            + '<div class="sc" id="v'+id+'">'+val.toFixed(1)+'</div></div>';
+    });
+  });
+  $('#sheet').innerHTML = html;
+  $$('#sheet input[type=range]').forEach(function(r){
+    r.addEventListener('input', function(){
+      var v = (+this.value)/2;
+      scoreState[this.dataset.id] = v;
+      $('#v'+this.dataset.id).textContent = v.toFixed(1);
+      recalc(); persistScore();
+    });
+  });
+  recalc();
+})();
+function persistScore(){ set(LS.score, JSON.stringify(scoreState)); }
+function recalc(){
+  var total=0, mkt=0;
+  SHEET.forEach(function(grp,gi){
+    var g=0;
+    grp[1].forEach(function(it,ii){ g += scoreState['s'+gi+'_'+ii] || 0; });
+    $('#g'+gi).textContent = g.toFixed(1)+'/'+grp[1].reduce(function(a,b){return a+b[1];},0);
+    total += g; if(gi===6) mkt = g;
+  });
+  var band, col;
+  if(total>=85){ band='Exceptional'; col='var(--green)'; }
+  else if(total>=75){ band='Strong'; col='var(--green)'; }
+  else if(total>=65){ band='Attractive'; col='var(--aqua)'; }
+  else if(total>=55){ band='Selective'; col='var(--yellow)'; }
+  else if(total>=45){ band='Weak'; col='var(--orange)'; }
+  else { band='Avoid'; col='var(--red)'; }
+  $('#tScore').textContent = total.toFixed(1);
+  $('#tBand').textContent = band;
+  $('#tBand').style.color = col;
+  $('#tBar').style.width = total+'%';
+  $('#tBar').style.background = col;
+  $('#tFund').textContent = (total-mkt).toFixed(1);
+  $('#tMkt').textContent = mkt.toFixed(1);
+}
+$('#btnScReset').addEventListener('click', function(){
+  if(!confirm('Reset all scores to zero?')) return;
+  scoreState={}; persistScore(); location.reload();
+});
+$('#btnScCopy').addEventListener('click', function(){
+  var lines=[], total=0, mkt=0;
+  lines.push('IPO SCORE — '+($('#scName').value||'(unnamed)'));
+  lines.push(new Date().toLocaleString('en-IN'));
+  lines.push('');
+  SHEET.forEach(function(grp,gi){
+    var g=0;
+    grp[1].forEach(function(it,ii){ g += scoreState['s'+gi+'_'+ii]||0; });
+    lines.push(grp[0]+' — '+g.toFixed(1)+'/'+grp[1].reduce(function(a,b){return a+b[1];},0));
+    grp[1].forEach(function(it,ii){
+      lines.push('  '+it[0]+': '+(scoreState['s'+gi+'_'+ii]||0).toFixed(1)+'/'+it[1]);
+    });
+    total+=g; if(gi===6) mkt=g;
+  });
+  lines.push('');
+  lines.push('TOTAL: '+total.toFixed(1)+'/100 — '+$('#tBand').textContent);
+  lines.push('Fundamentals only: '+(total-mkt).toFixed(1)+'/95');
+  copyText(lines.join('\n')).then(function(){ flash($('#btnScCopy'),'Copied'); });
+});
+
+/* ============================== install prompt ================== */
+var deferred=null;
+window.addEventListener('beforeinstallprompt', function(e){
+  e.preventDefault(); deferred=e;
+  $('#btnInstall').style.display='flex';
+});
+$('#btnInstall').addEventListener('click', function(){
+  if(!deferred) return;
+  deferred.prompt();
+  deferred.userChoice.then(function(){ deferred=null; $('#btnInstall').style.display='none'; });
+});
+if(window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone){
+  $('#installHint').textContent = 'Installed. You are running the app version.';
+}
+
+/* ============================== service worker ================== */
+if('serviceWorker' in navigator){
+  window.addEventListener('load', function(){
+    navigator.serviceWorker.register('sw.js').catch(function(){});
+  });
+}
+</script>
+</body>
+</html>
