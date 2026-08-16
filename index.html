@@ -484,7 +484,7 @@ details .in{padding:0 14px 14px;}
   </div>
 
   <div class="footer">
-    IPO Analyst &middot; v3.0 &middot; framework v3.0<br>
+    IPO Analyst &middot; <span id="verApp">v3.3</span> &middot; framework <span id="verFw">v3.3</span> &middot; build <span id="verBuild">-</span><br>
     Research tool only. Not investment advice, not a recommendation, and not a substitute for a SEBI-registered adviser.
     AI output can be wrong or out of date &mdash; verify every figure against the RHP, SEBI filings and the exchanges before acting.
     Equity investment carries the risk of permanent capital loss.
@@ -1219,7 +1219,7 @@ Every file carries this, translated where required, never shortened:
 
 ---
 
-*Framework v3.3 · IPO Company Research Report · Research tool only · Not investment advice.*
+*Framework v3.2 · IPO Company Research Report · Research tool only · Not investment advice.*
 
 </script>
 
@@ -2357,7 +2357,7 @@ function showReview(res, raw){
           + '4-page summary and the 450 DPI images from this.</div>';
   } else {
     html += '<div class="rvwarn">Scores only. For the app to generate documents you need the full data '
-          + 'block from framework v3.0 — the one that begins <b>"schema": "ipo-analyst/3"</b>.</div>';
+          + 'block from the framework — the one that begins <b>"schema": "ipo-analyst/3"</b>.</div>';
   }
   html += '<div class="rvm">'+esc(d.company||'(company not detected)')
         + ' · ' + esc(d.recommendation||'no verdict detected') + '</div>';
@@ -2569,6 +2569,20 @@ $('#btnSearch').addEventListener('click', function(){
   });
 });
 
+/* ============================== version stamp =================== */
+/* A stale service worker is invisible unless the page says which build it is
+   running, so print the build id and the cache actually serving these files. */
+(function(){
+  var el = $('#verBuild'); if(!el) return;
+  el.textContent = (window.APP_BUILD || 'dev');
+  if(navigator.serviceWorker && navigator.serviceWorker.controller){
+    caches.keys().then(function(ks){
+      var mine = ks.filter(function(k){ return /^ipo-analyst-/.test(k); });
+      if(mine.length) el.textContent = (window.APP_BUILD || 'dev') + ' · ' + mine.join(', ');
+    }).catch(function(){});
+  }
+})();
+
 /* ============================== install prompt ================== */
 var deferred=null;
 window.addEventListener('beforeinstallprompt', function(e){
@@ -2587,12 +2601,31 @@ if(window.matchMedia('(display-mode: standalone)').matches || window.navigator.s
 /* ============================== service worker ================== */
 if('serviceWorker' in navigator){
   window.addEventListener('load', function(){
-    navigator.serviceWorker.register('sw.js').catch(function(){});
+    navigator.serviceWorker.register('sw.js').then(function(reg){
+      /* Ask the browser to look for a new build on every launch, and reload
+         once when one takes over, so an upload is visible immediately. */
+      try{ reg.update(); }catch(e){}
+      reg.addEventListener('updatefound', function(){
+        var sw = reg.installing;
+        if(!sw) return;
+        sw.addEventListener('statechange', function(){
+          if(sw.state === 'installed' && navigator.serviceWorker.controller){
+            var m = document.getElementById('verBuild');
+            if(m) m.textContent = 'updating…';
+          }
+        });
+      });
+    }).catch(function(){});
+    var reloaded = false;
+    navigator.serviceWorker.addEventListener('controllerchange', function(){
+      if(reloaded) return; reloaded = true; location.reload();
+    });
   });
 }
 </script>
 <script src="vendor/html2canvas.min.js"></script>
 <script src="vendor/jspdf.umd.min.js"></script>
+<script>window.APP_BUILD="2026.08.16.2";</script>
 <script src="render.js"></script>
 <script src="docs.js"></script>
 </body>

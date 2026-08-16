@@ -1,5 +1,5 @@
 /* IPO Analyst service worker — offline shell */
-var CACHE = 'ipo-analyst-v10';
+var CACHE = 'ipo-analyst-v3.3-2026.08.16.2';
 var ASSETS = [
   './', './index.html', './manifest.webmanifest',
   './icons/icon-192.png', './icons/icon-512.png',
@@ -21,13 +21,36 @@ self.addEventListener('fetch', function(e){
   if(url.hostname.indexOf('anthropic.com') !== -1) return;
   if(e.request.method !== 'GET') return;
   if(url.origin !== self.location.origin) return;
-  e.respondWith(
-    caches.match(e.request).then(function(hit){
-      return hit || fetch(e.request).then(function(res){
+
+  /* The page itself is fetched network-first. Cache-first here meant a fresh
+     upload kept showing the previous build until the app happened to be opened
+     a second time — which is indistinguishable from "my deploy did not work". */
+  var isPage = e.request.mode === 'navigate' ||
+               /\.(html)$/.test(url.pathname) ||
+               url.pathname.replace(/\/+$/, '') === self.location.pathname.replace(/\/[^\/]*$/, '');
+  if(isPage){
+    e.respondWith(
+      fetch(e.request).then(function(res){
         var copy = res.clone();
         caches.open(CACHE).then(function(c){ c.put(e.request, copy); });
         return res;
-      }).catch(function(){ return caches.match('./index.html'); });
+      }).catch(function(){
+        return caches.match(e.request).then(function(hit){ return hit || caches.match('./index.html'); });
+      })
+    );
+    return;
+  }
+
+  /* Everything else is served from cache but refreshed in the background, so
+     the next load is current without ever waiting on the network. */
+  e.respondWith(
+    caches.match(e.request).then(function(hit){
+      var net = fetch(e.request).then(function(res){
+        var copy = res.clone();
+        caches.open(CACHE).then(function(c){ c.put(e.request, copy); });
+        return res;
+      }).catch(function(){ return hit; });
+      return hit || net;
     })
   );
 });

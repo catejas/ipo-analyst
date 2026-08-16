@@ -1,8 +1,24 @@
-# IPO Analyst — standalone web app  ·  v3.3
+# IPO Analyst — standalone web app  ·  v3.3  ·  build 2026.08.16.2
 
 A single-page web app that turns the institutional IPO research protocol into something you can
 run from an icon on your phone. It works on Android and iPhone/iPad, installs to the home screen,
 runs full-screen with no address bar, and works offline for everything except the AI call itself.
+
+## Version display and deployment (v3.3, build 2026.08.16.2)
+
+**Fixed: the footer said v3.0.** It was a hand-typed string that never got updated through v3.1,
+v3.2 or v3.3. Every version label — the footer, the service-worker cache name, the manifest and this
+README — is now written by the build step from one constant, and a test fails the build if any of
+them disagree. The footer also prints a build stamp and, when a service worker is serving the page,
+the name of the cache actually in use, so "which build am I looking at" is answerable at a glance.
+
+**Fixed: a fresh upload could keep showing the previous build.** The service worker served the page
+cache-first, so a new deployment only appeared on the *second* visit — indistinguishable from a
+failed upload. Pages are now fetched network-first with the cache as the offline fallback, static
+assets are served from cache and refreshed in the background, the app asks for an update on every
+launch, and it reloads itself once when a new build takes over. Verified over real HTTP by serving
+the app, replacing the files as if re-uploading to GitHub, and confirming the new version appears on
+the next load with the old cache discarded — and that it still works offline afterwards.
 
 ## What changed in v3.3 — the v3.2 import regression, fixed
 
