@@ -97,6 +97,23 @@ details .in{padding:0 14px 14px;}
 .bad{border-left-color:var(--red);background:rgba(230,103,103,.09);}
 
 /* worksheet */
+.gwrap{border:1px solid var(--line);border-radius:10px;margin:9px 0;overflow:hidden;background:var(--surf2);}
+.ghead{display:flex;align-items:center;gap:10px;width:100%;background:none;border:0;color:var(--ink);
+  font:inherit;padding:13px 14px;cursor:pointer;text-align:left;}
+.ghead .chev{display:inline-block;font-size:19px;line-height:1;color:var(--ink3);
+  transition:transform .16s ease;transform:rotate(0deg);flex:0 0 auto;}
+.ghead.open .chev{transform:rotate(90deg);}
+.ghead .gname{flex:1;font-size:14.5px;font-weight:700;letter-spacing:-.01em;}
+.ghead .gscore{font-size:17px;font-weight:800;font-variant-numeric:tabular-nums;letter-spacing:-.02em;}
+.ghead .gscore small{font-size:11px;color:var(--ink3);font-weight:600;}
+.gbody{padding:2px 14px 10px;border-top:1px solid var(--line);}
+.srow2{display:flex;align-items:center;gap:10px;padding:7px 0;}
+.srow2 .sname{flex:1;font-size:13px;color:var(--ink2);line-height:1.25;}
+.srow2 .strack{flex:0 0 78px;height:8px;background:var(--surf);border:1px solid var(--line);
+  border-radius:5px;overflow:hidden;}
+.srow2 .strack i{display:block;height:100%;background:var(--blue);border-radius:0 4px 4px 0;}
+.srow2 .sval{flex:0 0 50px;text-align:right;font-size:13.5px;font-weight:800;font-variant-numeric:tabular-nums;}
+.srow2 .sval small{font-size:10px;color:var(--ink3);font-weight:600;}
 .wrow{display:flex;align-items:center;gap:10px;padding:9px 0;border-bottom:1px solid var(--line);}
 .wrow:last-child{border-bottom:0;}
 .wrow .nm{flex:1;font-size:13.5px;line-height:1.3;}
@@ -109,7 +126,8 @@ details .in{padding:0 14px 14px;}
   margin:16px -16px -16px;padding:14px 16px calc(14px + env(safe-area-inset-bottom));border-radius:0 0 var(--r) var(--r);}
 .total .big{font-size:34px;font-weight:800;letter-spacing:-.03em;line-height:1;}
 .total .band{font-size:14px;font-weight:700;margin-top:3px;}
-.bar{height:10px;background:var(--surf2);border-radius:5px;overflow:hidden;margin-top:10px;position:relative;}
+.bar{height:10px;background:var(--surf2);border-radius:5px;overflow:hidden;margin-top:10px;position:relative;
+  pointer-events:none;user-select:none;-webkit-user-select:none;touch-action:none;}
 .bar i{display:block;height:100%;background:var(--blue);border-radius:0 5px 5px 0;}
 .bar u{position:absolute;top:0;bottom:0;width:2px;background:var(--ink3);}
 
@@ -128,6 +146,19 @@ details .in{padding:0 14px 14px;}
 .tag{display:inline-block;font-size:10.5px;font-weight:800;padding:2px 7px;border-radius:9px;
   background:var(--surf2);border:1px solid var(--line);color:var(--ink2);margin-left:6px;vertical-align:2px;}
 .hidden{display:none!important;}
+.rv{border:1px solid var(--line);border-radius:10px;padding:12px 13px;margin-top:12px;background:var(--surf2);}
+.rvh{font-size:14px;font-weight:800;letter-spacing:-.01em;}
+.tagx{font-size:10px;font-weight:700;background:var(--surf);border:1px solid var(--line);
+  border-radius:8px;padding:1px 7px;margin-left:6px;color:var(--ink3);vertical-align:2px;}
+.rvm{font-size:12.5px;color:var(--ink3);margin-top:3px;}
+.rvsum{font-size:12.5px;margin-top:9px;padding-top:9px;border-top:1px solid var(--line);}
+.rvbad{margin-top:6px;border-left:3px solid var(--red);background:rgba(230,103,103,.1);
+  padding:7px 10px;border-radius:0 7px 7px 0;font-size:12px;line-height:1.45;}
+.rvmiss{font-size:12.5px;margin-top:11px;line-height:1.45;color:var(--ink2);}
+.rvrow{display:flex;align-items:center;gap:9px;padding:5px 0;}
+.rvrow span{flex:1;font-size:13px;}
+.rvrow input{width:74px;flex:0 0 74px;padding:7px 9px;font-size:15px;text-align:right;}
+.rvrow small{flex:0 0 26px;color:var(--ink3);font-size:11.5px;}
 .rc{border:1px solid var(--line);border-radius:11px;padding:13px 14px;background:var(--surf2);}
 .rc .v{font-size:17px;font-weight:800;letter-spacing:-.01em;line-height:1.2;}
 .rc .m{font-size:12px;color:var(--ink3);margin-top:2px;}
@@ -169,7 +200,7 @@ details .in{padding:0 14px 14px;}
 <section id="tab-analyse">
   <div class="card">
     <h2>New analysis</h2>
-    <p class="hint">Fills the v2.2 institutional research protocol with your inputs. Always produces six files — full report, 4-page executive summary and 450-DPI visual summary, in English and Gujarati.</p>
+    <p class="hint">Six files plus an import block, in English and ગુજરાતી, every run.</p>
 
     <label for="company">Company name</label>
     <input type="text" id="company" placeholder="e.g. Behari Lal Engineering" autocomplete="off" autocapitalize="words" enterkeyhint="done">
@@ -184,42 +215,16 @@ details .in{padding:0 14px 14px;}
     <div class="seg" id="segInvestor"></div>
 
 
-    <button class="btn pri" id="btnRun">Run analysis in-app</button>
-
-    <div class="warn"><b>Six files, fixed.</b> Every run demands the same set, with no selection step:
-    <br>1 &middot; Full research report &mdash; English &nbsp;&nbsp; 4 &middot; Full research report &mdash; ગુજરાતી
-    <br>2 &middot; Executive summary, max 4 pages &mdash; English &nbsp;&nbsp; 5 &middot; Executive summary &mdash; ગુજરાતી
-    <br>3 &middot; Visual summary, 450 DPI PNG &mdash; English &nbsp;&nbsp; 6 &middot; Visual summary &mdash; ગુજરાતી
-    <br><br>The full report is written <b>first and in full</b> &mdash; the prompt forbids shortening it because a
-    summary follows, and forbids producing a subset. Six documents will not fit in one reply, so when the model
-    runs out of room it emits <b>⟪CONTINUE⟫</b> instead of compressing. When you see that marker, reply
-    <b>continue</b> and it resumes from that exact point.</div>
+    <button class="btn pri" id="btnRun">RUN ANALYSIS IN APP</button>
 
     <label style="margin-top:18px;">Select AI tool</label>
-    <p class="note" style="margin-top:0;margin-bottom:8px;">One tap copies the full prompt to your
-    clipboard and opens the tool. Paste it into the message box and send.</p>
+    <p class="note" style="margin-top:0;margin-bottom:8px;">Copies the prompt and opens the tool. Paste and send.</p>
     <div class="grid2">
       <button class="btn sm" data-tool="claude">Claude</button>
       <button class="btn sm" data-tool="chatgpt">ChatGPT</button>
       <button class="btn sm" data-tool="gemini">Gemini</button>
       <button class="btn sm" data-tool="perplexity">Perplexity</button>
     </div>
-    <button class="btn sm" id="btnShare">Send to another app&hellip;</button>
-
-    <div class="warn bad" id="autoNote"><b>What a web app can and cannot do.</b>
-    A page on one website is not permitted by any browser to type into, click, or read another
-    website &mdash; that restriction is what stops a malicious page emptying your bank account, and it
-    applies to Gemini and ChatGPT too. So the paste is one tap, but it is your tap.
-    <br><br><b>The one path to genuinely hands-off output is <span style="white-space:nowrap;">Run
-    analysis in-app</span></b> with an API key under Setup: that talks to the model directly, runs the
-    searches, streams all six files back, and needs no copying at all.
-    <br><br>Whatever tool you use, bring the result back with <b>Import result</b> on the Report tab &mdash;
-    it archives the report and fills the scoring worksheet automatically.</div>
-
-    <details>
-      <summary>Preview the generated prompt</summary>
-      <div class="in"><textarea id="preview" readonly style="min-height:220px;"></textarea></div>
-    </details>
   </div>
 
   <div class="card">
@@ -237,7 +242,7 @@ details .in{padding:0 14px 14px;}
     <label style="margin-top:0;">Saved analyses</label>
     <select id="libSel"><option value="">— none saved —</option></select>
     <div class="grid2" style="margin-top:9px;">
-      <button class="btn sm" id="btnImport" style="margin:0;">Import result</button>
+      <button class="btn sm" id="btnImport" style="margin:0;">IMPORT RESULT</button>
       <button class="btn sm" id="btnDelRep" style="margin:0;">Delete</button>
     </div>
     <div id="repCard" class="hidden" style="margin-top:12px;"></div>
@@ -247,7 +252,7 @@ details .in{padding:0 14px 14px;}
     with a <b>&#10218;CONTINUE&#10219;</b> marker, tap Continue and it resumes from that exact point &mdash;
     it is instructed never to compress or skip ahead to fit.</p>
     <div class="grid2" style="margin-top:10px;">
-      <button class="btn sm" id="btnCopyOut">Copy text</button>
+      <button class="btn sm" id="btnCopyOut">COPY TEXT</button>
       <button class="btn sm" id="btnPrint">Save as PDF</button>
     </div>
     <div class="status" id="status"></div>
@@ -256,15 +261,22 @@ details .in{padding:0 14px 14px;}
 
   <div class="card hidden" id="importCard">
     <h2>Import a result from another AI tool</h2>
-    <p class="hint">Paste everything the tool gave you — Gemini, ChatGPT, Perplexity, Claude, anything.
-    The app looks for the <b>ipo-analyst-data</b> block the prompt asks for at the end of every run. If
-    that block is missing it falls back to reading the scores out of the text.</p>
-    <textarea id="importText" placeholder="Paste the full output here…" style="min-height:180px;"></textarea>
+    <p class="hint">Paste everything the tool gave you. The app prefers the <b>File 7</b> data block, but
+    it also reads a plain scoring table — it knows each item's maximum, so it can tell a score of 3.0 from
+    a maximum of 4. Anything it cannot find is shown for you to complete before saving.</p>
+    <textarea id="importText" placeholder="Paste the whole reply here — the File 7 data block if you have it, otherwise just the report text…" style="min-height:170px;"></textarea>
+    <label for="importSrc">Which tool produced it</label>
+    <select id="importSrc">
+      <option>Gemini</option><option>ChatGPT</option><option>Claude</option>
+      <option>Perplexity</option><option>Other</option>
+    </select>
     <div class="grid2" style="margin-top:10px;">
-      <button class="btn sm pri" id="btnDoImport" style="margin:0;">Import</button>
+      <button class="btn sm pri" id="btnDoImport" style="margin:0;">READ IT</button>
       <button class="btn sm" id="btnCancelImport" style="margin:0;">Cancel</button>
     </div>
     <div id="importMsg" class="note"></div>
+    <div id="reviewBox" class="hidden"></div>
+    <button class="btn sm pri hidden" id="btnSaveImport">SAVE TO REPORT &amp; SCORING</button>
   </div>
 </section>
 
@@ -272,7 +284,9 @@ details .in{padding:0 14px 14px;}
 <section id="tab-score" class="hidden">
   <div class="card">
     <h2>100-point scoring worksheet</h2>
-    <p class="hint">Works offline. Drag each slider as you read the report. Market signals are capped at 5 points so sentiment cannot outweigh fundamentals.</p>
+    <p class="hint">Tap a block to open its line items. Scores are set by the imported analysis and
+    cannot be dragged by hand &mdash; use <b>IMPORT RESULT</b> on the Report tab. Market signals stay capped
+    at 5 points so sentiment can never outweigh fundamentals.</p>
     <label for="scName">Company</label>
     <input type="text" id="scName" placeholder="Company name" autocomplete="off">
     <div id="sheet"></div>
@@ -287,7 +301,7 @@ details .in{padding:0 14px 14px;}
           Market signals <b id="tMkt" style="color:var(--ink)">0</b>/5
         </div>
       </div>
-      <div class="bar"><i id="tBar" style="width:0%"></i><u style="left:45%"></u><u style="left:55%"></u><u style="left:65%"></u><u style="left:75%"></u><u style="left:85%"></u></div>
+      <div class="bar" aria-readonly="true" title="Set by the imported analysis"><i id="tBar" style="width:0%"></i><u style="left:45%"></u><u style="left:55%"></u><u style="left:65%"></u><u style="left:75%"></u><u style="left:85%"></u></div>
       <div class="grid2" style="margin-top:11px;">
         <button class="btn sm" id="btnScReset" style="margin:0;">Reset</button>
         <button class="btn sm" id="btnScCopy" style="margin:0;">Copy summary</button>
@@ -311,6 +325,25 @@ details .in{padding:0 14px 14px;}
       <option value="claude-sonnet-4-5-20250929" selected>Claude Sonnet — balanced (recommended)</option>
       <option value="claude-haiku-4-5-20251001">Claude Haiku — fastest, cheapest</option>
     </select>
+
+    <label for="promptMode">Prompt delivery</label>
+    <select id="promptMode">
+      <option value="full">Full text — paste the whole protocol into the tool</option>
+      <option value="link">Private link — paste only a short pointer</option>
+    </select>
+    <div id="linkBox" class="hidden">
+      <label for="baseUrl">Where your app is hosted</label>
+      <input type="text" id="baseUrl" placeholder="https://your-site.netlify.app" autocomplete="off" spellcheck="false">
+      <div class="warn"><b>What this does.</b> Instead of pasting 29,000 characters of protocol into
+      Gemini, the app pastes three lines telling it to fetch <b>protocol.md</b> from your own site and
+      follow it. Your method stays off the screen and out of the chat transcript.
+      <br><br><b>What it does not do.</b> The file still has to be publicly readable for the AI to fetch
+      it, so anyone with the URL can open it, and the AI provider still processes its contents. This
+      hides your prompt from over-the-shoulder view and from the chat history &mdash; it is not secrecy.
+      For real confidentiality use <b>RUN ANALYSIS IN APP</b>, where the protocol goes straight to the
+      API and is never pasted anywhere.
+      <br><br>Requires the tool to have browsing on, and it will refuse if the URL is unreachable.</div>
+    </div>
 
     <label for="searches">Max web searches per run</label>
     <select id="searches">
@@ -340,7 +373,7 @@ details .in{padding:0 14px 14px;}
   </div>
 
   <div class="footer">
-    IPO Analyst &middot; v2.2 &middot; framework v2.2<br>
+    IPO Analyst &middot; v2.3 &middot; framework v2.3<br>
     Research tool only. Not investment advice, not a recommendation, and not a substitute for a SEBI-registered adviser.
     AI output can be wrong or out of date &mdash; verify every figure against the RHP, SEBI filings and the exchanges before acting.
     Equity investment carries the risk of permanent capital loss.
@@ -542,11 +575,11 @@ If several answers are "No", do not recommend the IPO merely because GMP is posi
 ## 45. IMPORTANT DISTINCTION
 Always distinguish a GOOD COMPANY from a GOOD STOCK AT THIS VALUATION. The conclusion must reflect the second.
 
-## 46. OUTPUT CONTRACT — SIX FILES, EVERY SINGLE RUN
+## 46. OUTPUT CONTRACT — SIX FILES PLUS THE IMPORT BLOCK, EVERY SINGLE RUN
 
 This section is non-negotiable and overrides any instinct to be concise.
-Produce **all six files below, every time.** Never ask which files are wanted.
-Never offer a choice. Never produce a subset.
+Produce **all six files below, every time**, and then the File 7 import block described in §46.6.
+Never ask which files are wanted. Never offer a choice. Never produce a subset.
 
 | # | File name | Language | Format | Length |
 |---|-----------|----------|--------|--------|
@@ -559,7 +592,7 @@ Never offer a choice. Never produce a subset.
 
 ### 46.1 PRODUCTION ORDER — STRICT
 
-Produce in exactly this order: **1 → 2 → 3 → 4 → 5 → 6.**
+Produce in exactly this order: **1 → 2 → 3 → 4 → 5 → 6 → 7.**
 
 File 1 must be **100% complete** before a single word of File 2 is written.
 Announce each file before starting it, like this:
@@ -658,24 +691,55 @@ DELIVERY CHECKLIST
 [ ] Figure parity EN vs GU verified — every number identical
 [ ] No CRITICAL or HIGH red flag dropped from any summary
 [ ] Disclaimer present and complete in all six files
-[ ] Machine-readable export block emitted (Section 46.6)
+[ ] File 7  App import block emitted last, one clean JSON block, nothing after it
+[ ] score_lines sum equals scores.ipo_quality
 ```
 
 Any unticked box means the run is incomplete. Say so plainly rather than implying completion.
 
 
-### 46.6 MACHINE-READABLE EXPORT BLOCK — MANDATORY, LAST THING YOU OUTPUT
+### 46.6 FILE 7 — THE APP IMPORT BLOCK (**ALWAYS THE VERY LAST THING YOU OUTPUT**)
 
-After the delivery checklist, output **one fenced code block** exactly as below. It lets the
-IPO Analyst app import this analysis, display it, and populate its scoring worksheet without
-the numbers being re-keyed by hand.
+This is a **seventh deliverable** and it is not optional. It is how the analysis gets back into the
+IPO Analyst app, so it must be trivially easy to copy — one tap, nothing else selected with it.
 
-Rules: valid JSON only, no comments, no trailing commas. Every score is the value you actually
-awarded in Section 28 — not the maximum. Use `null` for anything genuinely not computable
-(a loss-making company has `"pe": null`, never `0`). Numbers unquoted, no ₹ symbols, no commas
-inside numbers, all rupee figures in **crore**.
+### How to present it
 
-```json ipo-analyst-data
+After the delivery checklist, output **exactly** this, and then stop. Nothing after it. No closing
+remarks, no "let me know if…", no summary of what you just did.
+
+```
+═══════════════════════════════════════════════════
+FILE 7 of 7 — APP IMPORT DATA
+Copy the single code block below (use the copy button
+on the block) and paste it into IPO Analyst →
+Report → IMPORT RESULT
+═══════════════════════════════════════════════════
+```
+
+then **one fenced code block and nothing else**:
+
+````
+```json
+{ ...the object specified below... }
+```
+````
+
+### Hard rules for this block
+
+- **One block. Nothing but JSON inside it.** No comments, no prose, no `//`, no trailing commas,
+  no ellipses, no placeholder text left in.
+- **Nothing after it.** The block is the last thing in your reply, so a copy-all also works.
+- **Never split it across a continuation.** If you are near your output limit, emit
+  `⟪CONTINUE⟫` *before* starting File 7, then produce File 7 whole on the next turn.
+- Every score is the value you actually awarded in Section 28 — never the maximum.
+- `null` for anything genuinely not computable (a loss-making company has `"pe": null`, never `0`).
+- Numbers unquoted. No ₹ symbols. No commas inside numbers. All rupee figures in **crore**.
+- Keep it compact — this is data, not a document. No pretty-printing beyond one key per line.
+
+### The object
+
+```json
 {
   "schema": "ipo-analyst/1",
   "company": "<legal company name>",
@@ -686,11 +750,8 @@ inside numbers, all rupee figures in **crore**.
   "allocation_band": "0% | 0-1% | 1-2% | 2-3% | 3-5% | 5%+",
   "verdict_line": "<the one-sentence verdict>",
   "scores": {
-    "ipo_quality": 0.0,
-    "long_term": 0.0,
-    "listing_gain": 0.0,
-    "promoter_10": 0.0,
-    "governance_10": 0.0
+    "ipo_quality": 0.0, "long_term": 0.0, "listing_gain": 0.0,
+    "promoter_10": 0.0, "governance_10": 0.0
   },
   "score_lines": {
     "business_model": 0.0, "competitive_advantage": 0.0, "industry_attractiveness": 0.0,
@@ -701,28 +762,28 @@ inside numbers, all rupee figures in **crore**.
     "absolute_valuation": 0.0, "peer_valuation": 0.0, "growth_adjusted_valuation": 0.0,
     "margin_of_safety": 0.0,
     "fresh_issue_quality": 0.0, "use_of_proceeds": 0.0, "ofs_exit_structure": 0.0,
-    "business_risks": 0.0, "financial_risks": 0.0, "governance_risks": 0.0,
-    "regulatory_risks": 0.0,
+    "business_risks": 0.0, "financial_risks": 0.0, "governance_risks": 0.0, "regulatory_risks": 0.0,
     "gmp": 0.0, "anchor_quality": 0.0, "subscription_demand": 0.0
   },
   "snapshot": {
-    "issue_size_cr": 0, "fresh_cr": 0, "ofs_cr": 0,
-    "subscription_x": 0, "gmp_pct": 0, "market_cap_cr": 0,
-    "pe": null, "ev_sales": null, "roce_pct": 0, "roe_pct": 0,
-    "debt_equity": 0, "cfo_pat": null,
-    "promoter_pre_pct": 0, "promoter_post_pct": 0
+    "issue_size_cr": 0, "fresh_cr": 0, "ofs_cr": 0, "subscription_x": 0, "gmp_pct": 0,
+    "market_cap_cr": 0, "pe": null, "ev_sales": null, "roce_pct": 0, "roe_pct": 0,
+    "debt_equity": 0, "cfo_pat": null, "promoter_pre_pct": 0, "promoter_post_pct": 0
   },
-  "red_flags": [
-    { "flag": "<short label>", "severity": "CRITICAL | HIGH | MEDIUM | LOW" }
-  ]
+  "red_flags": [ { "flag": "<short label>", "severity": "CRITICAL | HIGH | MEDIUM | LOW" } ]
 }
 ```
 
-The 28 keys in `score_lines` are fixed and must all be present. Their maxima are, in order:
-4, 4, 4, 4, 4 · 4, 4, 3, 3, 3, 3 · 5, 5, 5 · 5, 5, 5, 5 · 4, 3, 3 · 3, 3, 2, 2 · 2, 1, 2.
-They must sum to `scores.ipo_quality`. If they do not, recompute before emitting — a mismatch
-means the score in Section 28 and the score in the block disagree, which is a defect.
+### Validation before you emit it
 
+The 28 keys in `score_lines` are fixed, must all be present, and their maxima in order are:
+
+```
+4 4 4 4 4 | 4 4 3 3 3 3 | 5 5 5 | 5 5 5 5 | 4 3 3 | 3 3 2 2 | 2 1 2
+```
+
+They must sum to `scores.ipo_quality`. **Add them up before emitting.** If the total disagrees with
+Section 28, one of the two is wrong — fix it rather than shipping a block that contradicts the report.
 
 ---
 
@@ -923,9 +984,9 @@ function goTab(name){
 
 /* ============================== segmented controls ============== */
 var SEGS = {
-  segType:    { name:'type',     opts:['Mainboard','SME','Unknown'], def:'Mainboard' },
+  segType:    { name:'type',     opts:['Mainboard','SME'], def:'Mainboard' },
   segHorizon: { name:'horizon',  opts:['Both','Listing gain','1 year','3 years','5+ years'], def:'Both' },
-  segInvestor:{ name:'investor', opts:['HNI','Retail','UHNI'], def:'HNI' },
+  segInvestor:{ name:'investor', opts:['Retail','HNI','UHNI'], def:'HNI' },
 };
 Object.keys(SEGS).forEach(function(id){
   var s = SEGS[id], host = $('#'+id), html='';
@@ -970,7 +1031,7 @@ function buildPrompt(){
     .trim();
 }
 function refresh(){
-  $('#preview').value = buildPrompt();
+  var pv=$('#preview'); if(pv) pv.value = buildPrompt();
   set(LS.form, JSON.stringify(formVals()));
 }
 ['#company'].forEach(function(s){ $(s).addEventListener('input', refresh); });
@@ -1010,13 +1071,6 @@ function flash(btn, msg){
   var old = btn.textContent; btn.textContent = msg;
   setTimeout(function(){ btn.textContent = old; }, 1600);
 }
-$('#btnShare').addEventListener('click', function(){
-  if(!requireCompany()) return;
-  var t = buildPrompt();
-  if(navigator.share){ navigator.share({ title:'IPO research prompt', text:t }).catch(function(){}); }
-  else { copyText(t).then(function(){ flash($('#btnShare'),'Copied'); }); }
-  saveRecent();
-});
 var TOOLS = {
   claude:     { url:'https://claude.ai/new',        name:'Claude',     search:'web search is on by default' },
   chatgpt:    { url:'https://chatgpt.com/',         name:'ChatGPT',    search:'turn on Search in the composer' },
@@ -1027,7 +1081,18 @@ $$('[data-tool]').forEach(function(b){
   b.addEventListener('click', function(){
     if(!requireCompany()) return;
     var t = TOOLS[b.dataset.tool];
-    copyText(buildPrompt()).then(function(){
+    var payload = buildPrompt(), mode = get('ipo.mode','full'), base = get('ipo.base','');
+    if(mode === 'link'){
+      if(!base){ alert('Set your hosted address under Setup first, or switch back to full text.');
+                 goTab('setup'); return; }
+      var v = formVals();
+      payload = 'Fetch and follow every instruction in this document, in full:\n'
+        + base + '/protocol.md\n\n'
+        + 'Company: ' + v.company + '\nIPO type: ' + v.type
+        + '\nHorizon: ' + v.horizon + '\nInvestor: ' + v.investor
+        + '\n\nTurn web search on. Produce all six files and the File 7 import block exactly as the document specifies.';
+    }
+    copyText(payload).then(function(){
       saveRecent();
       b.textContent = 'Copied — opening…';
       setTimeout(function(){ b.textContent = t.name; }, 2500);
@@ -1083,6 +1148,12 @@ drawRecent();
 $('#key').value = get(LS.key,'');
 $('#model').value = get(LS.model, $('#model').value);
 $('#searches').value = get(LS.searches,'25');
+$('#promptMode').value = get('ipo.mode','full');
+$('#baseUrl').value = get('ipo.base','');
+function syncMode(){ $('#linkBox').classList.toggle('hidden', $('#promptMode').value!=='link'); }
+$('#promptMode').addEventListener('change', function(){ set('ipo.mode', this.value); syncMode(); });
+$('#baseUrl').addEventListener('change', function(){ set('ipo.base', this.value.trim().replace(/\/+$/,'')); });
+syncMode();
 $('#key').addEventListener('change', function(){ set(LS.key, this.value.trim()); });
 $('#model').addEventListener('change', function(){ set(LS.model, this.value); });
 $('#searches').addEventListener('change', function(){ set(LS.searches, this.value); });
@@ -1209,7 +1280,7 @@ function runAnalysis(key, fresh){
 
   function finish(err){
     running=false;
-    btn.disabled=false; btn.textContent='Run analysis in-app';
+    btn.disabled=false; btn.textContent='RUN ANALYSIS IN APP';
     var thisTurn = $('#out').textContent.slice(turnStart);
     if(!err && thisTurn.trim()){ convo.push({ role:'assistant', content: thisTurn }); }
     var more = /\u27EA\s*CONTINUE/i.test(thisTurn);
@@ -1222,7 +1293,8 @@ function runAnalysis(key, fresh){
           gu:true, ts:Date.now() })); }catch(e){}
     if(!err && !more){
       var parsed = parseImport($('#out').textContent);
-      if(parsed.data){
+      if(parsed.data && parsed.found){
+        ORDER.forEach(function(k){ if(parsed.data.score_lines[k]===undefined) parsed.data.score_lines[k]=0; });
         saveToLibrary({ id:'r'+Date.now(), ts:Date.now(), source:'in-app',
                         company:parsed.data.company||v.company, data:parsed.data,
                         text:$('#out').textContent });
@@ -1248,7 +1320,7 @@ function runAnalysis(key, fresh){
 $('#btnCopyOut').addEventListener('click', function(){
   var t=$('#out').textContent;
   if(!t.trim()){ alert('Nothing to copy yet.'); return; }
-  copyText(t).then(function(){ flash($('#btnCopyOut'),'Copied'); });
+  copyText(t).then(function(){ flash($('#btnCopyOut'),'COPIED'); });
 });
 $('#btnPrint').addEventListener('click', function(){
   var t=$('#out').textContent;
@@ -1270,58 +1342,70 @@ $('#btnPrint').addEventListener('click', function(){
 
 /* ============================== worksheet ======================= */
 var SHEET = [
- ['BUSINESS QUALITY',[
-   ['Business model',4],['Competitive advantage',4],['Industry attractiveness',4],
-   ['Growth runway',4],['Revenue quality',4]]],
- ['FINANCIAL QUALITY',[
-   ['Revenue growth',4],['Profit growth',4],['Margins',3],
-   ['ROCE / ROE',3],['Cash flow',3],['Balance sheet',3]]],
- ['MANAGEMENT & GOVERNANCE',[
-   ['Promoter track record',5],['Governance',5],['Capital allocation',5]]],
- ['VALUATION',[
-   ['Absolute valuation',5],['Peer valuation',5],['Growth-adjusted valuation',5],['Margin of safety',5]]],
- ['IPO STRUCTURE',[
-   ['Fresh issue quality',4],['Use of proceeds',3],['OFS / exit structure',3]]],
- ['RISK',[
-   ['Business risks',3],['Financial risks',3],['Governance risks',2],['Regulatory / industry risks',2]]],
- ['MARKET SIGNALS (capped)',[
-   ['GMP',2],['Anchor quality',1],['Subscription / demand',2]]]
+ ['Business Quality',[
+   ['Business Model',4],['Competitive Advantage',4],['Industry Attractiveness',4],
+   ['Growth Runway',4],['Revenue Quality',4]]],
+ ['Financial Quality',[
+   ['Revenue Growth',4],['Profit Growth',4],['Margins',3],
+   ['ROCE / ROE',3],['Cash Flow',3],['Balance Sheet',3]]],
+ ['Management & Governance',[
+   ['Promoter Track Record',5],['Governance',5],['Capital Allocation',5]]],
+ ['Valuation',[
+   ['Absolute Valuation',5],['Peer Valuation',5],['Growth-Adjusted Valuation',5],['Margin Of Safety',5]]],
+ ['IPO Structure',[
+   ['Fresh Issue Quality',4],['Use Of Proceeds',3],['OFS / Exit Structure',3]]],
+ ['Risk',[
+   ['Business Risks',3],['Financial Risks',3],['Governance Risks',2],['Regulatory / Industry Risks',2]]],
+ ['Market Signals',[
+   ['GMP',2],['Anchor Quality',1],['Subscription / Demand',2]]]
 ];
 var scoreState = {};
 try{ scoreState = JSON.parse(get(LS.score,'{}')) || {}; }catch(e){ scoreState = {}; }
 $('#scName').value = scoreState.__name || '';
 $('#scName').addEventListener('input', function(){ scoreState.__name=this.value; persistScore(); });
 
-(function buildSheet(){
+var openGroups = {};
+function buildSheet(){
   var html='';
   SHEET.forEach(function(grp,gi){
-    html += '<div class="grp"><span>'+esc(grp[0])+'</span><span id="g'+gi+'">0/'
-          + grp[1].reduce(function(a,b){return a+b[1];},0) + '</span></div>';
+    var max = grp[1].reduce(function(a,b){return a+b[1];},0);
+    var got = grp[1].reduce(function(a,b,ii){ return a + (scoreState['s'+gi+'_'+ii]||0); },0);
+    var open = !!openGroups[gi];
+    html += '<div class="gwrap">'
+      + '<button class="ghead'+(open?' open':'')+'" data-g="'+gi+'" aria-expanded="'+open+'">'
+      +   '<span class="chev">\u203A</span>'
+      +   '<span class="gname">'+esc(grp[0])+'</span>'
+      +   '<span class="gscore">'+got.toFixed(1)+'<small>/'+max+'</small></span>'
+      + '</button>'
+      + '<div class="gbody'+(open?'':' hidden')+'">';
     grp[1].forEach(function(it,ii){
-      var id='s'+gi+'_'+ii, val = scoreState[id]!==undefined ? scoreState[id] : 0;
-      html += '<div class="wrow"><div class="nm">'+esc(it[0])+'<small>max '+it[1]+'</small></div>'
-            + '<input type="range" min="0" max="'+(it[1]*2)+'" step="1" value="'+(val*2)+'" data-id="'+id+'" data-g="'+gi+'">'
-            + '<div class="sc" id="v'+id+'">'+val.toFixed(1)+'</div></div>';
+      var id='s'+gi+'_'+ii, v = scoreState[id]!==undefined ? scoreState[id] : 0;
+      var pct = it[1] ? (v/it[1]*100) : 0;
+      html += '<div class="srow2">'
+        + '<div class="sname">'+esc(it[0])+'</div>'
+        + '<div class="strack"><i style="width:'+pct+'%"></i></div>'
+        + '<div class="sval" id="v'+id+'">'+v.toFixed(1)+'<small>/'+it[1]+'</small></div>'
+        + '</div>';
     });
+    html += '</div></div>';
   });
   $('#sheet').innerHTML = html;
-  $$('#sheet input[type=range]').forEach(function(r){
-    r.addEventListener('input', function(){
-      var v = (+this.value)/2;
-      scoreState[this.dataset.id] = v;
-      $('#v'+this.dataset.id).textContent = v.toFixed(1);
-      recalc(); persistScore();
+  $$('#sheet .ghead').forEach(function(b){
+    b.addEventListener('click', function(){
+      var g = b.dataset.g;
+      openGroups[g] = !openGroups[g];
+      buildSheet(); recalc();
     });
   });
   recalc();
-})();
+}
+buildSheet();
 function persistScore(){ set(LS.score, JSON.stringify(scoreState)); }
 function recalc(){
   var total=0, mkt=0;
   SHEET.forEach(function(grp,gi){
     var g=0;
     grp[1].forEach(function(it,ii){ g += scoreState['s'+gi+'_'+ii] || 0; });
-    $('#g'+gi).textContent = g.toFixed(1)+'/'+grp[1].reduce(function(a,b){return a+b[1];},0);
     total += g; if(gi===6) mkt = g;
   });
   var band, col;
@@ -1341,7 +1425,7 @@ function recalc(){
 }
 $('#btnScReset').addEventListener('click', function(){
   if(!confirm('Reset all scores to zero?')) return;
-  scoreState={}; persistScore(); location.reload();
+  scoreState={}; $('#scName').value=''; persistScore(); buildSheet();
 });
 $('#btnScCopy').addEventListener('click', function(){
   var lines=[], total=0, mkt=0;
@@ -1365,10 +1449,11 @@ $('#btnScCopy').addEventListener('click', function(){
 
 
 /* ==================================================================
-   IMPORT — reverse an outside AI tool's output back into the app
+   IMPORT — reverse an outside AI tool's output back into the app.
+   Designed to work on whatever Gemini / ChatGPT / Perplexity actually
+   returns, not only on a perfectly formed data block.
    ================================================================== */
 var LIB = 'ipo.library';
-/* Canonical key -> [worksheet group index, item index]. Must match SHEET. */
 var KEYMAP = {
   business_model:[0,0], competitive_advantage:[0,1], industry_attractiveness:[0,2],
   growth_runway:[0,3], revenue_quality:[0,4],
@@ -1381,72 +1466,226 @@ var KEYMAP = {
   business_risks:[5,0], financial_risks:[5,1], governance_risks:[5,2], regulatory_risks:[5,3],
   gmp:[6,0], anchor_quality:[6,1], subscription_demand:[6,2]
 };
-/* Fallback: match the printed line-item label when the JSON block is missing. */
-var LABELMAP = {
-  'business model':'business_model', 'competitive advantage':'competitive_advantage',
-  'industry attractiveness':'industry_attractiveness', 'growth runway':'growth_runway',
-  'revenue quality':'revenue_quality', 'revenue growth':'revenue_growth',
-  'profit growth':'profit_growth', 'margins':'margins', 'roce / roe':'roce_roe',
-  'roce/roe':'roce_roe', 'cash flow':'cash_flow', 'balance sheet':'balance_sheet',
-  'promoter track record':'promoter_track_record', 'governance':'governance',
-  'capital allocation':'capital_allocation', 'absolute valuation':'absolute_valuation',
-  'peer valuation':'peer_valuation', 'growth-adjusted valuation':'growth_adjusted_valuation',
-  'growth adjusted valuation':'growth_adjusted_valuation', 'margin of safety':'margin_of_safety',
-  'fresh issue quality':'fresh_issue_quality', 'use of proceeds':'use_of_proceeds',
-  'ofs / exit structure':'ofs_exit_structure', 'ofs/exit structure':'ofs_exit_structure',
-  'business risks':'business_risks', 'financial risks':'financial_risks',
-  'governance risks':'governance_risks', 'regulatory / industry risks':'regulatory_risks',
-  'regulatory risks':'regulatory_risks', 'gmp':'gmp', 'anchor quality':'anchor_quality',
-  'subscription / demand':'subscription_demand', 'subscription':'subscription_demand'
-};
+var ORDER = ['business_model','competitive_advantage','industry_attractiveness','growth_runway',
+ 'revenue_quality','revenue_growth','profit_growth','margins','roce_roe','cash_flow','balance_sheet',
+ 'promoter_track_record','governance','capital_allocation','absolute_valuation','peer_valuation',
+ 'growth_adjusted_valuation','margin_of_safety','fresh_issue_quality','use_of_proceeds',
+ 'ofs_exit_structure','business_risks','financial_risks','governance_risks','regulatory_risks',
+ 'gmp','anchor_quality','subscription_demand'];
+
+function maxOf(key){ var p=KEYMAP[key]; return p ? SHEET[p[0]][1][p[1]][1] : 0; }
+function labelOf(key){ var p=KEYMAP[key]; return p ? SHEET[p[0]][1][p[1]][0] : key; }
+
+/* normalise a label so "ROCE/ROE", "ROCE / ROE" and "roce roe" all match */
+function norm(t){
+  return String(t).toLowerCase()
+    .replace(/&/g,' and ').replace(/[^a-z0-9]+/g,' ').replace(/\s+/g,' ').trim();
+}
+var ALIASES = {};
+(function(){
+  var A = {
+    business_model:['business model'],
+    competitive_advantage:['competitive advantage','moat','competitive moat'],
+    industry_attractiveness:['industry attractiveness','industry'],
+    growth_runway:['growth runway','runway'],
+    revenue_quality:['revenue quality','quality of revenue'],
+    revenue_growth:['revenue growth','sales growth','topline growth'],
+    profit_growth:['profit growth','pat growth','earnings growth'],
+    margins:['margins','margin','profitability margins'],
+    roce_roe:['roce roe','roe roce','roce','roe','return on capital','returns on capital'],
+    cash_flow:['cash flow','cashflow','operating cash flow','cash flows'],
+    balance_sheet:['balance sheet'],
+    promoter_track_record:['promoter track record','promoter record','promoter management track record','management track record','promoter quality'],
+    governance:['governance','corporate governance'],
+    capital_allocation:['capital allocation'],
+    absolute_valuation:['absolute valuation','absolute'],
+    peer_valuation:['peer valuation','peer relative valuation','relative valuation','peer'],
+    growth_adjusted_valuation:['growth adjusted valuation','growth adjusted','peg'],
+    margin_of_safety:['margin of safety','safety margin'],
+    fresh_issue_quality:['fresh issue quality','fresh issue'],
+    use_of_proceeds:['use of proceeds','objects of the issue','use of funds'],
+    ofs_exit_structure:['ofs exit structure','ofs exit','ofs','exit structure','ofs structure'],
+    business_risks:['business risks','business risk'],
+    financial_risks:['financial risks','financial risk'],
+    governance_risks:['governance risks','governance risk'],
+    regulatory_risks:['regulatory industry risks','regulatory risks','regulatory risk','industry risks','regulatory and industry risks'],
+    gmp:['gmp','grey market premium'],
+    anchor_quality:['anchor quality','anchor','anchor investors','anchor participation'],
+    subscription_demand:['subscription demand','subscription','demand','subscription and demand']
+  };
+  Object.keys(A).forEach(function(k){ A[k].forEach(function(a){ ALIASES[norm(a)] = k; }); });
+})();
+
+function matchLabel(text){
+  var n = norm(text);
+  if(!n || n.length < 3) return null;
+  if(ALIASES[n]) return ALIASES[n];
+  /* tolerate trailing notes: "Cash flow (CFO/PAT)" */
+  var best = null, bestLen = 0;
+  Object.keys(ALIASES).forEach(function(a){
+    if(a.length > bestLen && (n === a || n.indexOf(a + ' ') === 0 || n === a)){
+      best = ALIASES[a]; bestLen = a.length;
+    }
+  });
+  return best;
+}
+
+/* Pull the awarded score off one line, using the known maximum to tell
+   the score apart from the max. This is what the old parser got wrong —
+   in "| Business model | 4 | 3.0 |" it read the 4. */
+function scoreFromLine(line, key){
+  var max = maxOf(key);
+  var body = line.replace(/\*\*/g,'').replace(/`/g,'');
+  /* strip the label so its own digits can't be mistaken for a score */
+  var afterLabel = body;
+  var nums = (afterLabel.match(/-?\d+(?:\.\d+)?/g) || []).map(parseFloat);
+  if(!nums.length) return null;
+
+  /* 1. explicit "3.0 / 4" or "3 of 4" where the denominator is the max */
+  var frac = body.match(/(\d+(?:\.\d+)?)\s*(?:\/|of|out of)\s*(\d+(?:\.\d+)?)/i);
+  if(frac && Math.abs(parseFloat(frac[2]) - max) < 0.01){
+    var v = parseFloat(frac[1]);
+    if(v <= max + 0.01) return v;
+  }
+  /* 2. table cells — find the cell holding the max, take the next numeric cell */
+  if(body.indexOf('|') !== -1){
+    var cells = body.split('|').map(function(c){ return c.trim(); });
+    var numIdx = [];
+    cells.forEach(function(c,ix){
+      if(/^-?\d+(\.\d+)?$/.test(c)) numIdx.push([ix, parseFloat(c)]);
+    });
+    for(var a=0; a<numIdx.length; a++){
+      if(Math.abs(numIdx[a][1] - max) < 0.01){
+        if(numIdx[a+1] && numIdx[a+1][1] <= max + 0.01) return numIdx[a+1][1];   // | max | score |
+        if(numIdx[a-1] && numIdx[a-1][1] <= max + 0.01) return numIdx[a-1][1];   // | score | max |
+      }
+    }
+    var only = numIdx.filter(function(x){ return x[1] <= max + 0.01; });
+    if(only.length === 1) return only[0][1];
+  }
+  /* 3. a single plausible number on the line */
+  var plausible = nums.filter(function(v){ return v >= 0 && v <= max + 0.01; });
+  if(plausible.length === 1) return plausible[0];
+  /* 4. max appears alongside exactly one smaller number */
+  var hasMax = nums.some(function(v){ return Math.abs(v-max) < 0.01; });
+  if(hasMax && plausible.length){
+    var cand = plausible.filter(function(v){ return Math.abs(v-max) > 0.01; });
+    if(cand.length === 1) return cand[0];
+  }
+  return null;   /* ambiguous — never guess */
+}
 
 function parseImport(raw){
-  var out = { data:null, how:'', warn:[] };
-  /* Preferred path: the fenced block Section 46.6 mandates. */
-  var m = raw.match(/```(?:json)?[ \t]*ipo-analyst-data\s*([\s\S]*?)```/i);
-  if(!m){ m = raw.match(/```json\s*(\{[\s\S]*?"schema"\s*:\s*"ipo-analyst[\s\S]*?\})\s*```/i); }
+  var out = { data:null, how:'', warn:[], found:0, missing:[], statedTotal:null };
+  var lines = {}, seen = {};
+
+  /* --- strategy 1: the File 7 data block --- */
+  var m = raw.match(/```(?:json)?[ \t]*(?:ipo-analyst-data)?\s*(\{[\s\S]*?"score_lines"[\s\S]*?\})\s*```/i)
+       || raw.match(/(\{[\s\S]*?"schema"\s*:\s*"ipo-analyst[\s\S]*?\})\s*$/);
   if(m){
     try{
       var j = JSON.parse(m[1].trim());
-      if(j && j.score_lines){ out.data = j; out.how = 'data block'; return out; }
-      out.warn.push('Found a data block but it had no score_lines.');
-    }catch(e){ out.warn.push('Found a data block but it was not valid JSON: '+e.message+'. Fell back to reading the text.'); }
+      if(j && j.score_lines){
+        var bad = [];
+        ORDER.forEach(function(k){
+          var v = parseFloat(j.score_lines[k]);
+          if(isNaN(v)){ out.missing.push(k); return; }
+          if(v > maxOf(k) + 0.01){ bad.push(labelOf(k)); v = maxOf(k); }
+          lines[k] = v; out.found++;
+        });
+        if(bad.length) out.warn.push(bad.length+' item(s) exceeded their maximum and were capped.');
+        j.score_lines = lines;
+        out.data = j; out.how = 'data block';
+        if(j.scores && j.scores.ipo_quality != null) out.statedTotal = parseFloat(j.scores.ipo_quality);
+        return finishParse(out, raw);
+      }
+    }catch(e){ out.warn.push('A data block was present but the JSON was malformed, so the text was read instead.'); }
   }
-  /* Fallback: scrape the printed scoring table. */
-  var lines = {}, found = 0;
+
+  /* --- strategy 2: read the scoring section line by line --- */
   raw.split('\n').forEach(function(line){
-    var t = line.replace(/\*\*/g,'').replace(/^[|\s\-•]+/,'').trim();
-    var mm = t.match(/^([A-Za-z][A-Za-z \/&\-]{3,40}?)\s*[:|]\s*([0-9]+(?:\.[0-9])?)\s*(?:\/|\s*out of\s*|\|)\s*([0-9]+)/i);
-    if(!mm) return;
-    var key = LABELMAP[mm[1].toLowerCase().trim()];
-    if(!key) return;
-    lines[key] = parseFloat(mm[2]); found++;
+    if(!/\d/.test(line)) return;
+    var body = line.replace(/\*\*/g,'').replace(/^[\s>|\-•*]+/,'');
+    /* candidate label = text before the first digit, colon or pipe */
+    var lbl = (body.split(/[|:]/)[0] || '').replace(/\d.*$/,'').trim();
+    var key = matchLabel(lbl);
+    if(!key || seen[key]) return;
+    var v = scoreFromLine(line, key);
+    if(v === null) return;
+    lines[key] = v; seen[key] = 1; out.found++;
   });
-  if(!found){ out.warn.push('No scoring line items could be read.'); return out; }
-  if(found < 28) out.warn.push('Only '+found+' of 28 line items were found — check the worksheet.');
-  var g = function(re){ var x = raw.match(re); return x ? parseFloat(x[1]) : null; };
-  out.data = {
-    schema:'ipo-analyst/1',
-    company: (raw.match(/^#+\s*(.+?)\s*(?:—|--|\n)/m)||[])[1] || '',
-    recommendation: (raw.match(/\b(STRONG SUBSCRIBE|LISTING GAIN ONLY|WAIT FOR BETTER VALUATION|SUBSCRIBE|SELECTIVE|AVOID)\b/i)||[])[1] || '',
-    scores:{ ipo_quality:g(/IPO\s*Quality[^0-9]{0,20}([0-9]{1,3}(?:\.[0-9])?)/i),
-             long_term:g(/Long[- ]Term[^0-9]{0,20}([0-9]{1,3}(?:\.[0-9])?)/i),
-             listing_gain:g(/Listing[- ]Gain[^0-9]{0,20}([0-9]{1,3}(?:\.[0-9])?)/i) },
-    score_lines: lines, snapshot:{}, red_flags:[]
-  };
-  out.how = 'text scrape';
+
+  ORDER.forEach(function(k){ if(lines[k] === undefined) out.missing.push(k); });
+
+  if(!out.found){
+    out.warn.push('No scoring line items could be recognised in what you pasted.');
+    out.data = { schema:'ipo-analyst/1', score_lines:{}, scores:{}, snapshot:{}, red_flags:[] };
+    out.how = 'nothing recognised';
+    return finishParse(out, raw);
+  }
+  out.how = 'read from the report text';
+  out.data = { schema:'ipo-analyst/1', score_lines:lines, scores:{}, snapshot:{}, red_flags:[] };
+  return finishParse(out, raw);
+}
+
+/* fill in everything around the scores, whichever strategy ran */
+function finishParse(out, raw){
+  var d = out.data, txt = raw;
+  var num = function(re){ var x = txt.match(re); return x ? parseFloat(x[1].replace(/,/g,'')) : null; };
+  d.scores = d.scores || {};
+  if(d.scores.ipo_quality == null)
+    d.scores.ipo_quality = num(/IPO\s*Quality[^0-9\n]{0,25}(\d{1,3}(?:\.\d)?)/i) ||
+                           num(/TOTAL[^0-9\n]{0,25}(\d{1,3}(?:\.\d)?)\s*\/\s*100/i);
+  if(d.scores.long_term == null)
+    d.scores.long_term = num(/Long[-\s]?Term[^0-9\n]{0,30}(\d{1,3}(?:\.\d)?)/i);
+  if(d.scores.listing_gain == null)
+    d.scores.listing_gain = num(/Listing[-\s]?Gain[^0-9\n]{0,30}(\d{1,3}(?:\.\d)?)/i);
+  if(!d.recommendation){
+    var r = txt.match(/\b(STRONG SUBSCRIBE|LISTING GAIN ONLY|WAIT FOR BETTER VALUATION|SELECTIVE[A-Z \-–]*|SUBSCRIBE|AVOID)\b/);
+    d.recommendation = r ? r[1].trim() : '';
+  }
+  if(!d.allocation_band){
+    var a = txt.match(/allocation[^0-9\n]{0,20}(\d(?:\s*[-–]\s*\d)?\s*%|0\s*%)/i);
+    d.allocation_band = a ? a[1].replace(/\s+/g,'') : '';
+  }
+  if(!d.company){
+    /* take the whole heading line — a company suffix inside the name (…Engineering
+       Limited) must not truncate the match at the first suffix word */
+    var c = txt.match(/^#{1,3}\s*(?:\d+\.?\s*)?([A-Z][A-Za-z0-9&.,'\-() ]{3,70})\s*$/m);
+    var name = c ? c[1].trim().replace(/\s*[-–—:|].*$/,'').trim() : '';
+    if(!name){
+      var c2 = txt.match(/\b([A-Z][A-Za-z0-9&.,'\- ]{3,60}?\s(?:Limited|Ltd\.?))\b/);
+      name = c2 ? c2[1].trim() : '';
+    }
+    d.company = name;
+  }
+  if(!d.red_flags || !d.red_flags.length){
+    var flags = [];
+    txt.split('\n').forEach(function(l){
+      var sev = l.match(/\b(CRITICAL|HIGH|MEDIUM|LOW)\b/);
+      if(!sev || l.indexOf('|') === -1) return;
+      var cells = l.split('|').map(function(x){ return x.replace(/\*\*/g,'').trim(); })
+                   .filter(function(x){ return x; });
+      if(cells.length < 2) return;
+      var label = cells[0];
+      if(!label || /^-+$/.test(label) || /severity/i.test(label)) return;
+      if(flags.length < 8) flags.push({ flag:label, severity:sev[1] });
+    });
+    d.red_flags = flags;
+  }
+  if(d.scores.ipo_quality != null) out.statedTotal = d.scores.ipo_quality;
   return out;
 }
 
+function sumLines(l){ var t=0; Object.keys(l||{}).forEach(function(k){ t += (parseFloat(l[k])||0); }); return t; }
+
+/* ---------------- library ---------------- */
 function libRead(){ try{ return JSON.parse(get(LIB,'[]')) || []; }catch(e){ return []; } }
 function libWrite(a){ set(LIB, JSON.stringify(a.slice(0,40))); }
-
 function saveToLibrary(rec){
-  var lib = libRead();
-  lib = lib.filter(function(x){ return x.id !== rec.id; });
+  var lib = libRead().filter(function(x){ return x.id !== rec.id; });
   lib.unshift(rec); libWrite(lib); drawLibrary(rec.id);
 }
-
 function drawLibrary(selectId){
   var lib = libRead(), sel = $('#libSel');
   sel.innerHTML = '<option value="">— none saved —</option>' + lib.map(function(r){
@@ -1455,12 +1694,11 @@ function drawLibrary(selectId){
   }).join('');
   if(selectId){ sel.value = selectId; showRecord(selectId); }
 }
-
 function showRecord(id){
   var r = libRead().filter(function(x){ return x.id===id; })[0];
   if(!r){ $('#repCard').classList.add('hidden'); return; }
   var d = r.data || {}, sc = d.scores || {};
-  var tile = function(k,v){ return '<div class="t"><b>'+(v==null?'—':v)+'</b><span>'+k+'</span></div>'; };
+  var tile = function(k,v){ return '<div class="t"><b>'+(v==null||v===''?'—':v)+'</b><span>'+k+'</span></div>'; };
   var flags = (d.red_flags||[]).slice(0,6).map(function(f){
     var sv = String(f.severity||'LOW').toUpperCase();
     return '<div><i class="sv-'+sv+'">'+sv+'</i>'+esc(f.flag||'')+'</div>';
@@ -1482,60 +1720,101 @@ function showRecord(id){
   applyToWorksheet(d, r.company || d.company || '');
 }
 
-/* This is the reverse-use step: an outside tool's scores drive the worksheet. */
+/* the reverse-use step: an outside tool's scores drive the worksheet */
 function applyToWorksheet(d, company){
-  if(!d || !d.score_lines) return;
+  if(!d || !d.score_lines) return 0;
   var n = 0;
+  scoreState = {};
   Object.keys(d.score_lines).forEach(function(k){
     var pos = KEYMAP[k]; if(!pos) return;
     var v = parseFloat(d.score_lines[k]); if(isNaN(v)) return;
-    var max = SHEET[pos[0]][1][pos[1]][1];
-    v = Math.max(0, Math.min(max, v));
-    var id = 's'+pos[0]+'_'+pos[1];
-    scoreState[id] = v;
-    var slider = document.querySelector('#sheet input[data-id="'+id+'"]');
-    if(slider){ slider.value = v*2; }
-    var cell = $('#v'+id); if(cell) cell.textContent = v.toFixed(1);
-    n++;
+    v = Math.max(0, Math.min(maxOf(k), v));
+    scoreState['s'+pos[0]+'_'+pos[1]] = v; n++;
   });
-  scoreState.__name = company || scoreState.__name || '';
+  scoreState.__name = company || '';
   $('#scName').value = scoreState.__name;
-  persistScore(); recalc();
+  persistScore(); buildSheet();
   return n;
+}
+
+/* ---------------- review before saving ---------------- */
+var pendingImport = null;
+function showReview(res, raw){
+  pendingImport = { res:res, raw:raw, fixes:{} };
+  var d = res.data, sum = sumLines(d.score_lines);
+  var html = '<div class="rv">';
+  html += '<div class="rvh">Read '+res.found+' of 28 line items <span class="tagx">'+esc(res.how)+'</span></div>';
+  html += '<div class="rvm">'+esc(d.company||'(company not detected)')
+        + ' · ' + esc(d.recommendation||'no verdict detected') + '</div>';
+  html += '<div class="rvsum">Line items total <b>'+sum.toFixed(1)+'</b>';
+  if(res.statedTotal != null){
+    var diff = Math.abs(sum - res.statedTotal);
+    html += ' · report states <b>'+res.statedTotal+'</b>';
+    if(diff > 1.5) html += '<div class="rvbad">These disagree by '+diff.toFixed(1)
+      +' points. Check the pasted text before saving — the line items are what drive the worksheet.</div>';
+  }
+  html += '</div>';
+  if(res.missing.length){
+    html += '<div class="rvmiss"><b>'+res.missing.length+' not found.</b> Type the values from the '
+          + 'report’s scoring table, or leave blank to score them zero.</div>';
+    res.missing.forEach(function(k){
+      html += '<div class="rvrow"><span>'+esc(labelOf(k))+'</span>'
+        + '<input type="number" step="0.5" min="0" max="'+maxOf(k)+'" data-fix="'+k+'" '
+        + 'inputmode="decimal" placeholder="0"><small>/'+maxOf(k)+'</small></div>';
+    });
+  }
+  html += '</div>';
+  $('#reviewBox').innerHTML = html;
+  $('#reviewBox').classList.remove('hidden');
+  $('#btnSaveImport').classList.remove('hidden');
+  $$('#reviewBox [data-fix]').forEach(function(inp){
+    inp.addEventListener('input', function(){
+      var v = parseFloat(this.value);
+      if(isNaN(v)) delete pendingImport.fixes[this.dataset.fix];
+      else pendingImport.fixes[this.dataset.fix] = Math.max(0, Math.min(maxOf(this.dataset.fix), v));
+    });
+  });
 }
 
 $('#btnImport').addEventListener('click', function(){
   $('#importCard').classList.remove('hidden');
+  $('#reviewBox').classList.add('hidden');
+  $('#btnSaveImport').classList.add('hidden');
   $('#importMsg').textContent = '';
   $('#importText').focus();
 });
 $('#btnCancelImport').addEventListener('click', function(){
   $('#importCard').classList.add('hidden'); $('#importText').value='';
+  $('#reviewBox').classList.add('hidden'); $('#btnSaveImport').classList.add('hidden');
+  pendingImport = null;
 });
 $('#btnDoImport').addEventListener('click', function(){
   var raw = $('#importText').value.trim();
   if(!raw){ $('#importMsg').textContent = 'Nothing pasted.'; return; }
   var res = parseImport(raw);
-  if(!res.data){
-    $('#importMsg').innerHTML = '<b>Could not read it.</b> '+esc(res.warn.join(' '))
-      + ' Make sure you pasted the whole reply including the ipo-analyst-data block at the end.';
-    return;
-  }
-  var src = prompt('Which tool produced this? (Gemini, ChatGPT, Perplexity, Claude…)', 'Gemini') || 'unknown';
+  $('#importMsg').innerHTML = res.warn.length ? '<b>Note.</b> '+esc(res.warn.join(' ')) : '';
+  showReview(res, raw);
+});
+$('#btnSaveImport').addEventListener('click', function(){
+  if(!pendingImport) return;
+  var res = pendingImport.res, d = res.data;
+  Object.keys(pendingImport.fixes).forEach(function(k){ d.score_lines[k] = pendingImport.fixes[k]; });
+  ORDER.forEach(function(k){ if(d.score_lines[k] === undefined) d.score_lines[k] = 0; });
+  if(d.scores.ipo_quality == null) d.scores.ipo_quality = sumLines(d.score_lines);
+  var src = $('#importSrc').value || 'unknown';
   var rec = { id:'r'+Date.now(), ts:Date.now(), source:src,
-              company:res.data.company||formVals().company||'Untitled',
-              data:res.data, text:raw };
+              company:d.company || formVals().company || 'Untitled',
+              data:d, text:pendingImport.raw };
   saveToLibrary(rec);
-  var n = applyToWorksheet(res.data, rec.company) || 0;
+  var n = applyToWorksheet(d, rec.company);
   $('#importCard').classList.add('hidden'); $('#importText').value='';
-  $('#importMsg').textContent='';
-  alert('Imported from '+src+' via '+res.how+'.\n'
-        + n+' of 28 scoring line items applied to the worksheet.'
-        + (res.warn.length ? '\n\nNote: '+res.warn.join(' ') : ''));
+  $('#reviewBox').classList.add('hidden'); $('#btnSaveImport').classList.add('hidden');
+  pendingImport = null;
+  alert('Saved. '+n+' of 28 line items now drive the scoring worksheet.');
 });
 $('#libSel').addEventListener('change', function(){
   if(this.value) showRecord(this.value);
-  else { $('#repCard').classList.add('hidden'); }
+  else $('#repCard').classList.add('hidden');
 });
 $('#btnDelRep').addEventListener('click', function(){
   var id = $('#libSel').value;
