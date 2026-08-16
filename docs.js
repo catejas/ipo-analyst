@@ -8,7 +8,8 @@
 function $(s){ return document.querySelector(s); }
 
 var A4_W = 1240, A4_H = 1754;               /* CSS px at 150 DPI */
-var PNG_SCALE = 3;                          /* 3720 x 5262 = 450 DPI at A4 */
+var PNG_SCALE = 4;   /* 4960 x 7016 = 600 DPI at A4. Messaging apps downscale
+                        hard, so we oversample and use large type in the layout. */
 
 function currentPayload(){
   var id = $('#libSel') && $('#libSel').value;
@@ -24,19 +25,24 @@ function langsWanted(){
   return l === 'both' ? ['en','gu'] : [l];
 }
 function fileBase(p, kind, lang){
-  var nm = (p.meta && (p.meta.short_name || p.meta.company) || 'IPO')
-             .replace(/[^A-Za-z0-9]+/g,'_').replace(/^_+|_+$/g,'');
+  var raw = (window.IPODocs && IPODocs.S) ? IPODocs.S(p.meta && (p.meta.short_name || p.meta.company)) : '';
+  var nm = (raw || 'IPO').replace(/[^A-Za-z0-9]+/g,'_').replace(/^_+|_+$/g,'');
   var k = kind==='report' ? 'IPO_Company_Research_Report'
-        : kind==='exec' ? 'IPO_Executive_Summary' : 'IPO_Visual_Summary';
+        : kind==='exec' ? 'IPO_Executive_Summary'
+        : (kind==='score'||kind==='scorepng') ? 'IPO_Score_Card' : 'IPO_Investment_Summary';
   return nm + '_' + k + '_' + lang.toUpperCase();
 }
 function buildHTML(p, kind, lang){
   if(kind === 'report') return IPODocs.buildReport(p, lang);
   if(kind === 'exec')   return IPODocs.buildExec(p, lang);
+  if(kind === 'score' || kind === 'scorepng') return IPODocs.buildScorecard(p, lang);
   return IPODocs.buildVisual(p, lang);
 }
+function selFor(kind){ return kind==='visual' ? '.vpage' : '.page'; }
+function isPng(kind){ return kind==='visual' || kind==='scorepng'; }
+var MSG_EL = '#docMsg';
 function msg(t, bad){
-  var el = $('#docMsg'); if(!el) return;
+  var el = $(MSG_EL); if(!el) return;
   el.innerHTML = t ? (bad ? '<b style="color:var(--red)">'+t+'</b>' : t) : '';
 }
 
@@ -130,64 +136,72 @@ function needPayload(){
   return p;
 }
 
-/* ---------- buttons ---------- */
-document.addEventListener('DOMContentLoaded', function(){
-  var kindSel = $('#docKind');
+/* ---------- one delegated handler for every document row ---------- */
+function doAction(kind, act, msgTarget){
+  MSG_EL = msgTarget || '#docMsg';
+  var p = needPayload(); if(!p) return;
+  var langs = langsWanted();
 
-  $('#btnPdf') && $('#btnPdf').addEventListener('click', function(){
-    var p = needPayload(); if(!p) return;
-    var langs = langsWanted(), kind = kindSel.value;
+  if(act === 'make' && !isPng(kind)){
     msg('Opening the print view — choose <b>Save as PDF</b> as the destination.');
     langs.forEach(function(lg, i){
       setTimeout(function(){ openForPrint(buildHTML(p, kind, lg)); }, i * 1200);
     });
-  });
-
-  $('#btnPng') && $('#btnPng').addEventListener('click', function(){
-    var p = needPayload(); if(!p) return;
-    var langs = langsWanted();
+    return;
+  }
+  if(act === 'make'){
     var run = function(ix){
-      if(ix >= langs.length){ msg('Saved. 450 DPI, 3720 × 5262 px per page.'); return; }
+      if(ix >= langs.length){
+        msg('Saved at 600 DPI. <b>Send it on WhatsApp as a Document, not a Photo</b> — photo mode '
+          + 'recompresses images and softens small type.');
+        return;
+      }
       var lg = langs[ix];
-      htmlToPngBlobs(IPODocs.buildVisual(p, lg), '.vpage').then(function(blobs){
-        blobs.forEach(function(b, i){ download(b, fileBase(p,'visual',lg)+'_p'+(i+1)+'.png'); });
+      htmlToPngBlobs(buildHTML(p, kind, lg), selFor(kind)).then(function(blobs){
+        blobs.forEach(function(b, i){
+          download(b, fileBase(p,kind,lg) + (blobs.length>1 ? '_p'+(i+1) : '') + '.png'); });
         run(ix+1);
-      }).catch(function(e){ msg('Could not render the image: '+e.message, true); });
+      }).catch(function(err){ msg('Could not render the image: '+err.message, true); });
     };
     run(0);
-  });
+    return;
+  }
 
-  $('#btnSharePdf') && $('#btnSharePdf').addEventListener('click', function(){
-    var p = needPayload(); if(!p) return;
-    var lg = langsWanted()[0], kind = kindSel.value;
-    msg('Building the PDF…');
-    var sel = kind==='visual' ? '.vpage' : '.page';
-    htmlToPdfBlob(buildHTML(p, kind, lg), sel).then(function(blob){
-      var name = fileBase(p, kind, lg)+'.pdf';
-      var file = new File([blob], name, { type:'application/pdf' });
-      return share([file], p.meta.company).then(function(ok){
-        if(!ok){ download(blob, name); msg('Sharing is not available in this browser, so the file was downloaded instead.'); }
-        else msg('Shared.');
-      });
-    }).catch(function(e){ msg('Could not build the PDF: '+e.message, true); });
-  });
-
-  $('#btnSharePng') && $('#btnSharePng').addEventListener('click', function(){
-    var p = needPayload(); if(!p) return;
-    var lg = langsWanted()[0];
+  /* share */
+  var lg = langs[0];
+  if(isPng(kind)){
     msg('Building the images…');
-    htmlToPngBlobs(IPODocs.buildVisual(p, lg), '.vpage').then(function(blobs){
+    htmlToPngBlobs(buildHTML(p, kind, lg), selFor(kind)).then(function(blobs){
       var files = blobs.map(function(b,i){
-        return new File([b], fileBase(p,'visual',lg)+'_p'+(i+1)+'.png', { type:'image/png' }); });
-      return share(files, p.meta.company).then(function(ok){
+        return new File([b], fileBase(p,kind,lg)+(blobs.length>1?'_p'+(i+1):'')+'.png', { type:'image/png' }); });
+      return share(files, IPODocs.S(p.meta.company)).then(function(ok){
         if(!ok){ files.forEach(function(f,i){ download(blobs[i], f.name); });
                  msg('Sharing is not available in this browser, so the images were downloaded instead.'); }
         else msg('Shared.');
       });
-    }).catch(function(e){ msg('Could not render the images: '+e.message, true); });
+    }).catch(function(err){ msg('Could not render the images: '+err.message, true); });
+  } else {
+    msg('Building the PDF…');
+    htmlToPdfBlob(buildHTML(p, kind, lg), selFor(kind)).then(function(blob){
+      var name = fileBase(p, kind, lg)+'.pdf';
+      var file = new File([blob], name, { type:'application/pdf' });
+      return share([file], IPODocs.S(p.meta.company)).then(function(ok){
+        if(!ok){ download(blob, name); msg('Sharing is not available in this browser, so the file was downloaded instead.'); }
+        else msg('Shared.');
+      });
+    }).catch(function(err){ msg('Could not build the PDF: '+err.message, true); });
+  }
+}
+
+document.addEventListener('DOMContentLoaded', function(){
+  document.addEventListener('click', function(ev){
+    var b = ev.target.closest && ev.target.closest('[data-doc]');
+    if(!b) return;
+    var inScore = !!(b.closest('#scDocs'));
+    doAction(b.dataset.doc, b.dataset.act, inScore ? '#scMsg' : '#docMsg');
   });
 });
 
-window.IPODocTools = { currentPayload:currentPayload, buildHTML:buildHTML,
+window.IPODocTools = { currentPayload:currentPayload, buildHTML:buildHTML, doAction:doAction,
                        htmlToPngBlobs:htmlToPngBlobs, htmlToPdfBlob:htmlToPdfBlob };
 })();

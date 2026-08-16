@@ -431,6 +431,12 @@ followed by **one fenced ```json block** and nothing at all after it.
                      "priority": "High | Medium | Low" } ],
     "failure_modes": [ { "scenario": "max 130 chars", "probability": "Low | Low-Med | Medium | High",
                          "impact": "Low | Medium | High", "warning_sign": "max 110 chars" } ],
+    "swot": {
+      "strengths":     ["max 60 chars each, exactly 3"],
+      "weaknesses":    ["max 60 chars each, exactly 3"],
+      "opportunities": ["max 60 chars each, exactly 3"],
+      "threats":       ["max 60 chars each, exactly 3"]
+    },
     "monitoring": [ { "metric": "max 28 chars", "current": "max 18 chars",
                       "desired": "max 40 chars", "warning": "max 44 chars" } ],
     "levels": [ { "action": "max 26 chars", "price": "max 14 chars", "rationale": "max 110 chars" } ],
@@ -458,18 +464,25 @@ followed by **one fenced ```json block** and nothing at all after it.
     "missing": ["max 110 chars each — anything you could not obtain"] },
 
   "gu": {
-    "_comment_for_you": "Gujarati translation of the reader-facing text only. Same keys, same order, same lengths. Numbers, names and abbreviations stay exactly as in English. If a key is absent the app falls back to English.",
+    "_comment_for_you": "Gujarati translation of every reader-facing sentence. The app already holds Gujarati for all fixed labels, section titles, table headings, pills and the disclaimer, so translate CONTENT only. Numbers, company names, promoter names, exchange names and financial abbreviations stay exactly as in English. A blank key falls back to English, so fill in every one.",
     "verdict": { "headline": "", "one_liner": "", "thesis": [] },
-    "company": { "what_it_does": "", "how_it_earns": "", "why_customers_stay": "" },
-    "financials": { "earnings_quality_note": "", "valuation_note": "", "peers_note": "",
-                    "scenarios_note": "" },
+    "company": { "what_it_does": "", "how_it_earns": "", "why_customers_stay": "",
+                 "industry_growth_note": "", "drivers": [], "moat_note": "" },
+    "financials": { "earnings_quality_note": "", "eq_flags": [], "valuation_note": "",
+                    "peers_note": "", "scenarios_note": "" },
+    "ipo": { "structure_note": "" },
     "decision": { "strengths": [ { "title": "", "evidence": "" } ],
                   "weaknesses": [ { "title": "", "evidence": "" } ],
                   "red_flags": [ { "flag": "", "evidence": "" } ],
+                  "swot": { "strengths": [], "weaknesses": [], "opportunities": [], "threats": [] },
                   "allocation_note": "", "watch_number": { "title": "", "body": "" } },
-    "people": { "dd_note": "", "governance_note": "" }
+    "people": { "dd_note": "", "governance_note": "" },
+    "labels": {
+      "_comment_for_you": "Gujarati for EVERY short label string you used anywhere in the payload — financial row labels, ratio labels, segment names, operating metric labels, object uses, balance-sheet item labels, moat sources, governance parameters, due-diligence checks, monitoring metrics, price-level actions, promoter roles, trend and direction words. Key = the exact English string you wrote; value = the Gujarati. The app looks each one up when it renders the Gujarati edition, so anything missing here stays in English.",
+      "Revenue from operations": "સંચાલનમાંથી આવક",
+      "Profit after tax": "કરવેરા પછીનો નફો"
+    }
   }
-}
 ```
 
 ## 49. HOW MUCH TO PUT IN EACH ARRAY
@@ -500,9 +513,11 @@ The app lays out a **10-page report**, so quantity matters. Aim for these counts
 | `decision.red_flags` | 5–8, **never drop a CRITICAL or HIGH one** |
 | `decision.catalysts` | 4–6 |
 | `decision.failure_modes` | exactly 5 |
+| `decision.swot` | exactly 3 per quadrant — short phrases, not sentences |
 | `decision.monitoring` | exactly 6 |
 | `decision.levels` | 2–3 |
 | `score_lines` | all 28, always |
+| `gu.labels` | one entry for **every** short label string you used anywhere in the payload |
 
 ## 50. CHECK THESE BEFORE YOU SEND
 
@@ -517,6 +532,67 @@ The app lays out a **10-page report**, so quantity matters. Aim for these counts
 Then output the banner, the single JSON block, and stop.
 
 
+## 51. GUJARATI — A FULL TRANSLATION, NOT A PARTIAL ONE
+
+Both editions render from this one payload, so the numbers can never diverge.
+
+### 51.1 The only things that stay in English
+
+- **The document title header** — the running head at the top of each page, the document name in the
+  footer, and the page numbers. Deliberate: it keeps a file recognisable when forwarded.
+- Company names, promoter names, anchor investor names, exchange and regulator names (NSE, BSE, SEBI).
+- Financial abbreviations: P/E, EV/EBITDA, ROE, ROCE, EBITDA, PAT, CFO, FCF, GMP, OFS, IPO, DRHP,
+  RHP, QIB, NII, HNI, CAGR, D/E.
+- **All numerals in Western Arabic digits** (2026, not ૨૦૨૬) — financial readers scan figures.
+
+### 51.2 What the app already translates — do not spend effort here
+
+Section titles · table column headings · IPO snapshot row labels · score block and line-item names ·
+chart labels · severity and evidence-standard pills · SWOT quadrant titles · the disclaimer · footers.
+
+### 51.3 What you must translate — every key in the `gu` block
+
+The verdict headline and one-liner · the thesis · what the business does · how it earns · why
+customers stay · the industry note · demand drivers · the moat note · the issue-structure note ·
+the earnings-quality note and its flags · the valuation note · the peers note · the scenarios note ·
+every strength and weakness title and evidence · every red-flag label and evidence · all four SWOT
+quadrants · the allocation note · the watch-number title and body · the due-diligence note · the
+governance note.
+
+**Leave nothing blank.** A blank key silently falls back to English, and a half-English Gujarati
+report is the single most common complaint about this output. Re-read the `gu` block before sending
+and confirm every string is filled.
+
+### 51.4 Terminology
+
+| English | ગુજરાતી |
+|---|---|
+| Valuation | મૂલ્યાંકન |
+| Revenue | આવક |
+| Profit / PAT | નફો |
+| Operating cash flow | સંચાલન રોકડ પ્રવાહ |
+| Margin | માર્જિન |
+| Debt | દેવું |
+| Net worth | ચોખ્ખી સંપત્તિ |
+| Promoter | પ્રમોટર |
+| Governance | કોર્પોરેટ ગવર્નન્સ |
+| Moat / competitive advantage | સ્પર્ધાત્મક લાભ |
+| Red flag | ચેતવણી સંકેત |
+| Risk / Threat | જોખમ |
+| Opportunity | તક |
+| Subscribe | અરજી કરો |
+| Avoid | ટાળો |
+| Allocation | ફાળવણી |
+| Margin of safety | સલામતી માર્જિન |
+| Inventory | ઇન્વેન્ટરી |
+| Working capital | કાર્યકારી મૂડી |
+
+### 51.5 Accuracy
+
+Translate the **analysis**, never the **numbers**. A figure labelled Derived or Estimated in English
+carries the same label in Gujarati. A translation may never upgrade an allegation to a fact, soften a
+red flag, or drop a caveat.
+
 # PART 4 — HOW THE APP RENDERS YOUR DATA
 
 You do not build these files. This section exists so you know what your data becomes, and
@@ -528,7 +604,7 @@ therefore what to prioritise.
 |---|---|---|---|
 | 1 | `<Company>_IPO_Company_Research_Report_EN.pdf` | **10 max** | the whole payload |
 | 2 | `<Company>_IPO_Executive_Summary_EN.pdf` | 4 max | verdict, financials, decision |
-| 3 | `<Company>_IPO_Visual_Summary_EN.png` | 2 max, 450 DPI | scores, charts, red flags |
+| 3 | `<Company>_IPO_Investment_Summary_EN.png` | 2 max, **600 DPI** | scores, IPO basics, financials, SWOT, red flags |
 | 4–6 | the same three with `_GU` | same | the `gu` block, falling back to English |
 
 ## The 10-page report layout
@@ -552,10 +628,17 @@ Put a number in every field you can.
 
 ## Language handling
 
-Headers, footers, page numbers, file names, table column headings for numeric data, and all
-financial abbreviations stay in **English in every language version**. Only the reader-facing
-analysis is translated. This keeps the Gujarati edition scannable and the two editions
-numerically identical.
+Only the **document title header**, page numbers, file names, proper nouns and financial
+abbreviations stay in English. Everything else — section titles, table headings, row labels, chart
+labels, pills, the disclaimer and all analysis — appears in Gujarati in the Gujarati edition. See
+Section 51 for exactly which parts you translate and which the app handles.
+
+## The Investment Summary image
+
+Two A4 pages at **600 DPI**. Page 1 carries the verdict, the four score tiles, an IPO-at-a-glance row
+with the objective and grey market premium, the score card, and a three-year financial table. Page 2
+carries the SWOT grid, scenarios, red flags and the allocation call. Type is set deliberately large
+because messaging apps recompress images — send it as a **Document**, not a Photo.
 
 ## Two things the app cannot fix for you
 
@@ -578,4 +661,4 @@ Every file carries this, translated where required, never shortened:
 
 ---
 
-*Framework v3.0 · IPO Company Research Report · Research tool only · Not investment advice.*
+*Framework v3.1 · IPO Company Research Report · Research tool only · Not investment advice.*

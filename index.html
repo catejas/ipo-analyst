@@ -146,6 +146,18 @@ details .in{padding:0 14px 14px;}
 .tag{display:inline-block;font-size:10.5px;font-weight:800;padding:2px 7px;border-radius:9px;
   background:var(--surf2);border:1px solid var(--line);color:var(--ink2);margin-left:6px;vertical-align:2px;}
 .hidden{display:none!important;}
+.doc-row{display:flex;align-items:center;gap:8px;padding:11px 12px;margin-top:9px;
+  border:1px solid var(--line);border-radius:11px;background:var(--surf2);}
+.doc-name{flex:1;font-size:14px;font-weight:700;line-height:1.25;}
+.doc-name small{display:block;font-size:11px;font-weight:500;color:var(--ink3);margin-top:2px;}
+.ico{flex:0 0 auto;min-width:44px;height:38px;border-radius:9px;border:1px solid var(--line);
+  background:var(--surf);color:var(--ink);font:inherit;font-size:11.5px;font-weight:800;
+  letter-spacing:.03em;cursor:pointer;display:flex;align-items:center;justify-content:center;}
+.ico:active{transform:scale(.96);}
+.ico-pdf{background:var(--blue);border-color:var(--blue);color:#fff;}
+.ico-png{background:var(--orange);border-color:var(--orange);color:#fff;}
+.ico-sh{font-size:17px;font-weight:600;}
+.ico:disabled{opacity:.45;}
 .rv{border:1px solid var(--line);border-radius:10px;padding:12px 13px;margin-top:12px;background:var(--surf2);}
 .rvh{font-size:14px;font-weight:800;letter-spacing:-.01em;}
 .tagx{font-size:10px;font-weight:700;background:var(--surf);border:1px solid var(--line);
@@ -192,7 +204,7 @@ details .in{padding:0 14px 14px;}
   <nav>
     <button class="on" data-tab="analyse">Analyse</button>
     <button data-tab="report">Report</button>
-    <button data-tab="score">Scoring</button>
+    <button data-tab="score">Score Card</button>
     <button data-tab="setup">Setup</button>
   </nav>
  </div>
@@ -205,11 +217,22 @@ details .in{padding:0 14px 14px;}
   <div class="card">
     <label for="company">Company name</label>
     <div style="display:flex;gap:8px;">
-      <input type="text" id="company" list="ipoList" placeholder="e.g. Behari Lal Engineering"
+      <input type="text" id="company" list="ipoList" placeholder=""
              autocomplete="off" autocapitalize="words" enterkeyhint="done" style="flex:1;">
-      <button class="btn sm" id="btnSearch" style="margin:0;flex:0 0 92px;">Search</button>
+      <button class="btn sm" id="btnSearch" style="margin:0;flex:0 0 88px;">Search</button>
     </div>
     <datalist id="ipoList"></datalist>
+    <div class="grid2" style="margin-top:8px;">
+      <button class="btn sm" id="btnSearchImport" style="margin:0;">Import Search Data</button>
+      <button class="btn sm" id="btnSearchDel" style="margin:0;">Delete Search Data</button>
+    </div>
+    <div id="searchImportBox" class="hidden" style="margin-top:9px;">
+      <textarea id="searchText" placeholder="Paste the AI's IPO list here — the json block with &quot;ipos&quot;…" style="min-height:120px;"></textarea>
+      <div class="grid2" style="margin-top:8px;">
+        <button class="btn sm pri" id="btnSearchSave" style="margin:0;">Save List</button>
+        <button class="btn sm" id="btnSearchCancel" style="margin:0;">Cancel</button>
+      </div>
+    </div>
     <div id="searchMsg" class="note" style="margin-top:6px;"></div>
 
     <label>IPO type</label>
@@ -257,18 +280,21 @@ details .in{padding:0 14px 14px;}
     </div>
 
     <div id="docTools" class="hidden">
-      <label style="margin-top:14px;">Generate documents</label>
-      <select id="docKind">
-        <option value="report">Research Report — 10 pages</option>
-        <option value="exec">Executive Summary — 4 pages</option>
-      </select>
-      <div class="grid2" style="margin-top:9px;">
-        <button class="btn sm pri" id="btnPdf" style="margin:0;">Generate PDF</button>
-        <button class="btn sm pri2" id="btnPng" style="margin:0;">Generate PNG</button>
+      <label style="margin-top:14px;">Documents</label>
+      <div class="doc-row">
+        <span class="doc-name">Company Research Report<small>10 pages · A4 PDF</small></span>
+        <button class="ico ico-pdf" data-doc="report" data-act="make" title="Generate PDF" aria-label="Generate PDF">PDF</button>
+        <button class="ico ico-sh" data-doc="report" data-act="share" title="Share PDF" aria-label="Share PDF">&#8682;</button>
       </div>
-      <div class="grid2" style="margin-top:9px;">
-        <button class="btn sm" id="btnSharePdf" style="margin:0;">Share PDF</button>
-        <button class="btn sm" id="btnSharePng" style="margin:0;">Share PNG</button>
+      <div class="doc-row">
+        <span class="doc-name">Executive Summary Report<small>4 pages · A4 PDF</small></span>
+        <button class="ico ico-pdf" data-doc="exec" data-act="make" title="Generate PDF" aria-label="Generate PDF">PDF</button>
+        <button class="ico ico-sh" data-doc="exec" data-act="share" title="Share PDF" aria-label="Share PDF">&#8682;</button>
+      </div>
+      <div class="doc-row">
+        <span class="doc-name">Investment Summary<small>2 pages · A4 PNG, 600 DPI</small></span>
+        <button class="ico ico-png" data-doc="visual" data-act="make" title="Generate PNG" aria-label="Generate PNG">PNG</button>
+        <button class="ico ico-sh" data-doc="visual" data-act="share" title="Share PNG" aria-label="Share PNG">&#8682;</button>
       </div>
       <div id="docMsg" class="note"></div>
     </div>
@@ -310,10 +336,17 @@ details .in{padding:0 14px 14px;}
 <!-- ============ SCORING ============ -->
 <section id="tab-score" class="hidden">
   <div class="card">
-    <h2>100-point scoring worksheet</h2>
-    <p class="hint">Tap a block to open its line items. Scores are set by the imported analysis and
-    cannot be dragged by hand &mdash; use <b>IMPORT RESULT</b> on the Report tab. Market signals stay capped
-    at 5 points so sentiment can never outweigh fundamentals.</p>
+    <h2>Score Card</h2>
+    <div id="scDocs" class="hidden">
+      <div class="doc-row" style="margin-top:10px;">
+        <span class="doc-name">Score Card Report<small>1 page · A4</small></span>
+        <button class="ico ico-pdf" data-doc="score" data-act="make" title="Generate PDF" aria-label="Generate PDF">PDF</button>
+        <button class="ico ico-sh" data-doc="score" data-act="share" title="Share PDF" aria-label="Share PDF">&#8682;</button>
+        <button class="ico ico-png" data-doc="scorepng" data-act="make" title="Generate PNG" aria-label="Generate PNG">PNG</button>
+        <button class="ico ico-sh" data-doc="scorepng" data-act="share" title="Share PNG" aria-label="Share PNG">&#8682;</button>
+      </div>
+      <div id="scMsg" class="note"></div>
+    </div>
     <label for="scName">Company</label>
     <input type="text" id="scName" placeholder="Company name" autocomplete="off">
     <div id="sheet"></div>
@@ -339,6 +372,15 @@ details .in{padding:0 14px 14px;}
 
 <!-- ============ SETUP ============ -->
 <section id="tab-setup" class="hidden">
+  <div class="card">
+    <h2>Install Application</h2>
+    <p class="hint" id="installHint">Add this page to your home screen to get an app icon and a full-screen, address-bar-free experience.</p>
+    <button class="btn sm" id="btnInstall" style="display:none;">Install app</button>
+    <div class="warn"><b>Android (Chrome):</b> tap &#8942; menu &rarr; <b>Add to Home screen</b> &rarr; Install.<br><br>
+    <b>iPhone / iPad (Safari):</b> tap the <b>Share</b> icon &rarr; scroll down &rarr; <b>Add to Home Screen</b> &rarr; Add. This must be done in Safari, not Chrome.</div>
+  </div>
+
+
   <div class="card">
     <h2>In-app AI</h2>
     <p class="hint">Optional. Needed only for "Run analysis in-app". Your key is stored in this browser's local storage and sent directly to Anthropic — it never passes through any server of mine.</p>
@@ -383,14 +425,6 @@ details .in{padding:0 14px 14px;}
     <div class="warn"><b>Cost warning.</b> A full run makes 12&ndash;40 web searches and produces a very long report. Expect roughly &#8377;25&ndash;&#8377;150 of API usage per analysis depending on model and depth. Set a spend limit in your Anthropic console.</div>
     <div class="warn bad"><b>Key safety.</b> Anyone with access to this device or browser profile can read the stored key. Use a dedicated key with a low monthly cap, and revoke it if the device is lost. If you would rather not store a key at all, use "Copy prompt" and paste into a chat app instead.</div>
     <p class="note">Get a key at <b>console.anthropic.com</b> &rarr; API Keys. Model names above may need updating as new versions ship; edit the value in the dropdown if a call returns "model not found".</p>
-  </div>
-
-  <div class="card">
-    <h2>Install as an app</h2>
-    <p class="hint" id="installHint">Add this page to your home screen to get an app icon and a full-screen, address-bar-free experience.</p>
-    <button class="btn sm" id="btnInstall" style="display:none;">Install app</button>
-    <div class="warn"><b>Android (Chrome):</b> tap &#8942; menu &rarr; <b>Add to Home screen</b> &rarr; Install.<br><br>
-    <b>iPhone / iPad (Safari):</b> tap the <b>Share</b> icon &rarr; scroll down &rarr; <b>Add to Home Screen</b> &rarr; Add. This must be done in Safari, not Chrome.</div>
   </div>
 
   <div class="card">
@@ -1193,7 +1227,21 @@ function drawRecent(){
     });
   });
 }
-function esc(s){ return String(s).replace(/[&<>"]/g,function(c){
+/* An AI may return an object where a string was asked for. Coerce sensibly
+   instead of letting "[object Object]" reach the screen. */
+function str(v){
+  if(v==null) return '';
+  if(typeof v === 'string') return v;
+  if(typeof v === 'number' || typeof v === 'boolean') return String(v);
+  if(Array.isArray(v)) return v.map(str).filter(Boolean).join(', ');
+  if(typeof v === 'object'){
+    var keys = ['name','company','legal_name','full_name','value','text','title','label','en'];
+    for(var i=0;i<keys.length;i++){ if(typeof v[keys[i]]==='string' && v[keys[i]]) return v[keys[i]]; }
+    for(var k in v){ if(typeof v[k]==='string' && v[k]) return v[k]; }
+  }
+  return '';
+}
+function esc(s){ return str(s).replace(/[&<>"]/g,function(c){
   return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]; }); }
 drawRecent();
 
@@ -1642,7 +1690,9 @@ function parseImport(raw){
         /* v3 payload — everything the renderer needs travels with it */
         if(j.meta){
           out.v3 = true;
-          if(!j.company) j.company = j.meta.company;
+          j.meta.company = str(j.meta.company) || str(j.company);
+          j.meta.short_name = str(j.meta.short_name) || j.meta.company;
+          j.company = j.meta.company;
           if(!j.recommendation && j.verdict) j.recommendation = j.verdict.recommendation;
           if(!j.allocation_band && j.verdict) j.allocation_band = j.verdict.allocation_band;
           if(!j.verdict_line && j.verdict) j.verdict_line = j.verdict.one_liner;
@@ -1753,7 +1803,8 @@ function drawLibrary(selectId){
   var lib = libRead(), sel = $('#libSel');
   sel.innerHTML = '<option value="">— none saved —</option>' + lib.map(function(r){
     var d = new Date(r.ts).toLocaleDateString('en-IN',{day:'2-digit',month:'short',year:'2-digit'});
-    return '<option value="'+r.id+'">'+esc(r.company||'Untitled')+' · '+d+' · '+esc(r.source)+'</option>';
+    var nm = str(r.company) || str((r.data&&r.data.meta||{}).company) || 'Untitled';
+    return '<option value="'+r.id+'">'+esc(nm)+' · '+d+' · '+esc(r.source)+'</option>';
   }).join('');
   if(selectId){ sel.value = selectId; showRecord(selectId); }
 }
@@ -1768,7 +1819,7 @@ function showRecord(id){
   }).join('');
   $('#repCard').innerHTML = '<div class="rc">'
     + '<div class="v">'+esc(d.recommendation||'—')+'</div>'
-    + '<div class="m">'+esc(d.company||r.company||'')+' · '+esc(r.source)
+    + '<div class="m">'+esc(str(d.company)||str((d.meta||{}).company)||str(r.company))+' · '+esc(r.source)
     + ' · imported '+new Date(r.ts).toLocaleString('en-IN')+'</div>'
     + '<div class="tiles">'+tile('IPO',sc.ipo_quality)+tile('Long term',sc.long_term)
     + tile('Listing',sc.listing_gain)+tile('Alloc',d.allocation_band||'—')+'</div>'
@@ -1778,12 +1829,13 @@ function showRecord(id){
   $('#repCard').classList.remove('hidden');
   var isV3 = !!(d.meta && d.verdict);
   $('#docTools').classList.toggle('hidden', !isV3);
+  var sd = $('#scDocs'); if(sd) sd.classList.toggle('hidden', !isV3);
   if(!isV3 && $('#docMsg')) $('#docMsg').textContent = '';
   $('#out').textContent = r.text || '';
   $('#out').classList.toggle('gu', /[઀-૿]/.test(r.text||''));
   $('#repTag').textContent = 'imported';
-  $('#repMeta').textContent = (d.company||r.company||'')+' · via '+r.source;
-  applyToWorksheet(d, r.company || d.company || '');
+  $('#repMeta').textContent = (str(d.company)||str((d.meta||{}).company)||str(r.company))+' · via '+r.source;
+  applyToWorksheet(d, str(r.company) || str(d.company) || str((d.meta||{}).company) || '');
 }
 
 /* the reverse-use step: an outside tool's scores drive the worksheet */
@@ -1875,8 +1927,9 @@ $('#btnSaveImport').addEventListener('click', function(){
   ORDER.forEach(function(k){ if(d.score_lines[k] === undefined) d.score_lines[k] = 0; });
   if(d.scores.ipo_quality == null) d.scores.ipo_quality = sumLines(d.score_lines);
   var src = $('#importSrc').value || 'unknown';
-  var rec = { id:'r'+Date.now(), ts:Date.now(), source:src,
-              company:d.company || formVals().company || 'Untitled',
+  var coName = str(d.company) || str((d.meta||{}).company) || formVals().company || 'Untitled';
+  if(d.meta && !str(d.meta.company)) d.meta.company = coName;
+  var rec = { id:'r'+Date.now(), ts:Date.now(), source:src, company:coName,
               data:d, text:pendingImport.raw };
   saveToLibrary(rec);
   var n = applyToWorksheet(d, rec.company);
@@ -1920,6 +1973,37 @@ function fillIpoList(list){
 }
 (function(){ try{ var c=JSON.parse(get('ipo.list','null'));
   if(c && Date.now()-c.ts < 864e5) fillIpoList(c.list); }catch(e){} })();
+
+function readIpoList(raw){
+  var m = raw.match(/\{[\s\S]*"ipos"[\s\S]*\}/);
+  if(!m) return null;
+  try{ var j = JSON.parse(m[0]); return arrOf(j.ipos); }catch(e){ return null; }
+}
+function arrOf(a){ return Array.isArray(a) ? a : []; }
+
+$('#btnSearchImport').addEventListener('click', function(){
+  $('#searchImportBox').classList.toggle('hidden');
+  if(!$('#searchImportBox').classList.contains('hidden')) $('#searchText').focus();
+});
+$('#btnSearchCancel').addEventListener('click', function(){
+  $('#searchImportBox').classList.add('hidden'); $('#searchText').value='';
+});
+$('#btnSearchSave').addEventListener('click', function(){
+  var list = readIpoList($('#searchText').value.trim());
+  if(!list || !list.length){
+    $('#searchMsg').innerHTML = '<b>Could not read a list.</b> Paste the whole json block containing "ipos".';
+    return;
+  }
+  fillIpoList(list);
+  $('#searchImportBox').classList.add('hidden'); $('#searchText').value='';
+  $('#searchMsg').innerHTML = '<b>'+list.length+' IPOs loaded.</b> Tap the company box to pick one.';
+  $('#company').focus();
+});
+$('#btnSearchDel').addEventListener('click', function(){
+  try{ localStorage.removeItem('ipo.list'); }catch(e){}
+  $('#ipoList').innerHTML = '';
+  $('#searchMsg').textContent = 'Search list cleared. Saved analyses on the Report tab are untouched.';
+});
 
 $('#btnSearch').addEventListener('click', function(){
   var b = this, key = ($('#key').value || get(LS.key,'')).trim();
