@@ -438,7 +438,30 @@ function cover(p, lang, docTitle, pages){
 }
 
 /* ============================ REPORT ============================ */
+/* A payload that lost sections to truncation must still render. Every renderer
+   normalises first, so a missing block becomes an empty one rather than a
+   thrown error that leaves the user with no documents at all. */
+function safePayload(p){
+  p = (p && typeof p === 'object') ? p : {};
+  p.meta = p.meta || {};
+  p.verdict = p.verdict || {};
+  p.verdict.scores = p.verdict.scores || {};
+  p.verdict.score_bands = p.verdict.score_bands || {};
+  p.ipo = p.ipo || {};
+  p.company = (p.company && typeof p.company === 'object') ? p.company : {};
+  p.financials = p.financials || {};
+  p.people = p.people || {};
+  p.decision = p.decision || {};
+  p.score_lines = p.score_lines || {};
+  p.score_basis = p.score_basis || {};
+  p.gu = p.gu || {};
+  if(!S(p.meta.company)) p.meta.company = S(p.meta.short_name) || 'IPO';
+  if(!S(p.meta.short_name)) p.meta.short_name = S(p.meta.company);
+  return p;
+}
+
 function buildReport(p, lang){
+  p = safePayload(p);
   lang = lang || 'en';
   var TOT = 10, out = '';
   var m = p.meta||{}, f = p.financials||{}, c = p.company||{}, pe = p.people||{}, d = p.decision||{}, ipo = p.ipo||{};
@@ -646,7 +669,7 @@ function buildReport(p, lang){
                  '<span class="mut">'+e(tr(p,lang,x.warning))+'</span>'] }; }), { num:[1] })
     + sec('27', L(lang,'alloc_levels'))
     + '<div class="grid2"><div>'
-      + tbl([L(lang,'action'),L(lang,'price'),L(lang,'rationale')], arr(d.levels).map(function(x){
+      + tbl([L(lang,'action'),L(lang,'price'),L(lang,'rationale')], levelsOf(p,lang,d).map(function(x){
           return { cells:[e(tr(p,lang,x.action)), '<b class="en">'+e(x.price)+'</b>', '<span class="mut">'+e(tr(p,lang,x.rationale))+'</span>'] }; }), { num:[1] })
       + '</div><div class="note"><b>'+e(L(lang,'sugg_alloc'))+': '+e((p.verdict||{}).allocation_band||'—')+'</b>'
       + e(pick(p,lang,'decision.allocation_note', d.allocation_note))+'</div></div>'
@@ -666,6 +689,7 @@ function buildReport(p, lang){
 
 /* ======================= EXECUTIVE SUMMARY ======================= */
 function buildExec(p, lang){
+  p = safePayload(p);
   lang = lang || 'en';
   var TOT = 4, out = '', f = p.financials||{}, d = p.decision||{}, m = p.meta||{};
   out += cover(p, lang, 'Executive Summary', TOT);
@@ -720,7 +744,7 @@ function buildExec(p, lang){
     + '<div class="note"><b>'+e((p.verdict||{}).allocation_band||'—')+'</b>'
       + e(pick(p,lang,'decision.allocation_note', d.allocation_note))+'</div>'
     + sec('12', L(lang,'alloc_levels'))
-    + tbl([L(lang,'action'),L(lang,'price'),L(lang,'rationale')], arr(d.levels).map(function(x){
+    + tbl([L(lang,'action'),L(lang,'price'),L(lang,'rationale')], levelsOf(p,lang,d).map(function(x){
         return { cells:[e(tr(p,lang,x.action)),'<b class="en">'+e(x.price)+'</b>','<span class="mut">'+e(tr(p,lang,x.rationale))+'</span>'] }; }), { num:[1] })
     + sec('13', L(lang,'monitoring'))
     + tbl([L(lang,'metric'),L(lang,'current'),L(lang,'desired'),L(lang,'warning')], arr(d.monitoring).slice(0,6).map(function(x){
@@ -737,6 +761,19 @@ function buildExec(p, lang){
 }
 
 /* SWOT: use the payload's own block if present, otherwise derive it. */
+
+/* Some arrays carry prose that must be translated but has no natural label to
+   look up — price levels are the clearest case. The Gujarati block may supply a
+   parallel array; overlay it positionally and fall back per field. */
+function levelsOf(p, lang, d){
+  var base = arr(d.levels);
+  if(lang !== 'gu') return base;
+  var g = (p.gu && p.gu.decision && Array.isArray(p.gu.decision.levels)) ? p.gu.decision.levels : [];
+  return base.map(function(x, i){
+    var o = g[i] || {};
+    return { action: o.action || x.action, price: x.price, rationale: o.rationale || x.rationale };
+  });
+}
 function swotOf(p, lang){
   var d = p.decision||{}, sw = d.swot||{};
   var gsw = (p.gu||{}).decision ? ((p.gu.decision||{}).swot||{}) : {};
@@ -832,6 +869,7 @@ body.gu .vswot .q li{ line-height:1.65; }
 `;
 
 function buildVisual(p, lang){
+  p = safePayload(p);
   lang = lang || 'en';
   var v = p.verdict||{}, sc = v.scores||{}, f = p.financials||{}, d = p.decision||{},
       ipo = p.ipo||{}, m = p.meta||{};
@@ -936,7 +974,7 @@ function buildVisual(p, lang){
         + e(v.recommendation||'')+' · '+e(v.allocation_band||'')+'</div>'
       + '<div style="padding:15px 18px;font-size:18px;line-height:1.55;color:var(--ink2)">'
         + e(pick(p,lang,'decision.allocation_note', d.allocation_note))+'</div></div>'
-    + '<table class="vtab" style="margin-top:14px"><tbody>'+arr(d.levels).slice(0,3).map(function(x){
+    + '<table class="vtab" style="margin-top:14px"><tbody>'+levelsOf(p,lang,d).slice(0,3).map(function(x){
         return '<tr><td style="width:34%">'+e(tr(p,lang,x.action))+'</td><td style="width:18%"><b class="en">'+e(x.price)
           + '</b></td><td style="color:var(--ink2)">'+e(tr(p,lang,x.rationale))+'</td></tr>'; }).join('')+'</tbody></table>'
     + vfoot(2) + '</div>';
@@ -946,14 +984,25 @@ function buildVisual(p, lang){
     + '<body class="'+(lang==='gu'?'gu':'')+'" style="background:#E9E7E1">'+p1+p2
     + '<script>(function(){' +
       '/* Fit each page to A4. Gujarati runs longer than English, so this is what' +
-      ' keeps the two-page limit rather than hoping the translation happens to fit. */' +
-      'var PH=1754, MIN=0.72;' +
+      ' keeps the two-page limit rather than hoping the translation happens to fit.' +
+      ' The CONTENT is scaled, never the sheet: zooming the page box itself made' +
+      ' the exported PNG narrower than A4, so pages came out at different widths' +
+      ' and messaging apps stretched them. */' +
+      'var MIN=0.66;' +
       'var ps=document.querySelectorAll(".vpage");' +
       'for(var i=0;i<ps.length;i++){ var el=ps[i];' +
-        'var target=el.clientHeight*0.995; el.style.height="auto";' +
-        'var nat=el.scrollHeight;' +
-        'var z = nat>target ? Math.max(MIN, target/nat) : 1;' +
-        'z=Math.floor(z*1000)/1000; el.style.zoom=z; el.style.height=(PH/z)+"px";' +
+        'var w=document.createElement("div");' +
+        'w.className="vfit";' +
+        'w.style.cssText="display:flex;flex-direction:column;flex:1 1 auto;min-height:0;width:100%";' +
+        'while(el.firstChild) w.appendChild(el.firstChild);' +
+        'el.appendChild(w);' +
+        'var target=el.clientHeight - (parseFloat(getComputedStyle(el).paddingTop)||0)' +
+          ' - (parseFloat(getComputedStyle(el).paddingBottom)||0);' +
+        'var nat=w.scrollHeight;' +
+        'if(nat>target){' +
+          'var z=Math.max(MIN, Math.floor((target/nat)*1000)/1000);' +
+          'w.style.zoom=z; w.style.height=(target/z)+"px";' +
+        '}' +
       '}' +
     '})();<\/script>'
 
@@ -978,6 +1027,7 @@ function scBlock(p, b, lang){
    and each page is then auto-fitted — clipping is what used to lose half the
    marks. */
 function buildScorecard(p, lang){
+  p = safePayload(p);
   lang = lang || 'en';
   var v = p.verdict||{}, m = p.meta||{};
   var total = 0, mkt = 0;

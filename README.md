@@ -1,8 +1,61 @@
-# IPO Analyst — standalone web app  ·  v3.2
+# IPO Analyst — standalone web app  ·  v3.3
 
 A single-page web app that turns the institutional IPO research protocol into something you can
 run from an icon on your phone. It works on Android and iPhone/iPad, installs to the home screen,
 runs full-screen with no address bar, and works offline for everything except the AI call itself.
+
+## What changed in v3.3 — the v3.2 import regression, fixed
+
+**What went wrong in v3.2.** I replaced the prompt built into the app with the longer framework
+payload (SWOT, an exhaustive `gu.labels` dictionary, full-Gujarati rules). That pushed a single AI
+reply past what a chat model can finish, so replies were arriving cut off mid-JSON. The importer
+then did something unhelpful: `JSON.parse` threw, it silently fell back to scraping numbers out of
+the prose, and that fallback produces no `meta` and no `verdict` — which is exactly the condition
+that kept the Documents section and every PDF and share button hidden. One cause, both symptoms:
+missing score lines *and* no documents.
+
+**Three fixes, at three levels.**
+
+*The reply now fits.* Output is split into two blocks. Block 1 is the English analysis and is all
+the app needs. Block 2 is the Gujarati translation, sent only when you reply `gujarati`, and it
+repeats none of the English. `score_lines` moved to the top of the payload, so even a reply that
+does get cut short still carries the scoring. `gu.labels` is bounded at 25–40 entries instead of
+"every label you used".
+
+*The importer no longer gives up.* It brace-matches the payload out of the reply without needing a
+closing fence, strips `//` and `/* */` comments, trailing commas, curly quotes, `...` elisions and
+`NaN`, unwraps a payload nested inside `{"result": ...}`, and completes a truncated object by
+closing what the model left open. If it still cannot parse, it salvages the top-level keys that
+were complete. Whatever it had to repair, it tells you. Anything the JSON did not carry is then
+scraped from the prose rather than left blank.
+
+*Nothing fails silently.* The Documents tools appear whenever anything usable survived, and the app
+states exactly what is thin — "12 of the 28 score lines, the Gujarati translation". A score line the
+reply never supplied is recorded as unsupplied rather than quietly scored 0.
+
+**New: Add To This Analysis.** Paste a second block — the Gujarati block, or the rest of a reply the
+tool had to cut short — and it merges into the analysis you already have. Nothing already present is
+overwritten, the total is recomputed, and it reports what it gained.
+
+**One framework, one source.** The framework file, `protocol.md` and the prompt inside the app are
+now generated together by a build step. In v3.2 the in-app prompt was a whole version behind the
+framework file; that class of bug is gone.
+
+**Also fixed:** the Investment Summary exported at four different pixel widths (4960, 4772, 4540,
+4284) because the auto-fit shrank the page box instead of the content — messaging apps were
+stretching them. All pages are now exactly 4960 × 7016. Price-level rationales now translate in the
+Gujarati edition.
+
+**Tested.** 84 automated checks: 25 realistic model-output shapes (Claude, Gemini and ChatGPT
+pathologies — truncation, prose after the block, missing fences, comments, elisions, nested
+wrappers, missing whole sections), 12 merge-flow checks, 36 UI and rendering checks, and — the part
+that matters — three genuine end-to-end runs where a real model was given the framework, researched
+a real company on the web, and returned its reply untouched. All three imported with 28/28 score
+lines and produced all eight documents. A real Gujarati Block 2 was then merged and verified to
+carry identical figures to the English edition.
+
+*Note on coverage: Claude runs were real. I could not sign in to Gemini or ChatGPT from the build
+environment, so those are covered by the output-shape corpus rather than live runs.*
 
 ## What changed in v3.2
 
