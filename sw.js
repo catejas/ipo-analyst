@@ -1,9 +1,9 @@
 /* IPO Analyst service worker — offline shell */
-var CACHE = 'ipo-analyst-v6';
+var CACHE = 'ipo-analyst-v7';
 var ASSETS = [
   './', './index.html', './manifest.webmanifest',
   './icons/icon-192.png', './icons/icon-512.png',
-  './icons/icon-maskable-512.png', './icons/apple-touch-icon.png', './protocol.md'
+  './icons/icon-maskable-512.png', './icons/apple-touch-icon.png', './protocol.md', './render.js', './docs.js', './vendor/html2canvas.min.js', './vendor/jspdf.umd.min.js'
 ];
 self.addEventListener('install', function(e){
   self.skipWaiting();
