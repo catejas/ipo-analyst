@@ -200,6 +200,9 @@ var T = {
   scorecard:      ['Score Card','સ્કોર કાર્ડ'],
   block:          ['Block','વિભાગ'],
   line_item:      ['Line item','પેટા બાબત'],
+  total_score:    ['Total Score By Section','વિભાગવાર કુલ ગુણ'],
+  section:        ['Section','વિભાગ'],
+  band:           ['Share Of Maximum','મહત્તમનો હિસ્સો'],
   fundamentals:   ['Fundamentals','મૂળભૂત'],
   market_signals: ['Market signals','બજાર સંકેત'],
   disclaimer:     ['Independent research. Not investment advice, not a personal recommendation, and not an offer or solicitation. Figures are labelled Official, Derived or Estimated. Grey market premium data is unofficial and unregulated. Equity investment carries the risk of permanent capital loss.',
@@ -323,7 +326,7 @@ function head(p, label){
 function foot(p, i, total, lang){
   return '<div class="rf"><div><span class="en">IPO Company Research Report &nbsp;·&nbsp; '
        + e(p.meta.analysis_datetime||'') + '</span> &nbsp;·&nbsp; ' + e(L(lang,'research_only'))
-       + '</div><div class="en"><b>'+i+'</b> / '+total+'</div></div>';
+       + '</div><div class="en"><b class="pgnum">'+i+'</b> / <span class="pgtot">'+total+'</span></div></div>';
 }
 function page(p, i, total, label, inner, lang){
   return '<section class="page">'+head(p,label)+'<div class="body">'+inner+'</div>'
@@ -958,16 +961,33 @@ function buildVisual(p, lang){
 }
 
 /* ========================= SCORE CARD ========================= */
+function scBlock(p, b, lang){
+  var sl = p.score_lines||{}, sb = p.score_basis||{};
+  var gsb = (lang==='gu' && p.gu && p.gu.score_basis) ? p.gu.score_basis : {};
+  var got = blockScore(p,b), items = bItems(b,lang);
+  return sec('', bName(b,lang)+' — '+got.toFixed(1)+' / '+b[2])
+    + tbl([L(lang,'line_item'),L(lang,'score'),L(lang,'max'),L(lang,'basis')], b[3].map(function(k,i){
+        var val = Number(sl[k])||0;
+        return { cells:[e(items[i]), '<b class="en">'+val.toFixed(1)+'</b>',
+                        '<span class="en">'+b[6][i]+'</span>',
+                        '<span class="mut">'+e(gsb[k] || tr(p,lang,sb[k]) || '')+'</span>'] }; }), { num:[1,2] });
+}
+
+/* The card is deliberately paginated. Every one of the 31 line items that make
+   up the 100 marks has to appear, so the blocks are split across two A4 pages
+   and each page is then auto-fitted — clipping is what used to lose half the
+   marks. */
 function buildScorecard(p, lang){
   lang = lang || 'en';
-  var v = p.verdict||{}, sc = v.scores||{}, sl = p.score_lines||{}, sb = p.score_basis||{}, m = p.meta||{};
+  var v = p.verdict||{}, m = p.meta||{};
   var total = 0, mkt = 0;
   BLOCKS.forEach(function(b,i){ var g = blockScore(p,b); total += g; if(i===6) mkt = g; });
-  var inner = '<div style="height:5mm"></div>'
+
+  var head = '<div class="sc-top"><div style="height:4mm"></div>'
     + '<div class="eyebrow en">Score Card &nbsp;·&nbsp; '+e(m.ipo_type||'Mainboard')+' &nbsp;·&nbsp; India</div>'
-    + '<h1 class="en" style="margin-top:2mm;font-size:19pt">'+e(m.company||'')+'</h1>'
+    + '<h1 class="en" style="margin-top:1.5mm;font-size:18pt">'+e(m.company||'')+'</h1>'
     + '<div class="mut en" style="margin-top:1mm">'+e(m.analysis_datetime||'')+'</div>'
-    + '<div style="height:2.5mm;background:var(--teal);width:26mm;border-radius:1mm;margin:3mm 0 4mm"></div>'
+    + '<div style="height:2.5mm;background:var(--teal);width:26mm;border-radius:1mm;margin:2.5mm 0 3.5mm"></div>'
     + '<div class="tiles">'
       + '<div class="tile"><div class="k">'+e(L(lang,'ipo_quality'))+'</div><div class="v">'+n(total,1)
         + '<small>/100</small></div><div class="s">'+e(bandOf(total))+'</div></div>'
@@ -976,18 +996,87 @@ function buildScorecard(p, lang){
       + '<div class="tile"><div class="k">'+e(L(lang,'market_signals'))+'</div><div class="v">'+n(mkt,1)
         + '<small>/5</small></div></div>'
       + '<div class="tile"><div class="k">'+e(L(lang,'recommendation'))+'</div><div class="v" style="font-size:11pt">'
-        + e(v.recommendation||'—')+'</div><div class="s">'+e(v.allocation_band||'')+'</div></div></div>'
-    + BLOCKS.map(function(b){
-        var got = blockScore(p,b), items = bItems(b,lang);
-        return sec('', bName(b,lang)+' — '+got.toFixed(1)+' / '+b[2])
-          + tbl([L(lang,'line_item'),L(lang,'score'),L(lang,'max'),L(lang,'basis')], b[3].map(function(k,i){
-              var val = Number(sl[k])||0;
-              return { cells:[e(items[i]), '<b class="en">'+val.toFixed(1)+'</b>', '<span class="en">'+b[6][i]+'</span>',
-                '<span class="mut">'+e(sb[k]||'')+'</span>'] }; }), { num:[1,2] });
-      }).join('')
-    + '<div class="grow"></div>'
-    + '<div class="mut" style="border-top:.6pt solid var(--rule);padding-top:2.5mm">'+e(L(lang,'disclaimer'))+'</div>';
-  return shell(S(m.company)+' — Score Card', lang==='gu'?'gu':'', page(p,1,1,'Score Card',inner,lang));
+        + e(v.recommendation||'—')+'</div><div class="s">'+e(v.allocation_band||'')+'</div></div></div></div>';
+
+  var body = BLOCKS.map(function(b){ return '<div class="sc-blk">'+scBlock(p,b,lang)+'</div>'; }).join('')
+    + '<div class="sc-blk">' + sec('', L(lang,'total_score'))
+    + tbl([L(lang,'section'),L(lang,'score'),L(lang,'max'),L(lang,'band')],
+        BLOCKS.map(function(b){
+          var g = blockScore(p,b), pc = b[2] ? (g/b[2])*100 : 0;
+          return { cells:[ bName(b,lang), '<b class="en">'+g.toFixed(1)+'</b>',
+                           '<span class="en">'+b[2]+'</span>',
+                           barRow('', pc, Math.round(pc)+'%',
+                                  pc>=70?'var(--teal)':pc>=50?'var(--amber)':'var(--red)') ] }; })
+        .concat([{ __cls:'tot', cells:[ '<b>'+L(lang,'ipo_quality')+'</b>',
+                   '<b class="en">'+total.toFixed(1)+'</b>', '<span class="en">100</span>',
+                   '<b>'+e(bandOf(total))+'</b>' ] }]), { num:[1,2] }) + '</div>';
+
+  var tail = '<div class="grow"></div>'
+    + '<div class="mut sc-disc" style="border-top:.6pt solid var(--rule);padding-top:2.5mm">'
+    + e(L(lang,'disclaimer'))+'</div>';
+
+  var pages = page(p,1,2,'Score Card','<div class="sc-main">'+head+body+'</div>'+tail,lang)
+            + page(p,2,2,'Score Card','<div class="sc-spill"></div>'+tail,lang);
+
+  var CSS2 = '\n.sc-blk{break-inside:avoid}\n.sc-blk table{margin-bottom:0}\n'
+           + '.sc-blk .sec{margin:6mm 0 2.5mm}\n.sc-blk .bar{margin:0}\n'
+           + '.sc-blk td,.sc-blk th{padding-top:2.3mm;padding-bottom:2.3mm}\n'
+           + '.sc-blk .ti{font-size:10.5pt}\n'
+           + 'body.gu .sc-blk td,body.gu .sc-blk th{padding-top:1.9mm;padding-bottom:1.9mm}\n';
+
+  /* One page if it honestly fits; otherwise the tail sections spill onto a
+     second page. Nothing is ever clipped — losing half the marks was the bug
+     this replaces. */
+  /* One page when it honestly fits; otherwise the tail sections spill onto a
+     second page. Measure the content block itself — the flex spacer makes the
+     page always look "full", which is how half the marks used to get clipped. */
+  var FIT = '<script>(function(){'
+    + 'var ps=[].slice.call(document.querySelectorAll(".page"));'
+    + 'var p1=ps[0], p2=ps[1];'
+    + 'var b1=p1.querySelector(".body"), b2=p2.querySelector(".body");'
+    + 'var main=p1.querySelector(".sc-main"), spill=p2.querySelector(".sc-spill");'
+    + 'function avail(bd){ var d=bd.querySelector(".sc-disc");'
+      + 'return bd.clientHeight - (d? d.offsetHeight+14 : 0); }'
+    + 'var A1=avail(b1);'
+    + 'if(main.scrollHeight > A1){'
+      + 'var blks=[].slice.call(main.querySelectorAll(".sc-blk"));'
+      + 'for(var i=blks.length-1;i>=1 && main.scrollHeight>A1;i--){'
+        + 'spill.insertBefore(blks[i], spill.firstChild);'
+      + '}'
+    + '}'
+    + 'function h(x){ return x.scrollHeight; }'
+    + 'if(spill.children.length){'
+      /* balance the two pages so neither ends with a large empty band */
+      + 'for(;;){'
+        + 'var kids=main.querySelectorAll(".sc-blk");'
+        + 'if(kids.length<2) break;'
+        + 'var last=kids[kids.length-1];'
+        + 'var before=Math.abs(h(main)-h(spill));'
+        + 'spill.insertBefore(last, spill.firstChild);'
+        + 'var after=Math.abs(h(main)-h(spill));'
+        + 'if(after>=before || h(spill)>avail(b2)){ main.appendChild(last); break; }'
+      + '}'
+    + '} else { p2.parentNode.removeChild(p2); }'
+    + 'var live=[].slice.call(document.querySelectorAll(".page"));'
+    + 'for(var k=0;k<live.length-1;k++){ var d=live[k].querySelector(".sc-disc");'
+      + 'if(d) d.parentNode.removeChild(d); }'
+    + 'for(var j=0;j<live.length;j++){ var el=live[j];'
+      + 'var t=el.querySelector(".pgtot"); if(t) t.textContent=live.length;'
+      + 'var nm=el.querySelector(".pgnum"); if(nm) nm.textContent=(j+1);'
+      + 'var bd=el.querySelector(".body");'
+      + 'var box=bd.querySelector(".sc-main")||bd.querySelector(".sc-spill");'
+      + 'var A=avail(bd);'
+      /* Shrink the CONTENT, never the sheet — the page stays a true A4 box so
+         the PDF and the PNG keep their aspect ratio. */
+      + 'if(box && box.scrollHeight>A){'
+        + 'var z=Math.max(0.60, Math.floor((A/box.scrollHeight)*1000)/1000);'
+        + 'box.style.zoom=z;'
+      + '}'
+    + '}'
+    + '})();<\/script>';
+
+  return shell(S(m.company)+' — Score Card', lang==='gu'?'gu':'', pages, CSS2)
+         .replace('</body>', FIT+'</body>');
 }
 
 global.IPODocs = { buildReport:buildReport, buildExec:buildExec, buildVisual:buildVisual,

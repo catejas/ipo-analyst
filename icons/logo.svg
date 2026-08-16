@@ -1,0 +1,9 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="512" height="512">
+<defs><linearGradient id="gB" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#3B4BC8"/><stop offset="1" stop-color="#1E2A78"/></linearGradient>
+<linearGradient id="gB2" x1="0" y1="1" x2="1" y2="0"><stop offset="0" stop-color="#F2B233"/><stop offset="1" stop-color="#E08A1E"/></linearGradient></defs>
+<rect width="512" height="512" rx="112" fill="url(#gB)"/>
+<text x="256" y="360" font-family="Georgia,'Times New Roman',serif" font-size="290" font-weight="700" fill="#FFFFFF" text-anchor="middle" opacity="0.16">₹</text>
+<path d="M104 344 L200 236 L278 306 L408 158" fill="none" stroke="url(#gB2)" stroke-width="36" stroke-linecap="round" stroke-linejoin="round"/>
+<path d="M408 158 L408 240 M408 158 L326 158" fill="none" stroke="url(#gB2)" stroke-width="36" stroke-linecap="round" stroke-linejoin="round"/>
+<text x="256" y="452" font-family="Helvetica,Arial,sans-serif" font-size="86" font-weight="700" fill="#FFFFFF" text-anchor="middle" letter-spacing="6">IPO</text>
+</svg>

@@ -5,7 +5,8 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>IPO Analyst — Institutional Research</title>
 <meta name="description" content="Institutional-grade Indian IPO research assistant.">
-<meta name="theme-color" content="#0b0b0b">
+<meta name="theme-color" content="#0B1F3B" media="(prefers-color-scheme: dark)">
+<meta name="theme-color" content="#F1F4F9" media="(prefers-color-scheme: light)">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
@@ -14,18 +15,30 @@
 <link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
 <link rel="icon" href="icons/icon-192.png">
 <style>
+/* ── Navy & gold design system ──────────────────────────────────────────── */
 :root{
-  --bg:#0e0e0d; --surf:#1a1a19; --surf2:#232322; --line:#33332f;
-  --ink:#f5f4ef; --ink2:#b8b6ac; --ink3:#84837a;
-  --blue:#3987e5; --orange:#d95926; --aqua:#199e70; --yellow:#c98500;
-  --green:#2a9d4a; --red:#e66767; --violet:#9085e9;
-  --r:12px;
+  --bg:#08152B; --bg2:#0B1F3B; --surf:#102845; --surf2:#16324F; --line:#254060;
+  --ink:#F3F6FA; --ink2:#AFC0D4; --ink3:#7F94AC;
+  --navy:#1E4E8C; --navy2:#2E6BB8;
+  --gold:#F2B233; --gold2:#E08A1E; --goldink:#231704;
+  --blue:#2E6BB8; --orange:#E08A1E; --aqua:#12A085; --yellow:#F2B233;
+  --green:#18A05B; --red:#EF6A6A; --violet:#7C8CF0;
+  --r:16px; --r2:12px;
+  --shadow:0 1px 2px rgba(0,0,0,.28), 0 8px 24px rgba(0,0,0,.22);
+  --grad-gold:linear-gradient(135deg,#F5C255,#E08A1E);
+  --grad-navy:linear-gradient(135deg,#2E6BB8,#153A6B);
+  --grad-head:linear-gradient(160deg,#122E52 0%,#0B1F3B 60%,#08152B 100%);
 }
 @media (prefers-color-scheme: light){
-  :root{ --bg:#f4f3ee; --surf:#ffffff; --surf2:#faf9f5; --line:#dedcd4;
-    --ink:#0b0b0b; --ink2:#4a4945; --ink3:#7c7b73;
-    --blue:#2a78d6; --orange:#eb6834; --aqua:#1baf7a; --yellow:#a87200;
-    --green:#0a7a30; --red:#cf3b3a; --violet:#4a3aa7; }
+  :root{ --bg:#F1F4F9; --bg2:#FFFFFF; --surf:#FFFFFF; --surf2:#F6F8FC; --line:#DCE4EE;
+    --ink:#0B1F3B; --ink2:#41566F; --ink3:#7286A0;
+    --navy:#1E4E8C; --navy2:#2E6BB8;
+    --gold:#E9A21B; --gold2:#C97C10; --goldink:#2B1C02;
+    --blue:#1E4E8C; --orange:#C97C10; --aqua:#0E7C66; --yellow:#B37A05;
+    --green:#0A7A42; --red:#CF3B3A; --violet:#4A3AA7;
+    --shadow:0 1px 2px rgba(11,31,59,.06), 0 8px 22px rgba(11,31,59,.07);
+    --grad-head:linear-gradient(160deg,#FFFFFF 0%,#F4F7FC 100%);
+  }
 }
 *{box-sizing:border-box;-webkit-tap-highlight-color:transparent;}
 html,body{margin:0;padding:0;}
@@ -38,54 +51,71 @@ body{
 .wrap{max-width:820px;margin:0 auto;padding:0 16px 96px;}
 
 header{
-  position:sticky;top:0;z-index:50;background:var(--bg);
-  padding:calc(env(safe-area-inset-top) + 14px) 16px 0;
+  position:sticky;top:0;z-index:50;background:var(--grad-head);
+  padding:calc(env(safe-area-inset-top) + 16px) 16px 0;
   border-bottom:1px solid var(--line);
+  box-shadow:0 6px 18px rgba(0,0,0,.14);
 }
 header .in{max-width:820px;margin:0 auto;}
-.brand{display:flex;align-items:center;gap:10px;}
-.logo{width:30px;height:30px;border-radius:8px;background:linear-gradient(135deg,var(--blue),var(--violet));
-  display:flex;align-items:center;justify-content:center;color:#fff;font-weight:800;font-size:14px;flex:0 0 auto;}
-.brand h1{font-size:18px;margin:0;letter-spacing:-.02em;font-weight:800;}
-.brand .sub{font-size:11px;color:var(--ink3);margin-top:1px;}
-nav{display:flex;gap:4px;margin-top:12px;overflow-x:auto;scrollbar-width:none;}
+.brand{display:flex;align-items:center;gap:12px;}
+.logo{width:40px;height:40px;border-radius:11px;flex:0 0 auto;overflow:hidden;
+  box-shadow:0 2px 8px rgba(0,0,0,.3);}
+.logo img{width:100%;height:100%;display:block;}
+.brand h1{font-size:19px;margin:0;letter-spacing:-.025em;font-weight:800;}
+.brand .sub{font-size:11.5px;color:var(--ink3);margin-top:1px;letter-spacing:.02em;}
+nav{display:flex;gap:6px;margin-top:14px;padding-bottom:12px;overflow-x:auto;scrollbar-width:none;}
 nav::-webkit-scrollbar{display:none}
 nav button{
-  background:none;border:0;color:var(--ink3);font:inherit;font-size:14px;font-weight:600;
-  padding:9px 12px;border-bottom:2.5px solid transparent;cursor:pointer;white-space:nowrap;
+  background:var(--surf2);border:1px solid var(--line);color:var(--ink3);font:inherit;
+  font-size:13.5px;font-weight:700;padding:9px 16px;border-radius:999px;cursor:pointer;white-space:nowrap;
+  transition:background .15s ease,color .15s ease,border-color .15s ease;
 }
-nav button.on{color:var(--ink);border-bottom-color:var(--blue);}
+nav button.on{background:var(--grad-gold);border-color:transparent;color:var(--goldink);
+  box-shadow:0 2px 10px rgba(224,138,30,.35);}
 
-.card{background:var(--surf);border:1px solid var(--line);border-radius:var(--r);padding:16px;margin:14px 0;}
-.card h2{font-size:15px;margin:0 0 3px;letter-spacing:-.01em;}
+.card{background:var(--surf);border:1px solid var(--line);border-radius:var(--r);padding:18px;margin:16px 0;
+  box-shadow:var(--shadow);}
+.card h2{font-size:16px;margin:0 0 4px;letter-spacing:-.02em;font-weight:800;
+  display:flex;align-items:center;gap:9px;}
+.card h2::before{content:'';width:4px;height:16px;border-radius:3px;background:var(--grad-gold);flex:0 0 auto;}
 .card .hint{font-size:12.5px;color:var(--ink3);margin:0 0 12px;line-height:1.45;}
 label{display:block;font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:.07em;
   color:var(--ink3);margin:14px 0 5px;}
 label:first-of-type{margin-top:0;}
 input[type=text],input[type=password],select,textarea{
   width:100%;font:inherit;font-size:16px;color:var(--ink);background:var(--surf2);
-  border:1px solid var(--line);border-radius:9px;padding:11px 12px;appearance:none;
+  border:1px solid var(--line);border-radius:11px;padding:12px 13px;appearance:none;
+  transition:border-color .15s ease,box-shadow .15s ease;
 }
 textarea{min-height:120px;line-height:1.45;font-size:13px;font-family:ui-monospace,SFMono-Regular,Menlo,monospace;}
-input:focus,select:focus,textarea:focus{outline:2px solid var(--blue);outline-offset:1px;border-color:transparent;}
+input:focus,select:focus,textarea:focus{outline:0;border-color:var(--gold);
+  box-shadow:0 0 0 3px rgba(242,178,51,.22);}
 .seg{display:grid;grid-template-columns:repeat(auto-fit,minmax(90px,1fr));gap:7px;}
 .seg input{position:absolute;opacity:0;pointer-events:none;}
-.seg label{margin:0;text-transform:none;letter-spacing:0;font-size:13.5px;font-weight:600;color:var(--ink2);
-  background:var(--surf2);border:1px solid var(--line);border-radius:9px;padding:10px 8px;text-align:center;cursor:pointer;}
-.seg input:checked + label{background:var(--blue);border-color:var(--blue);color:#fff;}
+.seg label{margin:0;text-transform:none;letter-spacing:0;font-size:13.5px;font-weight:700;color:var(--ink2);
+  background:var(--surf2);border:1px solid var(--line);border-radius:999px;padding:11px 8px;text-align:center;
+  cursor:pointer;transition:all .15s ease;}
+.seg input:checked + label{background:var(--grad-navy);border-color:transparent;color:#fff;
+  box-shadow:0 2px 10px rgba(46,107,184,.34);}
+.seg input:focus-visible + label{box-shadow:0 0 0 3px rgba(242,178,51,.35);}
 
 .btn{display:flex;align-items:center;justify-content:center;gap:8px;width:100%;font:inherit;font-size:15.5px;
-  font-weight:700;padding:14px;border-radius:11px;border:1px solid var(--line);background:var(--surf2);
-  color:var(--ink);cursor:pointer;margin-top:9px;}
-.btn.pri{background:var(--blue);border-color:var(--blue);color:#fff;}
-.btn.pri2{background:var(--orange);border-color:var(--orange);color:#fff;}
-.btn:active{transform:scale(.99);}
-.btn:disabled{opacity:.5;}
-.btn.sm{padding:10px;font-size:14px;}
+  font-weight:800;letter-spacing:.01em;padding:15px;border-radius:13px;border:1px solid var(--line);
+  background:var(--surf2);color:var(--ink);cursor:pointer;margin-top:10px;
+  transition:transform .12s ease,box-shadow .15s ease,filter .15s ease;}
+.btn.pri{background:var(--grad-gold);border-color:transparent;color:var(--goldink);
+  box-shadow:0 3px 14px rgba(224,138,30,.34);}
+.btn.pri2{background:var(--grad-navy);border-color:transparent;color:#fff;
+  box-shadow:0 3px 14px rgba(46,107,184,.32);}
+.btn.ghost{background:transparent;color:var(--ink2);}
+.btn:hover:not(:disabled){filter:brightness(1.06);}
+.btn:active{transform:scale(.985);}
+.btn:disabled{opacity:.45;box-shadow:none;}
+.btn.sm{padding:11px;font-size:14px;border-radius:11px;}
 .grid2{display:grid;grid-template-columns:1fr 1fr;gap:9px;}
 .grid2 .btn{margin-top:0;}
 
-details{border:1px solid var(--line);border-radius:10px;background:var(--surf2);margin-top:12px;}
+details{border:1px solid var(--line);border-radius:13px;background:var(--surf2);margin-top:12px;}
 summary{padding:12px 14px;font-size:13.5px;font-weight:700;cursor:pointer;color:var(--ink2);}
 details .in{padding:0 14px 14px;}
 
@@ -97,7 +127,8 @@ details .in{padding:0 14px 14px;}
 .bad{border-left-color:var(--red);background:rgba(230,103,103,.09);}
 
 /* worksheet */
-.gwrap{border:1px solid var(--line);border-radius:10px;margin:9px 0;overflow:hidden;background:var(--surf2);}
+.gwrap{border:1px solid var(--line);border-radius:14px;margin:10px 0;overflow:hidden;background:var(--surf2);}
+.gwrap:has(.ghead.open){border-color:var(--gold);}
 .ghead{display:flex;align-items:center;gap:10px;width:100%;background:none;border:0;color:var(--ink);
   font:inherit;padding:13px 14px;cursor:pointer;text-align:left;}
 .ghead .chev{display:inline-block;font-size:19px;line-height:1;color:var(--ink3);
@@ -111,24 +142,24 @@ details .in{padding:0 14px 14px;}
 .srow2 .sname{flex:1;font-size:13px;color:var(--ink2);line-height:1.25;}
 .srow2 .strack{flex:0 0 78px;height:8px;background:var(--surf);border:1px solid var(--line);
   border-radius:5px;overflow:hidden;}
-.srow2 .strack i{display:block;height:100%;background:var(--blue);border-radius:0 4px 4px 0;}
+.srow2 .strack i{display:block;height:100%;background:var(--grad-gold);border-radius:0 4px 4px 0;}
 .srow2 .sval{flex:0 0 50px;text-align:right;font-size:13.5px;font-weight:800;font-variant-numeric:tabular-nums;}
 .srow2 .sval small{font-size:10px;color:var(--ink3);font-weight:600;}
 .wrow{display:flex;align-items:center;gap:10px;padding:9px 0;border-bottom:1px solid var(--line);}
 .wrow:last-child{border-bottom:0;}
 .wrow .nm{flex:1;font-size:13.5px;line-height:1.3;}
 .wrow .nm small{display:block;color:var(--ink3);font-size:11px;}
-.wrow input[type=range]{flex:0 0 108px;width:108px;accent-color:var(--blue);background:none;border:0;padding:0;}
+.wrow input[type=range]{flex:0 0 108px;width:108px;accent-color:var(--gold);background:none;border:0;padding:0;}
 .wrow .sc{flex:0 0 52px;text-align:right;font-weight:800;font-size:14px;font-variant-numeric:tabular-nums;}
 .grp{font-size:11.5px;font-weight:800;text-transform:uppercase;letter-spacing:.09em;color:var(--ink3);
   margin:18px 0 2px;display:flex;justify-content:space-between;}
-.total{position:sticky;bottom:0;background:var(--surf);border-top:2px solid var(--ink);
+.total{position:sticky;bottom:0;background:var(--surf);border-top:2px solid var(--gold);
   margin:16px -16px -16px;padding:14px 16px calc(14px + env(safe-area-inset-bottom));border-radius:0 0 var(--r) var(--r);}
 .total .big{font-size:34px;font-weight:800;letter-spacing:-.03em;line-height:1;}
 .total .band{font-size:14px;font-weight:700;margin-top:3px;}
 .bar{height:10px;background:var(--surf2);border-radius:5px;overflow:hidden;margin-top:10px;position:relative;
   pointer-events:none;user-select:none;-webkit-user-select:none;touch-action:none;}
-.bar i{display:block;height:100%;background:var(--blue);border-radius:0 5px 5px 0;}
+.bar i{display:block;height:100%;background:var(--grad-gold);border-radius:0 5px 5px 0;}
 .bar u{position:absolute;top:0;bottom:0;width:2px;background:var(--ink3);}
 
 /* output */
@@ -146,16 +177,23 @@ details .in{padding:0 14px 14px;}
 .tag{display:inline-block;font-size:10.5px;font-weight:800;padding:2px 7px;border-radius:9px;
   background:var(--surf2);border:1px solid var(--line);color:var(--ink2);margin-left:6px;vertical-align:2px;}
 .hidden{display:none!important;}
-.doc-row{display:flex;align-items:center;gap:8px;padding:11px 12px;margin-top:9px;
-  border:1px solid var(--line);border-radius:11px;background:var(--surf2);}
+.doc-row{display:flex;align-items:center;gap:8px;padding:13px 13px;margin-top:10px;
+  border:1px solid var(--line);border-radius:14px;background:var(--surf2);
+  transition:border-color .15s ease;}
+.doc-row:hover{border-color:var(--gold);}
 .doc-name{flex:1;font-size:14px;font-weight:700;line-height:1.25;}
 .doc-name small{display:block;font-size:11px;font-weight:500;color:var(--ink3);margin-top:2px;}
-.ico{flex:0 0 auto;min-width:44px;height:38px;border-radius:9px;border:1px solid var(--line);
+.ico{flex:0 0 auto;min-width:46px;height:40px;border-radius:11px;border:1px solid var(--line);
   background:var(--surf);color:var(--ink);font:inherit;font-size:11.5px;font-weight:800;
-  letter-spacing:.03em;cursor:pointer;display:flex;align-items:center;justify-content:center;}
-.ico:active{transform:scale(.96);}
-.ico-pdf{background:var(--blue);border-color:var(--blue);color:#fff;}
-.ico-png{background:var(--orange);border-color:var(--orange);color:#fff;}
+  letter-spacing:.03em;cursor:pointer;display:flex;align-items:center;justify-content:center;
+  transition:transform .12s ease,filter .15s ease;}
+.ico:hover:not(:disabled){filter:brightness(1.08);}
+.ico:active{transform:scale(.94);}
+.ico-pdf{background:var(--grad-navy);border-color:transparent;color:#fff;
+  box-shadow:0 2px 8px rgba(46,107,184,.3);}
+.ico-png{background:var(--grad-gold);border-color:transparent;color:var(--goldink);
+  box-shadow:0 2px 8px rgba(224,138,30,.3);}
+.ico-sh{background:var(--surf);color:var(--ink2);}
 .ico-sh{font-size:17px;font-weight:600;}
 .ico:disabled{opacity:.45;}
 .rv{border:1px solid var(--line);border-radius:10px;padding:12px 13px;margin-top:12px;background:var(--surf2);}
@@ -175,7 +213,7 @@ details .in{padding:0 14px 14px;}
 .rvrow span{flex:1;font-size:13px;}
 .rvrow input{width:74px;flex:0 0 74px;padding:7px 9px;font-size:15px;text-align:right;}
 .rvrow small{flex:0 0 26px;color:var(--ink3);font-size:11.5px;}
-.rc{border:1px solid var(--line);border-radius:11px;padding:13px 14px;background:var(--surf2);}
+.rc{border:1px solid var(--line);border-radius:14px;padding:14px 15px;background:var(--surf2);}
 .rc .v{font-size:17px;font-weight:800;letter-spacing:-.01em;line-height:1.2;}
 .rc .m{font-size:12px;color:var(--ink3);margin-top:2px;}
 .rc .tiles{display:grid;grid-template-columns:repeat(4,1fr);gap:7px;margin-top:11px;}
@@ -195,7 +233,7 @@ details .in{padding:0 14px 14px;}
 <header>
  <div class="in">
   <div class="brand">
-    <div class="logo">IP</div>
+    <div class="logo"><img src="icons/icon-192.png" alt="IPO Analyst"></div>
     <div>
       <h1>IPO Analyst</h1>
       <div class="sub">IPO Company Research &middot; EN / ગુજરાતી</div>
@@ -339,7 +377,7 @@ details .in{padding:0 14px 14px;}
     <h2>Score Card</h2>
     <div id="scDocs" class="hidden">
       <div class="doc-row" style="margin-top:10px;">
-        <span class="doc-name">Score Card Report<small>1 page · A4</small></span>
+        <span class="doc-name">Score Card Report<small>1&ndash;2 pages &middot; A4 &middot; all 100 marks</small></span>
         <button class="ico ico-pdf" data-doc="score" data-act="make" title="Generate PDF" aria-label="Generate PDF">PDF</button>
         <button class="ico ico-sh" data-doc="score" data-act="share" title="Share PDF" aria-label="Share PDF">&#8682;</button>
         <button class="ico ico-png" data-doc="scorepng" data-act="make" title="Generate PNG" aria-label="Generate PNG">PNG</button>
@@ -445,7 +483,7 @@ details .in{padding:0 14px 14px;}
 
 <!-- ======================= PROMPT TEMPLATE ======================= -->
 <script type="text/plain" id="tpl">
-# IPO COMPANY RESEARCH REPORT — FRAMEWORK v3.0
+# IPO COMPANY RESEARCH REPORT — FRAMEWORK v3.2
 
 You are researching an Indian IPO and returning your findings as structured data.
 Read Part 1 for who you are, Part 2 for what to research, Part 3 for what to output.
@@ -685,8 +723,10 @@ wrong? · Is there a margin of safety?
 
 # PART 2B — FINDING UPCOMING IPOs
 
-If you are asked to **list upcoming IPOs** rather than analyse one company, search for Indian IPOs
-opening in the next 10 days and return only this, as a single JSON block, nothing after it:
+If you are asked to **list upcoming IPOs** rather than analyse one company, search for every Indian IPO
+whose subscription window falls inside a 22-day band around today — that is, any IPO that
+**opened in the past 7 days** (open, closed, or awaiting listing) and any IPO that **opens within the
+next 15 days**. Return only this, as a single JSON block, nothing after it:
 
 ```json
 { "schema": "ipo-analyst/ipolist",
@@ -694,11 +734,12 @@ opening in the next 10 days and return only this, as a single JSON block, nothin
   "ipos": [ { "company": "Full legal name", "type": "Mainboard | SME",
               "open_date": "2026-08-18", "close_date": "2026-08-20",
               "price_band": "271-285", "issue_size_cr": 301.62,
-              "status": "Open | Upcoming" } ] }
+              "status": "Closed | Open | Upcoming" } ] }
 ```
 
-Sort by open date, soonest first. Include both Mainboard and SME. If nothing is scheduled, return
-an empty `ipos` array rather than inventing one.
+Sort by open date, soonest first, and include both Mainboard and SME every time. Use `Closed` for an
+issue whose window has already ended, `Open` for one taking bids today, `Upcoming` for one not yet
+open. If nothing falls in the band, return an empty `ipos` array rather than inventing one.
 
 ---
 
@@ -878,6 +919,12 @@ followed by **one fenced ```json block** and nothing at all after it.
                      "priority": "High | Medium | Low" } ],
     "failure_modes": [ { "scenario": "max 130 chars", "probability": "Low | Low-Med | Medium | High",
                          "impact": "Low | Medium | High", "warning_sign": "max 110 chars" } ],
+    "swot": {
+      "strengths":     ["max 60 chars each, exactly 3"],
+      "weaknesses":    ["max 60 chars each, exactly 3"],
+      "opportunities": ["max 60 chars each, exactly 3"],
+      "threats":       ["max 60 chars each, exactly 3"]
+    },
     "monitoring": [ { "metric": "max 28 chars", "current": "max 18 chars",
                       "desired": "max 40 chars", "warning": "max 44 chars" } ],
     "levels": [ { "action": "max 26 chars", "price": "max 14 chars", "rationale": "max 110 chars" } ],
@@ -905,18 +952,26 @@ followed by **one fenced ```json block** and nothing at all after it.
     "missing": ["max 110 chars each — anything you could not obtain"] },
 
   "gu": {
-    "_comment_for_you": "Gujarati translation of the reader-facing text only. Same keys, same order, same lengths. Numbers, names and abbreviations stay exactly as in English. If a key is absent the app falls back to English.",
+    "_comment_for_you": "Gujarati translation of every reader-facing sentence. The app already holds Gujarati for all fixed labels, section titles, table headings, pills and the disclaimer, so translate CONTENT only. Numbers, company names, promoter names, exchange names and financial abbreviations stay exactly as in English. A blank key falls back to English, so fill in every one.",
     "verdict": { "headline": "", "one_liner": "", "thesis": [] },
-    "company": { "what_it_does": "", "how_it_earns": "", "why_customers_stay": "" },
-    "financials": { "earnings_quality_note": "", "valuation_note": "", "peers_note": "",
-                    "scenarios_note": "" },
+    "company": { "what_it_does": "", "how_it_earns": "", "why_customers_stay": "",
+                 "industry_growth_note": "", "drivers": [], "moat_note": "" },
+    "financials": { "earnings_quality_note": "", "eq_flags": [], "valuation_note": "",
+                    "peers_note": "", "scenarios_note": "" },
+    "ipo": { "structure_note": "" },
     "decision": { "strengths": [ { "title": "", "evidence": "" } ],
                   "weaknesses": [ { "title": "", "evidence": "" } ],
                   "red_flags": [ { "flag": "", "evidence": "" } ],
+                  "swot": { "strengths": [], "weaknesses": [], "opportunities": [], "threats": [] },
                   "allocation_note": "", "watch_number": { "title": "", "body": "" } },
-    "people": { "dd_note": "", "governance_note": "" }
+    "people": { "dd_note": "", "governance_note": "" },
+    "score_basis": { "business_model": "તે જ કારણ, ગુજરાતીમાં" },
+    "labels": {
+      "_comment_for_you": "Gujarati for EVERY short label string you used anywhere in the payload — financial row labels, ratio labels, segment names, operating metric labels, object uses, balance-sheet item labels, moat sources, governance parameters, due-diligence checks, monitoring metrics, price-level actions, promoter roles, trend and direction words. Key = the exact English string you wrote; value = the Gujarati. The app looks each one up when it renders the Gujarati edition, so anything missing here stays in English.",
+      "Revenue from operations": "સંચાલનમાંથી આવક",
+      "Profit after tax": "કરવેરા પછીનો નફો"
+    }
   }
-}
 ```
 
 ## 49. HOW MUCH TO PUT IN EACH ARRAY
@@ -947,9 +1002,11 @@ The app lays out a **10-page report**, so quantity matters. Aim for these counts
 | `decision.red_flags` | 5–8, **never drop a CRITICAL or HIGH one** |
 | `decision.catalysts` | 4–6 |
 | `decision.failure_modes` | exactly 5 |
+| `decision.swot` | exactly 3 per quadrant — short phrases, not sentences |
 | `decision.monitoring` | exactly 6 |
 | `decision.levels` | 2–3 |
 | `score_lines` | all 28, always |
+| `gu.labels` | one entry for **every** short label string you used anywhere in the payload |
 
 ## 50. CHECK THESE BEFORE YOU SEND
 
@@ -964,6 +1021,67 @@ The app lays out a **10-page report**, so quantity matters. Aim for these counts
 Then output the banner, the single JSON block, and stop.
 
 
+## 51. GUJARATI — A FULL TRANSLATION, NOT A PARTIAL ONE
+
+Both editions render from this one payload, so the numbers can never diverge.
+
+### 51.1 The only things that stay in English
+
+- **The document title header** — the running head at the top of each page, the document name in the
+  footer, and the page numbers. Deliberate: it keeps a file recognisable when forwarded.
+- Company names, promoter names, anchor investor names, exchange and regulator names (NSE, BSE, SEBI).
+- Financial abbreviations: P/E, EV/EBITDA, ROE, ROCE, EBITDA, PAT, CFO, FCF, GMP, OFS, IPO, DRHP,
+  RHP, QIB, NII, HNI, CAGR, D/E.
+- **All numerals in Western Arabic digits** (2026, not ૨૦૨૬) — financial readers scan figures.
+
+### 51.2 What the app already translates — do not spend effort here
+
+Section titles · table column headings · IPO snapshot row labels · score block and line-item names ·
+chart labels · severity and evidence-standard pills · SWOT quadrant titles · the disclaimer · footers.
+
+### 51.3 What you must translate — every key in the `gu` block
+
+The verdict headline and one-liner · the thesis · what the business does · how it earns · why
+customers stay · the industry note · demand drivers · the moat note · the issue-structure note ·
+the earnings-quality note and its flags · the valuation note · the peers note · the scenarios note ·
+every strength and weakness title and evidence · every red-flag label and evidence · all four SWOT
+quadrants · the allocation note · the watch-number title and body · the due-diligence note · the
+governance note.
+
+**Leave nothing blank.** A blank key silently falls back to English, and a half-English Gujarati
+report is the single most common complaint about this output. Re-read the `gu` block before sending
+and confirm every string is filled.
+
+### 51.4 Terminology
+
+| English | ગુજરાતી |
+|---|---|
+| Valuation | મૂલ્યાંકન |
+| Revenue | આવક |
+| Profit / PAT | નફો |
+| Operating cash flow | સંચાલન રોકડ પ્રવાહ |
+| Margin | માર્જિન |
+| Debt | દેવું |
+| Net worth | ચોખ્ખી સંપત્તિ |
+| Promoter | પ્રમોટર |
+| Governance | કોર્પોરેટ ગવર્નન્સ |
+| Moat / competitive advantage | સ્પર્ધાત્મક લાભ |
+| Red flag | ચેતવણી સંકેત |
+| Risk / Threat | જોખમ |
+| Opportunity | તક |
+| Subscribe | અરજી કરો |
+| Avoid | ટાળો |
+| Allocation | ફાળવણી |
+| Margin of safety | સલામતી માર્જિન |
+| Inventory | ઇન્વેન્ટરી |
+| Working capital | કાર્યકારી મૂડી |
+
+### 51.5 Accuracy
+
+Translate the **analysis**, never the **numbers**. A figure labelled Derived or Estimated in English
+carries the same label in Gujarati. A translation may never upgrade an allegation to a fact, soften a
+red flag, or drop a caveat.
+
 # PART 4 — HOW THE APP RENDERS YOUR DATA
 
 You do not build these files. This section exists so you know what your data becomes, and
@@ -973,9 +1091,9 @@ therefore what to prioritise.
 
 | # | File | Pages | Built from |
 |---|---|---|---|
-| 1 | `{{COMPANY}}_IPO_Company_Research_Report_EN.pdf` | **10 max** | the whole payload |
-| 2 | `{{COMPANY}}_IPO_Executive_Summary_EN.pdf` | 4 max | verdict, financials, decision |
-| 3 | `{{COMPANY}}_IPO_Visual_Summary_EN.png` | 2 max, 450 DPI | scores, charts, red flags |
+| 1 | `<Company>_IPO_Company_Research_Report_EN.pdf` | **10 max** | the whole payload |
+| 2 | `<Company>_IPO_Executive_Summary_EN.pdf` | 4 max | verdict, financials, decision |
+| 3 | `<Company>_IPO_Investment_Summary_EN.png` | 2 max, **600 DPI** | scores, IPO basics, financials, SWOT, red flags |
 | 4–6 | the same three with `_GU` | same | the `gu` block, falling back to English |
 
 ## The 10-page report layout
@@ -999,10 +1117,17 @@ Put a number in every field you can.
 
 ## Language handling
 
-Headers, footers, page numbers, file names, table column headings for numeric data, and all
-financial abbreviations stay in **English in every language version**. Only the reader-facing
-analysis is translated. This keeps the Gujarati edition scannable and the two editions
-numerically identical.
+Only the **document title header**, page numbers, file names, proper nouns and financial
+abbreviations stay in English. Everything else — section titles, table headings, row labels, chart
+labels, pills, the disclaimer and all analysis — appears in Gujarati in the Gujarati edition. See
+Section 51 for exactly which parts you translate and which the app handles.
+
+## The Investment Summary image
+
+Two A4 pages at **600 DPI**. Page 1 carries the verdict, the four score tiles, an IPO-at-a-glance row
+with the objective and grey market premium, the score card, and a three-year financial table. Page 2
+carries the SWOT grid, scenarios, red flags and the allocation call. Type is set deliberately large
+because messaging apps recompress images — send it as a **Document**, not a Photo.
 
 ## Two things the app cannot fix for you
 
@@ -1025,10 +1150,7 @@ Every file carries this, translated where required, never shortened:
 
 ---
 
-*Framework v3.0 · IPO Company Research Report · Research tool only · Not investment advice.*
-
-
-Begin the research now for: {{COMPANY}}
+*Framework v3.2 · IPO Company Research Report · Research tool only · Not investment advice.*
 
 </script>
 
@@ -1061,7 +1183,7 @@ function goTab(name){
 
 /* ============================== segmented controls ============== */
 var SEGS = {
-  segType:    { name:'type',     opts:['Mainboard','SME'], def:'Mainboard' },
+  segType:    { name:'type',     opts:['Mainboard','SME','Both'], def:'Both' },
   segHorizon: { name:'horizon',  opts:['Both','Listing gain','3+ Years'], def:'Both' },
   segInvestor:{ name:'investor', opts:['Retail','HNI','UHNI'], def:'HNI' },
   segLang:    { name:'lang',     opts:['English','ગુજરાતી','Both'], def:'Both' },
@@ -1078,6 +1200,11 @@ Object.keys(SEGS).forEach(function(id){
 });
 
 /* ============================== prompt build ==================== */
+function typeText(t){
+  return t==='Both'
+    ? 'Mainboard or SME — determine which from the RHP/exchange listing yourself and state it'
+    : t;
+}
 function horizonText(h){
   if(h==='Both') return 'BOTH listing gain and long term (analyse both separately)';
   if(h==='Listing gain') return 'LISTING GAIN';
@@ -1110,7 +1237,7 @@ function buildPrompt(){
                 hour:'2-digit', minute:'2-digit', hour12:false }) + ' IST';
   return $('#tpl').textContent
     .split('{{COMPANY}}').join(name)
-    .split('{{TYPE}}').join(v.type)
+    .split('{{TYPE}}').join(typeText(v.type))
     .split('{{HORIZON}}').join(horizonText(v.horizon))
     .split('{{INVESTOR}}').join(v.investor)
     .split('{{LANGUAGE}}').join(langText(v.lang))
@@ -1790,7 +1917,8 @@ function finishParse(out, raw){
   return out;
 }
 
-function sumLines(l){ var t=0; Object.keys(l||{}).forEach(function(k){ t += (parseFloat(l[k])||0); }); return t; }
+function sumLines(l){ var t=0; Object.keys(l||{}).forEach(function(k){ t += (parseFloat(l[k])||0); });
+  return Math.round(t*10)/10; }
 
 /* ---------------- library ---------------- */
 function libRead(){ try{ return JSON.parse(get(LIB,'[]')) || []; }catch(e){ return []; } }
@@ -1812,7 +1940,13 @@ function showRecord(id){
   var r = libRead().filter(function(x){ return x.id===id; })[0];
   if(!r){ $('#repCard').classList.add('hidden'); return; }
   var d = r.data || {}, sc = d.scores || {};
-  var tile = function(k,v){ return '<div class="t"><b>'+(v==null||v===''?'—':v)+'</b><span>'+k+'</span></div>'; };
+  /* Scores are sums of one-decimal values, so raw floats leak 72.30000000000004. */
+  var fx = function(v){
+    if(v==null||v==='') return '—';
+    var f = parseFloat(v);
+    return isNaN(f) ? esc(str(v)) : String(Math.round(f*10)/10);
+  };
+  var tile = function(k,v){ return '<div class="t"><b>'+fx(v)+'</b><span>'+k+'</span></div>'; };
   var flags = (d.red_flags||[]).slice(0,6).map(function(f){
     var sv = String(f.severity||'LOW').toUpperCase();
     return '<div><i class="sv-'+sv+'">'+sv+'</i>'+esc(f.flag||'')+'</div>';
@@ -1954,13 +2088,16 @@ drawLibrary();
 
 /* ============================== IPO search ====================== */
 var IPO_SEARCH_PROMPT =
- 'Search the web now and list every IPO opening for subscription in India within the next 10 days, '
- + 'both Mainboard and SME. Use live sources such as NSE, BSE, Chittorgarh and IPO Ji. '
+ 'Search the web now and list every IPO in India whose subscription window falls in a 22-day band '
+ + 'around today: any IPO that opened in the past 7 days (open, closed or awaiting listing) and any '
+ + 'IPO that opens within the next 15 days. Include BOTH Mainboard and SME. '
+ + 'Use live sources such as NSE, BSE, Chittorgarh and IPO Ji. '
  + 'Reply with ONE json code block and nothing else, in exactly this shape:\n'
  + '{"schema":"ipo-analyst/ipolist","as_of":"YYYY-MM-DD","ipos":[{"company":"Full legal name",'
  + '"type":"Mainboard|SME","open_date":"YYYY-MM-DD","close_date":"YYYY-MM-DD","price_band":"271-285",'
- + '"issue_size_cr":301.62,"status":"Open|Upcoming"}]}\n'
- + 'Sort soonest first. If none are scheduled return an empty ipos array. Do not invent an IPO.';
+ + '"issue_size_cr":301.62,"status":"Closed|Open|Upcoming"}]}\n'
+ + 'Sort by open date, soonest first. If none fall in the band return an empty ipos array. '
+ + 'Do not invent an IPO.';
 
 function fillIpoList(list){
   var dl = $('#ipoList');
@@ -2013,12 +2150,12 @@ $('#btnSearch').addEventListener('click', function(){
       box.innerHTML = '<b>No API key set.</b> The upcoming-IPO question has been copied to your '
         + 'clipboard — paste it into any AI tool with web search on, then paste its JSON reply back '
         + 'here using Import Data. Add a key under Setup to have the app do this itself.';
-      window.open('https://www.google.com/search?q=upcoming+IPO+India+next+week+mainboard+SME','_blank','noopener');
+      window.open('https://www.google.com/search?q=IPO+India+open+and+upcoming+mainboard+and+SME+this+month','_blank','noopener');
     });
     return;
   }
   b.disabled = true; b.textContent = '…';
-  box.textContent = 'Searching for IPOs opening in the next 10 days…';
+  box.textContent = 'Searching IPOs from the past 7 days and the next 15 days…';
   fetch('https://api.anthropic.com/v1/messages',{
     method:'POST',
     headers:{ 'content-type':'application/json','x-api-key':key,
@@ -2035,7 +2172,7 @@ $('#btnSearch').addEventListener('click', function(){
         + esc((j.error && j.error.message) || 'Try again, or type the company name yourself.'); return; }
     var data = JSON.parse(m[0]);
     var list = (data.ipos||[]);
-    if(!list.length){ box.textContent = 'No IPOs are scheduled to open in the next 10 days.'; return; }
+    if(!list.length){ box.textContent = 'No IPOs found in the past 7 days or the next 15 days.'; return; }
     fillIpoList(list);
     box.innerHTML = '<b>'+list.length+' found</b> (as of '+esc(data.as_of||'today')
       + '). Tap the company box and pick one: ' + list.slice(0,4).map(function(x){

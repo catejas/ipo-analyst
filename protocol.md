@@ -1,4 +1,4 @@
-# IPO COMPANY RESEARCH REPORT — FRAMEWORK v3.0
+# IPO COMPANY RESEARCH REPORT — FRAMEWORK v3.2
 
 You are researching an Indian IPO and returning your findings as structured data.
 Read Part 1 for who you are, Part 2 for what to research, Part 3 for what to output.
@@ -238,8 +238,10 @@ wrong? · Is there a margin of safety?
 
 # PART 2B — FINDING UPCOMING IPOs
 
-If you are asked to **list upcoming IPOs** rather than analyse one company, search for Indian IPOs
-opening in the next 10 days and return only this, as a single JSON block, nothing after it:
+If you are asked to **list upcoming IPOs** rather than analyse one company, search for every Indian IPO
+whose subscription window falls inside a 22-day band around today — that is, any IPO that
+**opened in the past 7 days** (open, closed, or awaiting listing) and any IPO that **opens within the
+next 15 days**. Return only this, as a single JSON block, nothing after it:
 
 ```json
 { "schema": "ipo-analyst/ipolist",
@@ -247,11 +249,12 @@ opening in the next 10 days and return only this, as a single JSON block, nothin
   "ipos": [ { "company": "Full legal name", "type": "Mainboard | SME",
               "open_date": "2026-08-18", "close_date": "2026-08-20",
               "price_band": "271-285", "issue_size_cr": 301.62,
-              "status": "Open | Upcoming" } ] }
+              "status": "Closed | Open | Upcoming" } ] }
 ```
 
-Sort by open date, soonest first. Include both Mainboard and SME. If nothing is scheduled, return
-an empty `ipos` array rather than inventing one.
+Sort by open date, soonest first, and include both Mainboard and SME every time. Use `Closed` for an
+issue whose window has already ended, `Open` for one taking bids today, `Upcoming` for one not yet
+open. If nothing falls in the band, return an empty `ipos` array rather than inventing one.
 
 ---
 
@@ -477,6 +480,7 @@ followed by **one fenced ```json block** and nothing at all after it.
                   "swot": { "strengths": [], "weaknesses": [], "opportunities": [], "threats": [] },
                   "allocation_note": "", "watch_number": { "title": "", "body": "" } },
     "people": { "dd_note": "", "governance_note": "" },
+    "score_basis": { "business_model": "તે જ કારણ, ગુજરાતીમાં" },
     "labels": {
       "_comment_for_you": "Gujarati for EVERY short label string you used anywhere in the payload — financial row labels, ratio labels, segment names, operating metric labels, object uses, balance-sheet item labels, moat sources, governance parameters, due-diligence checks, monitoring metrics, price-level actions, promoter roles, trend and direction words. Key = the exact English string you wrote; value = the Gujarati. The app looks each one up when it renders the Gujarati edition, so anything missing here stays in English.",
       "Revenue from operations": "સંચાલનમાંથી આવક",

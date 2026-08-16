@@ -1,8 +1,44 @@
-# IPO Analyst — standalone web app  ·  v3.1
+# IPO Analyst — standalone web app  ·  v3.2
 
 A single-page web app that turns the institutional IPO research protocol into something you can
 run from an icon on your phone. It works on Android and iPhone/iPad, installs to the home screen,
 runs full-screen with no address bar, and works offline for everything except the AI call itself.
+
+## What changed in v3.2
+
+**New app icon.** The *Rupee Rise* mark — a gold breakout arrow over a rupee watermark on indigo,
+with an IPO wordmark — is installed at every size Android and iOS ask for, including a maskable
+version for Android's adaptive icon shapes.
+
+**Redesigned interface, navy and gold.** Pill navigation with a gold active tab, gradient primary
+buttons, rounded cards with soft shadows, gold focus rings, larger tap targets, and a light mode
+that mirrors the dark one. The header now shows the real app icon.
+
+**Search window is now the past 7 days and the next 15 days**, not the next 10. Both the framework
+and the in-app search ask for every Mainboard and SME issue in that 22-day band and label each one
+`Closed`, `Open` or `Upcoming`, so an issue that just closed but has not listed still shows up.
+
+**IPO Type gains a Both option**, and it is the default. You no longer have to know whether a
+company is coming to the mainboard or the SME platform before you can research it — the analysis
+determines it from the RHP and states it.
+
+**Score Card documents were losing half the marks.** The card was a single fixed A4 box with
+`overflow:hidden`, so everything past Valuation was clipped out of the PDF and the PNG. It is now
+adaptive: it fits on one page when it honestly can, and otherwise spills onto a second page that is
+balanced against the first. All 28 line items, all seven sections and a new *Total Score By Section*
+summary with share-of-maximum bars are always present. Nothing is clipped in either language.
+
+**Gujarati Score Card** now translates the basis notes too, through a new `gu.score_basis` block.
+
+**The prompt built into the app was a version behind the framework file** — it was missing the SWOT
+block, the `gu.labels` dictionary and the full-Gujarati rule. It is now generated from the same
+source, so copying from the app and using the framework file give identical results.
+
+**Fixed a floating-point leak** that displayed a score as `72.30000000000004`.
+
+Regression-tested: 36 automated checks plus real file generation — 10-page report PDF, 4-page
+executive summary PDF, 2-page Score Card PDF, 600 DPI Investment Summary PNGs and 384 DPI Score Card
+PNGs, in both languages. No console or page errors.
 
 ## What changed in v3.1
 
