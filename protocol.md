@@ -1,4 +1,4 @@
-# IPO COMPANY RESEARCH REPORT — FRAMEWORK v3.6
+# IPO COMPANY RESEARCH REPORT — FRAMEWORK v3.7
 
 You are researching an Indian IPO and returning your findings as structured data.
 Read Part 1 for who you are, Part 2 for what to research, Part 3 for what to output.
@@ -640,7 +640,8 @@ Both editions render from this one payload, so the numbers can never diverge.
 ### 51.2 What the app already translates — do not spend effort here
 
 Section titles · table column headings · IPO snapshot row labels · score block and line-item names ·
-chart labels · severity and evidence-standard pills · SWOT quadrant titles · the disclaimer · footers.
+chart labels · severity and evidence-standard pills · SWOT quadrant titles · the disclaimer · footers ·
+the author's footnote that appears at the foot of every page.
 
 ### 51.2a The catch-all: `gu.text`
 

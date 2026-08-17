@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
 <title>IPO Analyst — Institutional Research</title>
 <meta name="description" content="Institutional-grade Indian IPO research assistant.">
 <meta name="theme-color" content="#0B1F3B" media="(prefers-color-scheme: dark)">
@@ -41,6 +41,13 @@
   }
 }
 *{box-sizing:border-box;-webkit-tap-highlight-color:transparent;}
+/* The app is a fixed-width phone layout, so pinch-zooming only ever pushed the
+   cards off-screen and left the header half-scrolled. Locked to 1x; the
+   document preview and the generated files are unaffected. */
+html{ -webkit-text-size-adjust:100%; text-size-adjust:100%; touch-action:manipulation; }
+body{ touch-action:manipulation; overscroll-behavior-y:contain; }
+/* inputs at 16px so iOS does not zoom the page when a field is focused */
+input,select,textarea{ font-size:16px; }
 html,body{margin:0;padding:0;}
 body{
   font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
@@ -281,6 +288,20 @@ body.previewing{overflow:hidden;}
    next thing to tap — say so visually. */
 #toolRow.armed{outline:2px solid var(--gold);outline-offset:6px;border-radius:14px;}
 #toolRow.armed .btn{background:var(--surf);border-color:var(--gold);}
+
+/* Setup toggles. The in-app API run is off unless the user turns it on, so the
+   button never advertises a feature they cannot use. */
+.toggle-row{display:flex;align-items:center;gap:14px;margin-top:14px;padding:13px 14px;
+  border:1px solid var(--line);border-radius:13px;background:var(--surf2);}
+.tg-label{flex:1;margin:0;font-size:13.5px;font-weight:700;text-transform:none;letter-spacing:0;
+  color:var(--ink);line-height:1.35;}
+.tg{flex:0 0 auto;width:54px;height:32px;border-radius:999px;border:1px solid var(--line);
+  background:var(--surf);cursor:pointer;padding:0;position:relative;transition:background .18s ease;}
+.tg .tg-knob{position:absolute;top:3px;left:3px;width:24px;height:24px;border-radius:50%;
+  background:var(--ink3);transition:transform .18s ease,background .18s ease;}
+.tg[aria-checked="true"]{background:var(--grad-gold);border-color:transparent;}
+.tg[aria-checked="true"] .tg-knob{transform:translateX(22px);background:#fff;}
+.tg:focus-visible{outline:0;box-shadow:0 0 0 3px rgba(242,178,51,.35);}
 .footer{font-size:11.5px;color:var(--ink3);text-align:center;padding:24px 8px;line-height:1.6;}
 </style>
 </head>
@@ -505,7 +526,20 @@ body.previewing{overflow:hidden;}
 
   <div class="card">
     <h2>In-app AI</h2>
-    <p class="hint">Optional. Needed only for "Run analysis in-app". Your key is stored in this browser's local storage and sent directly to Anthropic — it never passes through any server of mine.</p>
+    <p class="hint">Off by default. Turn this on only if you have an Anthropic API plan and want the
+    app to run the research itself. With it off, the app works entirely through Claude, ChatGPT,
+    Gemini or Perplexity and the <b>Run analysis in-app</b> button is hidden.</p>
+
+    <div class="toggle-row">
+      <label class="tg-label" for="tgApi">Use my own API key to run analyses in-app</label>
+      <button type="button" class="tg" id="tgApi" role="switch" aria-checked="false"
+              aria-labelledby="tgApiLbl"><span class="tg-knob"></span></button>
+    </div>
+    <span id="tgApiLbl" class="hidden">Use my own API key to run analyses in-app</span>
+
+    <div id="apiFields" class="hidden">
+    <p class="note" style="margin-top:12px;">Your key is stored in this browser's local storage and
+    sent directly to Anthropic — it never passes through any server of mine.</p>
 
     <label for="key">Anthropic API key</label>
     <input type="password" id="key" placeholder="sk-ant-..." autocomplete="off" spellcheck="false">
@@ -547,17 +581,21 @@ body.previewing{overflow:hidden;}
     <div class="warn"><b>Cost warning.</b> A full run makes 12&ndash;40 web searches and produces a very long report. Expect roughly &#8377;25&ndash;&#8377;150 of API usage per analysis depending on model and depth. Set a spend limit in your Anthropic console.</div>
     <div class="warn bad"><b>Key safety.</b> Anyone with access to this device or browser profile can read the stored key. Use a dedicated key with a low monthly cap, and revoke it if the device is lost. If you would rather not store a key at all, use "Copy prompt" and paste into a chat app instead.</div>
     <p class="note">Get a key at <b>console.anthropic.com</b> &rarr; API Keys. Model names above may need updating as new versions ship; edit the value in the dropdown if a call returns "model not found".</p>
+    </div>
   </div>
 
   <div class="card">
     <h2>Data &amp; privacy</h2>
     <p class="hint">Everything lives on this device: your key, saved analyses and worksheet scores. There is no backend and no analytics.</p>
     <button class="btn sm" id="btnWipe">Erase all local data</button>
+    <p class="note">Removes the API key, every saved analysis and the reports built from it, the
+    imported IPO list, the worksheet scores and all settings. Files you have already downloaded to
+    your phone are yours and are not touched.</p>
   </div>
 
   
 <div class="footer">
-    IPO Analyst &middot; <span id="verApp">v3.6</span> &middot; framework <span id="verFw">v3.6</span> &middot; build <span id="verBuild">-</span><br>
+    IPO Analyst &middot; <span id="verApp">v3.7</span> &middot; framework <span id="verFw">v3.7</span> &middot; build <span id="verBuild">-</span><br>
     Research tool only. Not investment advice, not a recommendation, and not a substitute for a SEBI-registered adviser.
     AI output can be wrong or out of date &mdash; verify every figure against the RHP, SEBI filings and the exchanges before acting.
     Equity investment carries the risk of permanent capital loss.
@@ -568,7 +606,7 @@ body.previewing{overflow:hidden;}
 
 <!-- ======================= PROMPT TEMPLATE ======================= -->
 <script type="text/plain" id="tpl">
-# IPO COMPANY RESEARCH REPORT — FRAMEWORK v3.6
+# IPO COMPANY RESEARCH REPORT — FRAMEWORK v3.7
 
 You are researching an Indian IPO and returning your findings as structured data.
 Read Part 1 for who you are, Part 2 for what to research, Part 3 for what to output.
@@ -1210,7 +1248,8 @@ Both editions render from this one payload, so the numbers can never diverge.
 ### 51.2 What the app already translates — do not spend effort here
 
 Section titles · table column headings · IPO snapshot row labels · score block and line-item names ·
-chart labels · severity and evidence-standard pills · SWOT quadrant titles · the disclaimer · footers.
+chart labels · severity and evidence-standard pills · SWOT quadrant titles · the disclaimer · footers ·
+the author's footnote that appears at the foot of every page.
 
 ### 51.2a The catch-all: `gu.text`
 
@@ -1670,8 +1709,28 @@ $('#model').addEventListener('change', function(){ set(LS.model, this.value); })
 $('#searches').addEventListener('change', function(){ set(LS.searches, this.value); });
 
 $('#btnWipe').addEventListener('click', function(){
-  if(!confirm('Erase your API key, saved analyses, report and worksheet scores from this device?')) return;
+  if(!confirm('Erase everything this app has stored on this device — your API key, every saved '
+            + 'analysis and its generated reports, the imported IPO list, the worksheet scores and '
+            + 'all settings?\n\nThis cannot be undone.')) return;
+  /* Remove every key this app owns by PREFIX, not from a hand-kept list. The
+     list had drifted: ipo.library (the saved analyses and everything the
+     documents are built from), ipo.list, ipo.base and ipo.mode were never in
+     it, so Erase left the reports behind — and the worksheet was then refilled
+     from the surviving library on the next load, which is why the Score Card
+     appeared not to reset either. */
+  try{
+    var doomed = [];
+    for(var i = 0; i < localStorage.length; i++){
+      var k = localStorage.key(i);
+      if(k && k.indexOf('ipo.') === 0) doomed.push(k);
+    }
+    doomed.forEach(function(k){ localStorage.removeItem(k); });
+  }catch(e){}
+  /* belt and braces for anything the loop could not see */
   Object.keys(LS).forEach(function(k){ try{ localStorage.removeItem(LS[k]); }catch(e){} });
+  ['ipo.library','ipo.list','ipo.base','ipo.mode'].forEach(function(k){
+    try{ localStorage.removeItem(k); }catch(e){} });
+  try{ sessionStorage.clear(); }catch(e){}
   location.reload();
 });
 
@@ -2911,6 +2970,52 @@ $('#btnSearch').addEventListener('click', function(){
   }
 })();
 
+/* ---------- in-app AI toggle ---------- */
+function apiEnabled(){ return get('ipo.apion','0') === '1'; }
+function applyApiMode(){
+  var on = apiEnabled();
+  var tg = $('#tgApi');
+  if(tg) tg.setAttribute('aria-checked', on ? 'true' : 'false');
+  var f = $('#apiFields'); if(f) f.classList.toggle('hidden', !on);
+  var run = $('#btnRun'); if(run) run.classList.toggle('hidden', !on);
+  var sb = $('#btnSearch');
+  if(sb) sb.title = on ? 'Search for IPOs using your API key'
+                       : 'Copy the IPO-list question for an AI tool';
+}
+if($('#tgApi')){
+  $('#tgApi').addEventListener('click', function(){
+    var on = !apiEnabled();
+    set('ipo.apion', on ? '1' : '0');
+    applyApiMode();
+    if(!on){
+      /* leaving the key behind after the user has switched the feature off
+         would be storing a secret for no reason */
+      try{ localStorage.removeItem(LS.key); }catch(e){}
+      var k = $('#key'); if(k) k.value = '';
+    }
+  });
+}
+applyApiMode();
+
+/* ---------- zoom lock ----------
+   iOS Safari ignores user-scalable=no, so the gestures are cancelled directly.
+   Double-tap zoom is handled by touch-action:manipulation in CSS. */
+(function(){
+  ['gesturestart','gesturechange','gestureend'].forEach(function(ev){
+    document.addEventListener(ev, function(e){ e.preventDefault(); }, { passive:false });
+  });
+  document.addEventListener('touchmove', function(e){
+    if(e.touches && e.touches.length > 1) e.preventDefault();
+  }, { passive:false });
+  /* ctrl+wheel is the desktop pinch gesture on trackpads */
+  window.addEventListener('wheel', function(e){
+    if(e.ctrlKey) e.preventDefault();
+  }, { passive:false });
+  document.addEventListener('keydown', function(e){
+    if((e.ctrlKey || e.metaKey) && ['+','-','=','0'].indexOf(e.key) >= 0) e.preventDefault();
+  });
+})();
+
 setPending('analysis');
 
 /* ============================== install prompt ================== */
@@ -2955,7 +3060,7 @@ if('serviceWorker' in navigator){
 </script>
 <script src="vendor/html2canvas.min.js"></script>
 <script src="vendor/jspdf.umd.min.js"></script>
-<script>window.APP_BUILD="2026.08.17.6";</script>
+<script>window.APP_BUILD="2026.08.17.7";</script>
 <script src="render.js"></script>
 <script src="docs.js"></script>
 
