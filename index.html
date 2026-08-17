@@ -338,13 +338,14 @@ body.previewing{overflow:hidden;}
         <button type="button" class="pickbtn hidden" id="btnPick"
                 aria-label="Show the imported IPO list" aria-expanded="false">&#9662;</button>
       </div>
-      <button class="btn sm" id="btnSearch" style="margin:0;flex:0 0 88px;">Search</button>
+      <button class="btn sm" id="btnSearch" style="margin:0;flex:0 0 104px;">Find IPOs</button>
     </div>
     <div id="ipoPanel" class="pickpanel hidden" role="listbox" aria-label="Imported IPOs"></div>
     <div class="grid2" style="margin-top:8px;">
       <button class="btn sm" id="btnSearchImport" style="margin:0;">Import Search Data</button>
       <button class="btn sm" id="btnSearchDel" style="margin:0;">Delete Search Data</button>
     </div>
+    <button class="btn sm hidden" id="btnFindIpos">FIND IPOs INSTEAD</button>
     <div id="searchImportBox" class="hidden" style="margin-top:9px;">
       <textarea id="searchText" placeholder="Paste the AI's IPO list here — the json block with &quot;ipos&quot;…" style="min-height:120px;"></textarea>
       <div class="grid2" style="margin-top:8px;">
@@ -595,7 +596,7 @@ body.previewing{overflow:hidden;}
 
   
 <div class="footer">
-    IPO Analyst &middot; <span id="verApp">v3.7</span> &middot; framework <span id="verFw">v3.7</span> &middot; build <span id="verBuild">-</span><br>
+    IPO Analyst &middot; <span id="verApp">v3.8</span> &middot; framework <span id="verFw">v3.8</span> &middot; build <span id="verBuild">-</span><br>
     Research tool only. Not investment advice, not a recommendation, and not a substitute for a SEBI-registered adviser.
     AI output can be wrong or out of date &mdash; verify every figure against the RHP, SEBI filings and the exchanges before acting.
     Equity investment carries the risk of permanent capital loss.
@@ -606,7 +607,7 @@ body.previewing{overflow:hidden;}
 
 <!-- ======================= PROMPT TEMPLATE ======================= -->
 <script type="text/plain" id="tpl">
-# IPO COMPANY RESEARCH REPORT — FRAMEWORK v3.7
+# IPO COMPANY RESEARCH REPORT — FRAMEWORK v3.8
 
 You are researching an Indian IPO and returning your findings as structured data.
 Read Part 1 for who you are, Part 2 for what to research, Part 3 for what to output.
@@ -1589,6 +1590,26 @@ window.IPOTools = { TOOLS:TOOLS, openTool:openTool, isAndroid:isAndroid, isIOS:i
    one — instead of the search flow dumping the user on a Google results page. */
 var PENDING = 'analysis';
 
+/* The Search button used to mean one thing only: fetch the list of upcoming
+   IPOs. So after picking a company it still copied the IPO-list question, and
+   the tool received the wrong prompt entirely. It now does what its label says,
+   and the label follows the company box. When a company IS chosen, the
+   IPO-list question is still one tap away on a separate button, so refreshing
+   the list never means clearing your selection. */
+function searchIntent(){ return $('#company').value.trim() ? 'research' : 'ipolist'; }
+
+function syncSearchButton(){
+  var b = $('#btnSearch'); if(!b) return;
+  var research = searchIntent() === 'research';
+  b.textContent = research ? 'Research' : 'Find IPOs';
+  b.title = research
+    ? 'Copy the full research prompt for the company above'
+    : 'Copy the question that finds IPOs open now and coming up';
+  b.classList.toggle('pri', research);
+  var alt = $('#btnFindIpos');
+  if(alt) alt.classList.toggle('hidden', !research);
+}
+
 function setPending(kind){
   PENDING = kind;
   var lbl = $('#toolHint');
@@ -1596,9 +1617,15 @@ function setPending(kind){
     ? '<b>The IPO-list question is copied.</b> Pick a tool below — the app opens if it is '
       + 'installed, otherwise the website. Paste, send, then bring the reply back with '
       + '<b>Import Search Data</b>.'
-    : 'Copies the prompt and opens the tool &mdash; its app if you have it installed, otherwise the website. Paste and send.';
+    : (kind === 'armed'
+      ? '<b>The research prompt is copied.</b> Pick a tool below — the app opens if it is '
+        + 'installed, otherwise the website. Paste, send, then bring the reply back with '
+        + '<b>Import Data</b> on the Report tab.'
+      : 'Copies the prompt and opens the tool &mdash; its app if you have it installed, otherwise the website. Paste and send.');
   var row = $('#toolRow');
-  if(row) row.classList.toggle('armed', kind === 'search');
+  if(row) row.classList.toggle('armed', kind === 'search' || kind === 'armed');
+  /* 'armed' is only a visual state; the tool buttons still send the analysis prompt */
+  if(kind === 'armed') PENDING = 'analysis';
 }
 
 $$('[data-tool]').forEach(function(b){
@@ -2858,12 +2885,14 @@ $('#ipoPanel').addEventListener('click', function(ev){
   $('#company').value = b.dataset.pick;
   closePicker();
   refresh();
+  syncSearchButton();
   $('#company').blur();
 });
 $('#company').addEventListener('focus', function(){ if(IPO_LIST.length) openPicker(); });
 $('#company').addEventListener('input', function(){
   if(pickerOpen()) drawPicker(this.value);
   if(PENDING === 'search') setPending('analysis');
+  syncSearchButton();
 });
 document.addEventListener('click', function(ev){
   if(!pickerOpen()) return;
@@ -2909,22 +2938,49 @@ $('#btnSearchDel').addEventListener('click', function(){
   $('#searchMsg').textContent = 'Search list cleared. Saved analyses on the Report tab are untouched.';
 });
 
+/* Copy the full research prompt and point at the tool row. */
+function armResearch(box){
+  if(!requireCompany()) return;
+  copyText(buildPrompt()).then(function(){
+    saveRecent();
+    if(box) box.innerHTML = '<b>Research prompt copied for '
+      + esc($('#company').value.trim()) + '.</b> Now tap <b>Claude</b>, <b>ChatGPT</b>, '
+      + '<b>Gemini</b> or <b>Perplexity</b> below, paste and send. Bring the reply back with '
+      + '<b>Import Data</b> on the Report tab.';
+    setPending('armed');
+    var row = $('#toolRow');
+    if(row) row.scrollIntoView({ behavior:'smooth', block:'center' });
+  });
+}
+
+/* Copy the IPO-list question and point at the tool row. */
+function armIpoList(box){
+  copyText(IPO_SEARCH_PROMPT).then(function(){
+    if(box) box.innerHTML = '<b>Question copied.</b> Now tap <b>Claude</b>, <b>ChatGPT</b>, '
+      + '<b>Gemini</b> or <b>Perplexity</b> below — the app opens if you have it installed, '
+      + 'otherwise the website. Paste, send, then bring the reply back with '
+      + '<b>Import Search Data</b>. (Add an API key under Setup to have the app do this itself.)';
+    setPending('search');
+    var row = $('#toolRow');
+    if(row) row.scrollIntoView({ behavior:'smooth', block:'center' });
+  });
+}
+
+$('#btnFindIpos').addEventListener('click', function(){ armIpoList($('#searchMsg')); });
+
 $('#btnSearch').addEventListener('click', function(){
   var b = this, key = ($('#key').value || get(LS.key,'')).trim();
   var box = $('#searchMsg');
+
+  /* A company is chosen, so this button means "research it" — not "find IPOs".
+     Sending the IPO-list question here was the bug. */
+  if(searchIntent() === 'research'){ armResearch(box); return; }
+
   if(!key){
     /* Copy only. Opening Google here was never useful — the question is written
        for an AI tool, not a search engine, and the user then had to leave the
        results page anyway. The tool buttons below now carry it. */
-    copyText(IPO_SEARCH_PROMPT).then(function(){
-      box.innerHTML = '<b>Question copied.</b> Now tap <b>Claude</b>, <b>ChatGPT</b>, <b>Gemini</b> '
-        + 'or <b>Perplexity</b> below — the app opens if you have it installed, otherwise the '
-        + 'website. Paste, send, then bring the reply back with <b>Import Search Data</b>. '
-        + '(Add an API key under Setup to have the app do this itself.)';
-      setPending('search');
-      var row = $('#toolRow');
-      if(row) row.scrollIntoView({ behavior:'smooth', block:'center' });
-    });
+    armIpoList(box);
     return;
   }
   b.disabled = true; b.textContent = '…';
@@ -3017,6 +3073,7 @@ applyApiMode();
 })();
 
 setPending('analysis');
+syncSearchButton();
 
 /* ============================== install prompt ================== */
 var deferred=null;
@@ -3060,7 +3117,7 @@ if('serviceWorker' in navigator){
 </script>
 <script src="vendor/html2canvas.min.js"></script>
 <script src="vendor/jspdf.umd.min.js"></script>
-<script>window.APP_BUILD="2026.08.17.7";</script>
+<script>window.APP_BUILD="2026.08.17.8";</script>
 <script src="render.js"></script>
 <script src="docs.js"></script>
 

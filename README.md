@@ -1,8 +1,22 @@
-# IPO Analyst — standalone web app  ·  v3.7  ·  build 2026.08.17.7
+# IPO Analyst — standalone web app  ·  v3.8  ·  build 2026.08.17.8
 
 A single-page web app that turns the institutional IPO research protocol into something you can
 run from an icon on your phone. It works on Android and iPhone/iPad, installs to the home screen,
 runs full-screen with no address bar, and works offline for everything except the AI call itself.
+
+## What changed in v3.8
+
+**Search sent the wrong prompt once a company was chosen.** The Search button had exactly one
+meaning — fetch the list of upcoming IPOs — so after picking a company it still copied the IPO-list
+question, and the AI tool received that instead of the research framework. The button now does what
+its label says, and the label follows the company box: **Find IPOs** while the box is empty,
+**Research** once a company is in it. A separate **Find IPOs instead** button appears when a company
+is selected, so the list can still be refreshed without clearing your choice.
+
+**Logo:** the magnifier is now a small mark in the top-right corner over the candles rather than the
+centrepiece, IPO is much larger and heavier with a dark outline so it lifts off the chart, and the
+candles are thicker and drawn as an ECG-style volatility trace — quiet baseline, sharp spike, deep
+trough, recovery, a taller second spike, then a settle.
 
 ## What changed in v3.7
 
