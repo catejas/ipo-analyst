@@ -277,6 +277,10 @@ details .in{padding:0 14px 14px;}
 body.previewing{overflow:hidden;}
 @media print{ body.previewing > *:not(#preview){display:none!important;}
   #preview{position:static;} #preview .pvbar{display:none!important;} }
+/* When the Search button has armed the IPO-list question, the tool row is the
+   next thing to tap — say so visually. */
+#toolRow.armed{outline:2px solid var(--gold);outline-offset:6px;border-radius:14px;}
+#toolRow.armed .btn{background:var(--surf);border-color:var(--gold);}
 .footer{font-size:11.5px;color:var(--ink3);text-align:center;padding:24px 8px;line-height:1.6;}
 </style>
 </head>
@@ -345,8 +349,9 @@ body.previewing{overflow:hidden;}
     <button class="btn pri" id="btnRun">RUN ANALYSIS IN APP</button>
 
     <label style="margin-top:18px;">Select AI tool</label>
-    <p class="note" style="margin-top:0;margin-bottom:8px;">Copies the prompt and opens the tool. Paste and send.</p>
-    <div class="grid2">
+    <p class="note" id="toolHint" style="margin-top:0;margin-bottom:8px;">Copies the prompt and opens
+    the tool &mdash; its app if you have it installed, otherwise the website. Paste and send.</p>
+    <div class="grid2" id="toolRow">
       <button class="btn sm" data-tool="claude">Claude</button>
       <button class="btn sm" data-tool="chatgpt">ChatGPT</button>
       <button class="btn sm" data-tool="gemini">Gemini</button>
@@ -552,7 +557,7 @@ body.previewing{overflow:hidden;}
 
   
 <div class="footer">
-    IPO Analyst &middot; <span id="verApp">v3.5</span> &middot; framework <span id="verFw">v3.5</span> &middot; build <span id="verBuild">-</span><br>
+    IPO Analyst &middot; <span id="verApp">v3.6</span> &middot; framework <span id="verFw">v3.6</span> &middot; build <span id="verBuild">-</span><br>
     Research tool only. Not investment advice, not a recommendation, and not a substitute for a SEBI-registered adviser.
     AI output can be wrong or out of date &mdash; verify every figure against the RHP, SEBI filings and the exchanges before acting.
     Equity investment carries the risk of permanent capital loss.
@@ -563,7 +568,7 @@ body.previewing{overflow:hidden;}
 
 <!-- ======================= PROMPT TEMPLATE ======================= -->
 <script type="text/plain" id="tpl">
-# IPO COMPANY RESEARCH REPORT — FRAMEWORK v3.5
+# IPO COMPANY RESEARCH REPORT — FRAMEWORK v3.6
 
 You are researching an Indian IPO and returning your findings as structured data.
 Read Part 1 for who you are, Part 2 for what to research, Part 3 for what to output.
@@ -1468,16 +1473,111 @@ function flash(btn, msg){
   var old = btn.textContent; btn.textContent = msg;
   setTimeout(function(){ btn.textContent = old; }, 1600);
 }
+/* Each tool carries what is needed to reach its INSTALLED app first:
+     pkg    — Android package name, used in an intent:// URL
+     scheme — iOS custom scheme, tried before the website
+     url    — the website, used as the fallback everywhere
+   A browser cannot ask the phone which apps are installed, so this is done the
+   only way that actually works: hand the OS a link that resolves to the app when
+   it is there, and carry the website as the declared fallback when it is not. */
 var TOOLS = {
-  claude:     { url:'https://claude.ai/new',        name:'Claude',     search:'web search is on by default' },
-  chatgpt:    { url:'https://chatgpt.com/',         name:'ChatGPT',    search:'turn on Search in the composer' },
-  gemini:     { url:'https://gemini.google.com/app',name:'Gemini',     search:'use a model with Google Search grounding' },
-  perplexity: { url:'https://www.perplexity.ai/',   name:'Perplexity', search:'search is always on' }
+  claude:     { url:'https://claude.ai/new', host:'claude.ai', path:'/new',
+                pkg:'com.anthropic.claude', scheme:'claude://',
+                name:'Claude',     search:'web search is on by default' },
+  chatgpt:    { url:'https://chatgpt.com/', host:'chatgpt.com', path:'/',
+                pkg:'com.openai.chatgpt', scheme:'chatgpt://',
+                name:'ChatGPT',    search:'turn on Search in the composer' },
+  gemini:     { url:'https://gemini.google.com/app', host:'gemini.google.com', path:'/app',
+                pkg:'com.google.android.apps.bard', scheme:'googlegemini://',
+                name:'Gemini',     search:'use a model with Google Search grounding' },
+  perplexity: { url:'https://www.perplexity.ai/', host:'www.perplexity.ai', path:'/',
+                pkg:'ai.perplexity.app.android', scheme:'perplexity://',
+                name:'Perplexity', search:'search is always on' }
 };
+
+function isAndroid(){ return /Android/i.test(navigator.userAgent); }
+function isIOS(){
+  return /iPad|iPhone|iPod/.test(navigator.userAgent)
+      || (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
+}
+
+/* Open the tool's app if the phone has it, otherwise its website.
+
+   Android: an intent:// URL with S.browser_fallback_url — Chrome hands it to the
+   app when the package is installed and loads the fallback URL when it is not.
+   That is a single hop with no guessing.
+
+   iOS: the https address is a universal link, so iOS opens the app when it is
+   installed and Safari when it is not. We try the custom scheme first and fall
+   back on a timer, because a universal link opened from an installed PWA does
+   not always hand off.
+
+   Desktop: just open the site. */
+/* One indirection for every navigation the launcher performs, so the launch
+   logic can be exercised in a test without the browser actually leaving. */
+var GO = function(u){ window.location.href = u; };
+
+function openTool(t){
+  if(isAndroid() && t.pkg){
+    var intent = 'intent://' + t.host + t.path + '#Intent;scheme=https;package=' + t.pkg
+               + ';S.browser_fallback_url=' + encodeURIComponent(t.url) + ';end';
+    GO(intent);
+    return;
+  }
+  if(isIOS() && t.scheme){
+    var left = false;
+    var away = function(){ left = true; };
+    window.addEventListener('pagehide', away, { once:true });
+    document.addEventListener('visibilitychange', function vc(){
+      if(document.hidden){ left = true; document.removeEventListener('visibilitychange', vc); }
+    });
+    var t0 = Date.now();
+    GO(t.scheme);
+    setTimeout(function(){
+      window.removeEventListener('pagehide', away);
+      /* Still here after the timeout, and no time jump from being suspended:
+         the app is not installed, so use the website. */
+      if(!left && Date.now() - t0 < 2200) GO(t.url);
+    }, 1400);
+    return;
+  }
+  window.open(t.url, '_blank', 'noopener');
+}
+window.IPOTools = { TOOLS:TOOLS, openTool:openTool, isAndroid:isAndroid, isIOS:isIOS,
+                    setGo:function(f){ GO = f; } };
+/* Which prompt the tool buttons should carry. Set to 'search' by the Search
+   button so the same four buttons serve both jobs — finding IPOs and analysing
+   one — instead of the search flow dumping the user on a Google results page. */
+var PENDING = 'analysis';
+
+function setPending(kind){
+  PENDING = kind;
+  var lbl = $('#toolHint');
+  if(lbl) lbl.innerHTML = kind === 'search'
+    ? '<b>The IPO-list question is copied.</b> Pick a tool below — the app opens if it is '
+      + 'installed, otherwise the website. Paste, send, then bring the reply back with '
+      + '<b>Import Search Data</b>.'
+    : 'Copies the prompt and opens the tool &mdash; its app if you have it installed, otherwise the website. Paste and send.';
+  var row = $('#toolRow');
+  if(row) row.classList.toggle('armed', kind === 'search');
+}
+
 $$('[data-tool]').forEach(function(b){
   b.addEventListener('click', function(){
-    if(!requireCompany()) return;
     var t = TOOLS[b.dataset.tool];
+
+    /* the IPO-list question needs no company name */
+    if(PENDING === 'search'){
+      copyText(IPO_SEARCH_PROMPT).then(function(){
+        b.textContent = 'Copied — opening…';
+        setTimeout(function(){ b.textContent = t.name; }, 2500);
+        openTool(t);
+        setPending('analysis');
+      });
+      return;
+    }
+
+    if(!requireCompany()) return;
     var payload = buildPrompt(), mode = get('ipo.mode','full'), base = get('ipo.base','');
     if(mode === 'link'){
       if(!base){ alert('Set your hosted address under Setup first, or switch back to full text.');
@@ -1493,7 +1593,7 @@ $$('[data-tool]').forEach(function(b){
       saveRecent();
       b.textContent = 'Copied — opening…';
       setTimeout(function(){ b.textContent = t.name; }, 2500);
-      window.open(t.url, '_blank', 'noopener');
+      openTool(t);
     });
   });
 });
@@ -2702,7 +2802,10 @@ $('#ipoPanel').addEventListener('click', function(ev){
   $('#company').blur();
 });
 $('#company').addEventListener('focus', function(){ if(IPO_LIST.length) openPicker(); });
-$('#company').addEventListener('input', function(){ if(pickerOpen()) drawPicker(this.value); });
+$('#company').addEventListener('input', function(){
+  if(pickerOpen()) drawPicker(this.value);
+  if(PENDING === 'search') setPending('analysis');
+});
 document.addEventListener('click', function(ev){
   if(!pickerOpen()) return;
   if(ev.target.closest && (ev.target.closest('#ipoPanel') || ev.target.closest('.pickwrap'))) return;
@@ -2751,11 +2854,17 @@ $('#btnSearch').addEventListener('click', function(){
   var b = this, key = ($('#key').value || get(LS.key,'')).trim();
   var box = $('#searchMsg');
   if(!key){
+    /* Copy only. Opening Google here was never useful — the question is written
+       for an AI tool, not a search engine, and the user then had to leave the
+       results page anyway. The tool buttons below now carry it. */
     copyText(IPO_SEARCH_PROMPT).then(function(){
-      box.innerHTML = '<b>No API key set.</b> The upcoming-IPO question has been copied to your '
-        + 'clipboard — paste it into any AI tool with web search on, then paste its JSON reply back '
-        + 'here using Import Data. Add a key under Setup to have the app do this itself.';
-      window.open('https://www.google.com/search?q=IPO+India+open+and+upcoming+mainboard+and+SME+this+month','_blank','noopener');
+      box.innerHTML = '<b>Question copied.</b> Now tap <b>Claude</b>, <b>ChatGPT</b>, <b>Gemini</b> '
+        + 'or <b>Perplexity</b> below — the app opens if you have it installed, otherwise the '
+        + 'website. Paste, send, then bring the reply back with <b>Import Search Data</b>. '
+        + '(Add an API key under Setup to have the app do this itself.)';
+      setPending('search');
+      var row = $('#toolRow');
+      if(row) row.scrollIntoView({ behavior:'smooth', block:'center' });
     });
     return;
   }
@@ -2802,6 +2911,8 @@ $('#btnSearch').addEventListener('click', function(){
   }
 })();
 
+setPending('analysis');
+
 /* ============================== install prompt ================== */
 var deferred=null;
 window.addEventListener('beforeinstallprompt', function(e){
@@ -2844,7 +2955,7 @@ if('serviceWorker' in navigator){
 </script>
 <script src="vendor/html2canvas.min.js"></script>
 <script src="vendor/jspdf.umd.min.js"></script>
-<script>window.APP_BUILD="2026.08.17.5";</script>
+<script>window.APP_BUILD="2026.08.17.6";</script>
 <script src="render.js"></script>
 <script src="docs.js"></script>
 

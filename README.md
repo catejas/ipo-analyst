@@ -1,8 +1,29 @@
-# IPO Analyst — standalone web app  ·  v3.5  ·  build 2026.08.17.5
+# IPO Analyst — standalone web app  ·  v3.6  ·  build 2026.08.17.6
 
 A single-page web app that turns the institutional IPO research protocol into something you can
 run from an icon on your phone. It works on Android and iPhone/iPad, installs to the home screen,
 runs full-screen with no address bar, and works offline for everything except the AI call itself.
+
+## What changed in v3.6
+
+**Search no longer dumps you on a Google results page.** Tapping Search now copies the IPO-list
+question and stops there — it highlights the four AI tool buttons and tells you to pick one. Google
+was never useful for this: the question is written for an AI tool, not a search engine.
+
+**The tool buttons open the installed app first.** A web page cannot ask a phone which apps it has,
+so this is done the way that actually works rather than by guessing. On Android the app is reached
+through an `intent://` URL carrying the package name and the website as a declared fallback — Chrome
+hands it to Claude, ChatGPT, Gemini or Perplexity when that app is installed and loads the site when
+it is not, in a single hop. On iOS the app's custom scheme is tried first with a timed fallback to
+the website, since a universal link opened from an installed PWA does not always hand off. On
+desktop it simply opens the site. Verified for all four tools on all three platforms.
+
+**The same four buttons now serve both jobs.** They carry the IPO-list question after you tap
+Search, and the full analysis prompt otherwise — so finding an IPO and analysing one follow the same
+path instead of the search flow being a dead end. Typing a company name switches back automatically.
+
+**Logo:** the candlestick background is now an N — climb, decline, climb again — three mountain
+slopes instead of a single rising run.
 
 ## What changed in v3.5
 
