@@ -1,8 +1,78 @@
-# IPO Analyst — standalone web app  ·  v3.3  ·  build 2026.08.16.2
+# IPO Analyst — standalone web app  ·  v3.5  ·  build 2026.08.17.5
 
 A single-page web app that turns the institutional IPO research protocol into something you can
 run from an icon on your phone. It works on Android and iPhone/iPad, installs to the home screen,
 runs full-screen with no address bar, and works offline for everything except the AI call itself.
+
+## What changed in v3.5
+
+**The Gujarati Score Card was half English, and there were three separate reasons.**
+
+*The AI was sending one basis note instead of 28.* The framework's Gujarati skeleton showed
+`gu.score_basis` with a single example key, so models filled in one and moved on — and the Basis
+column runs down the entire Score Card. The skeleton now lists all 28 keys explicitly, the counts
+table demands all 28, and the pre-send checklist makes the model count them. A real model run went
+from 1 of 28 to 28 of 28.
+
+*Words the app itself prints were never translatable by the AI at all.* Score bands, severity pills,
+evidence standards, recommendation verdicts, trend and assessment words come from the app, not the
+payload. They now go through a Gujarati vocabulary built into the app, so they are right regardless
+of what the model sends. The Gujarati disclaimer no longer contains "Official, Derived or Estimated"
+either.
+
+*The `gu` block was a partial mirror of the payload.* Note fields on moat sources, operating
+metrics, balance-sheet lines, ratios, governance parameters, due-diligence checks, monitoring
+metrics and objects of the issue had no Gujarati keys, so they printed in English. Block 2 gains
+`gu.text` — a flat dictionary from the exact English string to its Gujarati — described as the final
+sweep of Block 1. The renderer looks up every string it draws there.
+
+Measured on a real model run, English fragments in the Gujarati Score Card fell from 97 to 11, and
+the 11 that remain are the document title header, the footer and the company name, which stay
+English by design along with PAT, EBITDA, ROE, ROCE, GMP, GST and the other abbreviations.
+
+**Figures can no longer diverge between the two editions.** The app compares the numbers in each
+translated string against its English source and discards a translation that has lost one, keeping
+the English for that line — two editions disagreeing on a number is worse than one English sentence.
+While testing this, models turned out to write Gujarati numerals (૯૨ rather than 92), which your
+spec forbids and which also broke the parity check; the app now converts them to Western digits on
+the way out rather than hoping the model complies.
+
+**New app icon.** A full-bleed candlestick chart — brighter green and red, wider bodies, a
+decisively rising series — behind a centred gold magnifying lens with the rupee inside, and IPO in
+gold beneath.
+
+## What changed in v3.4
+
+**Score Card page 2 was rendering Gujarati on top of itself.** The cause was CSS `zoom`: when a page
+overflowed, the content was scaled with `zoom`, and html2canvas — which rasterises the PDF and the
+PNG — measures a zoomed box with the wrong glyph advance widths. Latin text survived it; Gujarati
+collapsed into overlapping words. The Score Card now paginates into as many pages as the content
+genuinely needs (two or three) instead of squeezing, and the last-resort scale left in place for a
+single oversized block uses `transform: scale()`, which html2canvas reproduces exactly. The same
+change was applied to the Investment Summary. A test now fails the build if any rendered document
+contains a CSS `zoom` at all.
+
+**The company picker is a real dropdown.** It was a `<datalist>`, which phones render as a one-line
+strip above the keyboard and — the worse half — will not reopen once a value has been chosen, so a
+mis-tap could only be undone by killing the app. It is now a vertical list you can reopen any time
+from the ▾ button: each row shows the company, an OPEN / CLOSED / UPCOMING chip, the dates and the
+price band. Opening always shows the full list; typing filters it; tapping outside or pressing
+Escape closes it.
+
+**One paste, both languages.** The framework now asks for both data blocks — English and Gujarati —
+in the same reply, and the importer reads every block it finds in a single paste and merges them.
+Nothing to remember, no second prompt. They stay two blocks rather than one object because a single
+combined object is long enough that models stop mid-JSON, and Add To This Analysis remains for the
+occasions when a tool still runs short.
+
+**New: All Reports.** One row at the top of the Documents list with its own ENG / GUJ switch, a PDF
+button and a share button. One tap builds the research report, the executive summary, the investment
+summary and the score card in the chosen language and saves or shares them together.
+
+**A generated report no longer traps you.** The PDF preview used to open in a new window, which
+inside an installed PWA has no browser chrome and no back gesture — the only way out was to close
+the app. Documents now preview in a full-screen panel with a **Back** button and a **Save as PDF**
+button, and the phone's own back gesture closes the preview rather than the app.
 
 ## Version display and deployment (v3.3, build 2026.08.16.2)
 

@@ -23,7 +23,16 @@ function S(v){
   }
   return '';
 }
-function e(s){ return S(s).replace(/[&<>"]/g,function(c){
+/* Gujarati digits (૦-૯) back to Western Arabic. Section 51.1 requires figures
+   in 2026 form, not ૨૦૨૬, because financial readers scan numbers — and a model
+   that writes ૯૨ instead of 92 also breaks the figure-parity check, which would
+   silently cost it the whole translation. Enforced here rather than hoped for. */
+var GU_DIGITS = /[\u0AE6-\u0AEF]/g;
+function westernDigits(t){
+  if(!t || !GU_DIGITS.test(t)) return t;
+  return t.replace(GU_DIGITS, function(c){ return String(c.charCodeAt(0) - 0x0AE6); });
+}
+function e(s){ return westernDigits(S(s)).replace(/[&<>"]/g,function(c){
   return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]; }); }
 function n(v, dp){ if(v==null||v===''||isNaN(v)) return '—';
   return Number(v).toLocaleString('en-IN',{minimumFractionDigits:dp||0,maximumFractionDigits:dp||0}); }
@@ -34,20 +43,134 @@ function pick(p, lang, path, fallback){
   if(lang === 'gu'){
     var cur = p.gu, ok = true;
     path.split('.').forEach(function(k){ if(!ok||cur==null){ ok=false; return; } cur = cur[k]; });
-    if(ok && cur != null && cur !== '' && !(Array.isArray(cur) && !cur.length)) return cur;
+    if(ok && cur != null && cur !== '' && !(Array.isArray(cur) && !cur.length)){
+      /* same rule as tr(): a translation that lost a figure is not used */
+      if(typeof cur === 'string' && typeof fallback === 'string') return safeTr(fallback, cur);
+      if(Array.isArray(cur) && Array.isArray(fallback)){
+        return cur.map(function(x, i){
+          var en = fallback[i];
+          if(typeof x === 'string' && typeof en === 'string') return safeTr(en, x);
+          return x;
+        });
+      }
+      return cur;
+    }
   }
   return fallback;
 }
 /* Any label the payload supplies can be translated through gu.labels, so the
    Gujarati edition is complete rather than half-English. */
+
+/* ---------------------------------------------------------------------------
+   Fixed vocabulary, translated by the app itself.
+
+   These words come from the APP, not from the payload — score bands, severity
+   pills, evidence standards, recommendation verdicts, trend and assessment
+   words. Asking the model to translate them through gu.labels was unreliable,
+   and a miss left English scattered through a Gujarati document. The app owns
+   them now, so they are right every time regardless of what the model sends.
+   -------------------------------------------------------------------------- */
+var VOCAB_GU = {
+  /* score bands */
+  'Exceptional':'અસાધારણ', 'Strong':'મજબૂત', 'Attractive':'આકર્ષક',
+  'Selective':'પસંદગીયુક્ત', 'Weak':'નબળું', 'Avoid':'ટાળો',
+  /* recommendations */
+  'STRONG SUBSCRIBE':'મજબૂત સબસ્ક્રાઇબ', 'SUBSCRIBE':'સબસ્ક્રાઇબ', 'APPLY':'અરજી કરો',
+  'SELECTIVE':'પસંદગીયુક્ત', 'WAIT FOR BETTER VALUATION':'સારા મૂલ્યાંકનની રાહ જુઓ',
+  'LISTING GAIN ONLY':'માત્ર લિસ્ટિંગ ગેઇન', 'AVOID':'ટાળો', 'NEUTRAL':'તટસ્થ',
+  /* severity */
+  'CRITICAL':'ગંભીર', 'HIGH':'ઊંચું', 'MEDIUM':'મધ્યમ', 'LOW':'નીચું',
+  /* evidence standard */
+  'Official':'સત્તાવાર', 'Derived':'વ્યુત્પન્ન', 'Estimated':'અંદાજિત',
+  'Unverified':'ચકાસાયેલ નથી', 'Verified':'ચકાસાયેલ',
+  /* trend and direction */
+  'Improving':'સુધરી રહ્યું', 'Stable':'સ્થિર', 'Deteriorating':'બગડી રહ્યું',
+  'Declining':'ઘટી રહ્યું', 'Rising':'વધી રહ્યું', 'Flat':'સપાટ', 'Mixed':'મિશ્ર',
+  'Volatile':'અસ્થિર', 'Up':'ઉપર', 'Down':'નીચે', 'Turned positive':'હકારાત્મક બન્યું',
+  'Positive':'હકારાત્મક', 'Negative':'નકારાત્મક',
+  /* assessments */
+  'Strong positive':'મજબૂત હકારાત્મક', 'Adequate':'પર્યાપ્ત', 'Inadequate':'અપર્યાપ્ત',
+  'Good':'સારું', 'Poor':'નબળું', 'Clear':'સ્પષ્ટ', 'Clean':'સ્વચ્છ',
+  'Concern':'ચિંતા', 'Moderate':'મધ્યમ', 'Minor':'નાનું', 'Major':'મોટું',
+  'Yes':'હા', 'No':'ના', 'None':'કોઈ નહીં', 'Not disclosed':'જાહેર કરેલ નથી',
+  'Not applicable':'લાગુ પડતું નથી', 'Pending':'બાકી', 'Ongoing':'ચાલુ',
+  'Real':'વાસ્તવિક', 'Allegation':'આરોપ', 'Disclosed':'જાહેર કરેલ',
+  'Partial':'આંશિક', 'Full':'સંપૂર્ણ', 'Limited':'મર્યાદિત', 'Extensive':'વ્યાપક',
+  'Above':'ઉપર', 'Below':'નીચે', 'In line':'સમાન', 'At par':'સમકક્ષ',
+  'Not meaningful':'અર્થપૂર્ણ નથી', 'Not available':'ઉપલબ્ધ નથી', 'Not comparable':'સરખાવી શકાય નહીં',
+  'Moderate positive':'મધ્યમ હકારાત્મક', 'Moderate negative':'મધ્યમ નકારાત્મક',
+  'Strong negative':'મજબૂત નકારાત્મક', 'Neutral':'તટસ્થ', 'Cautious':'સાવચેત',
+  'Expensive':'મોંઘું', 'Cheap':'સસ્તું', 'Fair':'વાજબી', 'Rich':'ઊંચું',
+  'Premium':'પ્રીમિયમ', 'Discount':'ડિસ્કાઉન્ટ', 'Sector':'ક્ષેત્ર',
+  /* scenario cases */
+  'Bear':'મંદી', 'Base':'આધાર', 'Bull':'તેજી',
+  /* cadence */
+  'Quarterly':'ત્રિમાસિક', 'Monthly':'માસિક', 'Annual':'વાર્ષિક', 'Weekly':'સાપ્તાહિક',
+  'Half-yearly':'અર્ધવાર્ષિક', 'Daily':'દૈનિક',
+  /* investor and issue words that are not abbreviations */
+  'Retail':'રિટેલ', 'Mainboard':'મેઇનબોર્ડ', 'Fresh issue':'નવો ઇશ્યૂ',
+  'Listing':'લિસ્ટિંગ', 'Anchor':'એન્કર', 'Unofficial':'બિનસત્તાવાર'
+};
+
+/* Financial shorthand that stays English by design, per section 51.1. */
+var KEEP_EN = ['PAT','EBITDA','EBIT','ROE','ROCE','ROA','CFO','FCF','GMP','OFS','IPO','DRHP','RHP',
+  'QIB','NII','HNI','UHNI','CAGR','PEG','SEBI','NSE','BSE','GST','MF','FPI','SME','EV','P/E','P/B',
+  'D/E','YoY','NAV','AUM','WC','TTM'];
+
+/* Look a string up in the app vocabulary, case-insensitively, and handle
+   "Improving, still negative" style compounds by translating the head word. */
+function vocab(t){
+  if(!t) return null;
+  if(VOCAB_GU[t]) return VOCAB_GU[t];
+  var keys = Object.keys(VOCAB_GU);
+  for(var i = 0; i < keys.length; i++){
+    if(keys[i].toLowerCase() === t.toLowerCase()) return VOCAB_GU[keys[i]];
+  }
+  return null;
+}
+
+
+/* A translation that loses a figure is worse than no translation: the two
+   editions would then disagree on the numbers, which is the one thing they can
+   never do. If a Gujarati string drops a number its English source carried, the
+   English is kept for that string. */
+function numsOf(t){
+  return (westernDigits(String(t)).match(/\d[\d,]*\.?\d*/g) || [])
+    .map(function(x){ return x.replace(/,/g,'').replace(/\.$/,''); })
+    .filter(function(x){ return x.length > 1; });
+}
+function keepsFigures(en, gu){
+  var a = numsOf(en);
+  if(!a.length) return true;
+  var b = numsOf(gu);
+  for(var i = 0; i < a.length; i++) if(b.indexOf(a[i]) < 0) return false;
+  return true;
+}
+function safeTr(en, gu){ return keepsFigures(en, gu) ? gu : en; }
+
 function tr(p, lang, v){
   var t = S(v);
   if(lang !== 'gu' || !t) return t;
   var d = (p.gu && p.gu.labels) || {};
-  if(d[t]) return S(d[t]);
+  if(d[t]) return safeTr(t, S(d[t]));
   var k = t.trim();
-  if(d[k]) return S(d[k]);
+  if(d[k]) return safeTr(t, S(d[k]));
+  var tx = (p.gu && p.gu.text) || {};
+  if(tx[t]) return safeTr(t, S(tx[t]));
+  if(tx[k]) return safeTr(t, S(tx[k]));
+  var vg = vocab(k);
+  if(vg) return vg;
+  /* "Improving, still negative" -> translate the head, keep the qualifier */
+  var m = k.match(/^([A-Za-z][A-Za-z \-]*?)(,|\u2014|\u2013| - )([\s\S]+)$/);
+  if(m){ var head = vocab(m[1].trim()); if(head) return head + m[2] + m[3]; }
   return t;
+}
+
+/* Words the app itself prints — bands, severities, evidence standards — go
+   through here so they never depend on what the model chose to send. */
+function A(lang, t){
+  if(lang !== 'gu') return S(t);
+  return vocab(S(t)) || S(t);
 }
 function toneClass(t){ return t==='good'?'tn-good':t==='bad'?'tn-bad':t==='warn'?'tn-warn':''; }
 function sevClass(s){ s=S(s).toUpperCase();
@@ -200,13 +323,15 @@ var T = {
   scorecard:      ['Score Card','સ્કોર કાર્ડ'],
   block:          ['Block','વિભાગ'],
   line_item:      ['Line item','પેટા બાબત'],
+  india:          ['India','ભારત'],
+  score_card:     ['Score Card','સ્કોર કાર્ડ'],
   total_score:    ['Total Score By Section','વિભાગવાર કુલ ગુણ'],
   section:        ['Section','વિભાગ'],
   band:           ['Share Of Maximum','મહત્તમનો હિસ્સો'],
   fundamentals:   ['Fundamentals','મૂળભૂત'],
   market_signals: ['Market signals','બજાર સંકેત'],
   disclaimer:     ['Independent research. Not investment advice, not a personal recommendation, and not an offer or solicitation. Figures are labelled Official, Derived or Estimated. Grey market premium data is unofficial and unregulated. Equity investment carries the risk of permanent capital loss.',
-                   'સ્વતંત્ર સંશોધન. આ રોકાણ સલાહ નથી, વ્યક્તિગત ભલામણ નથી, અને ખરીદ-વેચાણની ઓફર નથી. આંકડા Official, Derived કે Estimated તરીકે લેબલ કરેલા છે. GMP માહિતી અનધિકૃત અને અનિયંત્રિત છે. ઇક્વિટી રોકાણમાં કાયમી મૂડી નુકસાનનું જોખમ છે.'],
+                   'સ્વતંત્ર સંશોધન. આ રોકાણ સલાહ નથી, વ્યક્તિગત ભલામણ નથી, અને ખરીદ-વેચાણની ઓફર નથી. આંકડા સત્તાવાર, વ્યુત્પન્ન કે અંદાજિત તરીકે લેબલ કરેલા છે. GMP માહિતી અનધિકૃત અને અનિયંત્રિત છે. ઇક્વિટી રોકાણમાં કાયમી મૂડી નુકસાનનું જોખમ છે.'],
   research_only:  ['Research only, not investment advice','માત્ર સંશોધન, રોકાણ સલાહ નથી']
 };
 function L(lang, k){ var r = T[k]; return r ? (lang==='gu' ? r[1] : r[0]) : k; }
@@ -408,9 +533,9 @@ function cover(p, lang, docTitle, pages){
   ];
   var inner =
     '<div style="height:7mm"></div>'
-    + '<div class="eyebrow en">'+e(docTitle)+' &nbsp;·&nbsp; '+e(m.ipo_type||'Mainboard')+' &nbsp;·&nbsp; India</div>'
+    + '<div class="eyebrow en">'+e(docTitle)+' &nbsp;·&nbsp; '+e(A(lang,m.ipo_type||'Mainboard'))+' &nbsp;·&nbsp; '+e(L(lang,'india'))+'</div>'
     + '<h1 class="en" style="margin-top:2mm">'+e(m.company||'')+'</h1>'
-    + '<div class="mut en" style="margin-top:1mm;font-size:8pt">'+e(m.sector||'')
+    + '<div class="mut" style="margin-top:1mm;font-size:8pt">'+e(tr(p,lang,m.sector||''))
       + (m.sector?' &nbsp;·&nbsp; ':'')+e(m.analysis_datetime||'')+'</div>'
     + '<div style="height:2.5mm;background:var(--teal);width:26mm;border-radius:1mm;margin:4mm 0 5mm"></div>'
     + '<div class="vb"><div class="h">'+e(L(lang,'verdict_h'))+'</div><div class="c">'
@@ -420,7 +545,7 @@ function cover(p, lang, docTitle, pages){
     + '<div class="tiles" style="margin-top:5mm">'
       + [['ipo_quality','/100'],['long_term','/100'],['listing_gain','/100']].map(function(t){
           return '<div class="tile"><div class="k">'+e(L(lang,t[0]))+'</div><div class="v">'+n(sc[t[0]],1)
-            +'<small>'+t[1]+'</small></div><div class="s">'+e(bands[t[0]]||bandOf(sc[t[0]]))+'</div></div>';
+            +'<small>'+t[1]+'</small></div><div class="s">'+e(A(lang, bands[t[0]]||bandOf(sc[t[0]])))+'</div></div>';
         }).join('')
       + '<div class="tile"><div class="k">'+e(L(lang,'allocation'))+'</div><div class="v">'
         + e(v.allocation_band||'—')+'</div><div class="s">'+e(L(lang,'of_portfolio'))+'</div></div>'
@@ -485,7 +610,7 @@ function buildReport(p, lang){
     + sec('04', L(lang,'listing_assess'))
     + tbl([L(lang,'component'),L(lang,'max'),L(lang,'score'),L(lang,'basis')],
         arr((ipo.listing_gain||{}).components).map(function(x){
-          return { cells:[e(x.factor), n(x.max), '<b>'+n(x.score,0)+'</b>', '<span class="mut">'+e(x.note)+'</span>'] }; })
+          return { cells:[e(tr(p,lang,x.factor)), n(x.max), '<b>'+n(x.score,0)+'</b>', '<span class="mut">'+e(tr(p,lang,x.note))+'</span>'] }; })
         .concat([{ __cls:'tot', cells:[L(lang,'lg_score'),'100','<b>'+n((ipo.listing_gain||{}).score,0)+'</b>','' ] }]),
         { num:[1,2] })
     + ((ipo.listing_gain||{}).verdict?'<div class="note" style="margin-top:2mm">'+e(ipo.listing_gain.verdict)+'</div>':'')
@@ -507,10 +632,10 @@ function buildReport(p, lang){
         return { cells:[e(tr(p,lang,o.use)), n(o.amount_cr,2), '<span class="mut">'+e(tr(p,lang,o.verdict))+'</span>'] }; }), { num:[1] })
     + sec('07', L(lang,'who_selling'))
     + tbl([L(lang,'seller'),L(lang,'type'),L(lang,'rs_crore')], arr(ipo.selling_shareholders).map(function(x){
-        return { cells:['<span class="en">'+e(x.name)+'</span>', e(x.type), n(x.amount_cr,2)] }; }), { num:[2] })
+        return { cells:['<span class="en">'+e(x.name)+'</span>', e(tr(p,lang,x.type)), n(x.amount_cr,2)] }; }), { num:[2] })
     + sec('08', L(lang,'anchors'))
     + tbl([L(lang,'anchor'),L(lang,'type'),L(lang,'rs_crore')], arr((ipo.anchors||{}).top).map(function(x){
-        return { cells:['<span class="en">'+e(x.name)+'</span>', e(x.type),
+        return { cells:['<span class="en">'+e(x.name)+'</span>', e(tr(p,lang,x.type)),
                  x.amount_cr==null?L(lang,'not_disclosed'):n(x.amount_cr,2)] }; }), { num:[2] })
     + '<div class="mut" style="margin-top:1.5mm">'+e(L(lang,'anchor_total'))+' <span class="en">'
       + cr((ipo.anchors||{}).total_cr)+'</span> · '+e(L(lang,'lockin'))+' '+e((ipo.anchors||{}).lockin||'—')+'. '
@@ -551,7 +676,7 @@ function buildReport(p, lang){
     + tbl([L(lang,'source_adv'),L(lang,'verdict'),L(lang,'evidence')], arr(moat.sources).map(function(x){
         return { cells:[e(tr(p,lang,x.source)),
           '<span class="pill" style="background:'+(x.verdict==='Real'?'var(--good)':x.verdict==='None'?'#9AA2AD':'var(--amber)')+'">'
-            +e(x.verdict)+'</span>', '<span class="mut">'+e(tr(p,lang,x.evidence))+'</span>'] }; }))
+            +e(A(lang,x.verdict))+'</span>', '<span class="mut">'+e(tr(p,lang,x.evidence))+'</span>'] }; }))
     + (moat.note?'<div class="note" style="margin-top:2mm">'+e(pick(p,lang,'company.moat_note', moat.note))+'</div>':'')
     + '<div class="grow"></div>', lang);
 
@@ -559,7 +684,7 @@ function buildReport(p, lang){
     + tbl([L(lang,'rs_crore')].concat(arr(f.years)).concat([L(lang,'trend')]), arr(f.rows).map(function(r){
         return { __cls: r.highlight?'hi':'', cells:[e(tr(p,lang,r.label))]
           .concat(arr(r.values).map(function(x){ return typeof x==='number'? n(x, Math.abs(x)<100?2:0) : e(x); }))
-          .concat(['<span class="mut">'+e(r.trend)+'</span>']) }; }), { num:[1,2,3] })
+          .concat(['<span class="mut">'+e(tr(p,lang,r.trend))+'</span>']) }; }), { num:[1,2,3] })
     + (f.note?'<div class="mut" style="margin-top:1.5mm">'+e(f.note)+'</div>':'')
     + sec('15', L(lang,'key_ratios'))
     + '<div class="grid4">'+arr(f.ratios).slice(0,8).map(function(r){
@@ -598,8 +723,8 @@ function buildReport(p, lang){
   out += page(p, 8, TOT, 'Valuation', sec('18', L(lang,'valuation_at'))
     + '<div class="eyebrow" style="margin-bottom:1.5mm">'+e(L(lang,'verdict'))+': '+e(val.verdict||'—')+'</div>'
     + tbl([L(lang,'multiple'),L(lang,'value'),L(lang,'denom')], arr(val.multiples).map(function(x){
-        return { cells:['<span class="en">'+e(x.label)+'</span>', '<b class="en">'+e(x.value)+'</b>',
-          '<span class="mut">'+e(x.basis)+(x.label_tag?' <i style="font-style:normal;color:var(--teal)">['+e(x.label_tag)+']</i>':'')+'</span>'] };
+        return { cells:['<span class="en">'+e(tr(p,lang,x.label))+'</span>', '<b class="en">'+e(x.value)+'</b>',
+          '<span class="mut">'+e(tr(p,lang,x.basis))+(x.label_tag?' <i style="font-style:normal;color:var(--teal)">['+e(tr(p,lang,x.label_tag))+']</i>':'')+'</span>'] };
       }), { num:[1] })
     + (val.note?'<div class="note" style="margin-top:2mm">'+e(pick(p,lang,'financials.valuation_note', val.note))+'</div>':'')
     + sec('19', L(lang,'peers'))
@@ -610,15 +735,15 @@ function buildReport(p, lang){
     + sec('20', L(lang,'scenarios')+(scn.horizon?' '+L(lang,'to_')+' '+scn.horizon:''))
     + cases.map(function(x){
         var col = x.case==='Bear'?'var(--bad)':x.case==='Bull'?'var(--good)':'var(--navy2)';
-        return barRow(S(x.case), (Number(x.value_per_share)||0)/maxV*100, '₹'+n(x.value_per_share), col); }).join('')
+        return barRow(A(lang,S(x.case)), (Number(x.value_per_share)||0)/maxV*100, '₹'+n(x.value_per_share), col); }).join('')
     + tbl([L(lang,'case_'),L(lang,'val_share'),L(lang,'vs_issue'),L(lang,'vs_listing'),L(lang,'key_assum')],
         cases.map(function(x){
           var c1 = (Number(x.vs_issue_pct)||0) < 0 ? 'var(--bad)' : 'var(--good)';
           var c2 = (Number(x.vs_listing_pct)||0) < 0 ? 'var(--bad)' : 'var(--good)';
-          return { cells:['<b>'+e(x.case)+'</b>', '₹'+n(x.value_per_share),
+          return { cells:['<b>'+e(A(lang,x.case))+'</b>', '₹'+n(x.value_per_share),
             '<span style="color:'+c1+'">'+pct(x.vs_issue_pct,0)+'</span>',
             '<span style="color:'+c2+'">'+pct(x.vs_listing_pct,0)+'</span>',
-            '<span class="mut">'+e(x.assumption)+'</span>'] }; }), { num:[1,2,3] })
+            '<span class="mut">'+e(tr(p,lang,x.assumption))+'</span>'] }; }), { num:[1,2,3] })
     + '<div class="mut" style="margin-top:1.5mm">'+e(pick(p,lang,'financials.scenarios_note', scn.note))
       + ' '+e(L(lang,'scen_caveat'))+'</div>'
     + '<div class="grow"></div>', lang);
@@ -636,13 +761,13 @@ function buildReport(p, lang){
     + tbl([L(lang,'check_'),L(lang,'finding'),L(lang,'standard')], arr(pe.due_diligence).map(function(x){
         return { cells:[e(tr(p,lang,x.check)), '<span class="mut">'+e(tr(p,lang,x.finding))+'</span>',
           '<span class="pill" style="background:'+(x.standard==='Verified'?'var(--good)':x.standard==='Allegation'?'var(--amber)':'#7C838C')+'">'
-          +e(x.standard)+'</span>'] }; }))
+          +e(A(lang,x.standard))+'</span>'] }; }))
     + '<div class="mut" style="margin-top:1.5mm">'+e(pick(p,lang,'people.dd_note', pe.dd_note))+'</div>'
     + sec('23', L(lang,'governance')+' — '+n(gov.score_10,1)+' / 10')
     + tbl([L(lang,'parameter'),L(lang,'finding'),L(lang,'flag_')], arr(gov.items).map(function(x){
         return { cells:[e(tr(p,lang,x.parameter)), '<span class="mut">'+e(tr(p,lang,x.finding))+'</span>',
           '<span class="pill" style="background:'+(x.flag==='Clean'?'var(--good)':x.flag==='High'?'var(--bad)':x.flag==='Medium'?'var(--amber)':'#7C838C')+'">'
-          +e(x.flag)+'</span>'] }; }))
+          +e(A(lang,x.flag))+'</span>'] }; }))
     + '<div class="grow"></div>', lang);
 
   out += page(p, 10, TOT, 'The Decision', sec('24', L(lang,'str_weak'))
@@ -650,21 +775,21 @@ function buildReport(p, lang){
       + '<div><div class="eyebrow" style="color:var(--good)">'+e(L(lang,'strengths'))+'</div><ul class="blist" style="margin-top:1mm">'
         + arr(pick(p,lang,'decision.strengths', arr(d.strengths))).map(function(x,i){
             var en = arr(d.strengths)[i]||{};
-            return '<li><b>'+e(x.title||en.title)+'</b> — '+e(x.evidence||en.evidence)+'</li>'; }).join('')
+            return '<li><b>'+e(safeTr(S(en.title), S(x.title)||S(en.title)))+'</b> — '+e(safeTr(S(en.evidence), S(x.evidence)||S(en.evidence)))+'</li>'; }).join('')
         + '</ul></div>'
       + '<div><div class="eyebrow" style="color:var(--bad)">'+e(L(lang,'weaknesses'))+'</div><ul class="blist" style="margin-top:1mm">'
         + arr(pick(p,lang,'decision.weaknesses', arr(d.weaknesses))).map(function(x,i){
             var en = arr(d.weaknesses)[i]||{};
-            return '<li><b>'+e(x.title||en.title)+'</b> — '+e(x.evidence||en.evidence)+'</li>'; }).join('')
+            return '<li><b>'+e(safeTr(S(en.title), S(x.title)||S(en.title)))+'</b> — '+e(safeTr(S(en.evidence), S(x.evidence)||S(en.evidence)))+'</li>'; }).join('')
         + '</ul></div></div>'
     + sec('25', L(lang,'red_flags'))
     + tbl([L(lang,'red_flag'),L(lang,'evidence'),L(lang,'severity')], arr(d.red_flags).map(function(x,i){
         var g = arr(pick(p,lang,'decision.red_flags', []))[i]||{};
-        return { cells:['<b>'+e(g.flag||x.flag)+'</b>', '<span class="mut">'+e(g.evidence||x.evidence)+'</span>',
-          '<span class="pill '+sevClass(x.severity)+'">'+e(x.severity)+'</span>'] }; }))
+        return { cells:['<b>'+e(safeTr(S(x.flag), S(g.flag)||S(x.flag)))+'</b>', '<span class="mut">'+e(safeTr(S(x.evidence), S(g.evidence)||S(x.evidence)))+'</span>',
+          '<span class="pill '+sevClass(x.severity)+'">'+e(A(lang,x.severity))+'</span>'] }; }))
     + sec('26', L(lang,'monitoring'))
     + tbl([L(lang,'metric'),L(lang,'current'),L(lang,'desired'),L(lang,'warning')], arr(d.monitoring).map(function(x){
-        return { cells:[e(tr(p,lang,x.metric)), '<b class="en">'+e(x.current)+'</b>',
+        return { cells:[e(tr(p,lang,x.metric)), '<b class="en">'+e(tr(p,lang,x.current))+'</b>',
                  '<span class="mut">'+e(tr(p,lang,x.desired))+'</span>',
                  '<span class="mut">'+e(tr(p,lang,x.warning))+'</span>'] }; }), { num:[1] })
     + sec('27', L(lang,'alloc_levels'))
@@ -698,15 +823,15 @@ function buildExec(p, lang){
     + tbl([L(lang,'rs_crore')].concat(arr(f.years)).concat([L(lang,'trend')]), arr(f.rows).slice(0,9).map(function(r){
         return { __cls:r.highlight?'hi':'', cells:[e(tr(p,lang,r.label))]
           .concat(arr(r.values).map(function(v){ return typeof v==='number'? n(v,Math.abs(v)<100?2:0):e(v); }))
-          .concat(['<span class="mut">'+e(r.trend)+'</span>']) }; }), { num:[1,2,3] })
+          .concat(['<span class="mut">'+e(tr(p,lang,r.trend))+'</span>']) }; }), { num:[1,2,3] })
     + sec('04', L(lang,'key_ratios'))
     + '<div class="grid4">'+arr(f.ratios).slice(0,8).map(function(r){
         return '<div class="kv"><div class="k">'+e(tr(p,lang,r.label))+'</div><div class="v en '+toneClass(r.tone)+'">'
           +e(r.value)+'</div></div>'; }).join('')+'</div>'
     + sec('05', L(lang,'valuation_at'))
     + tbl([L(lang,'multiple'),L(lang,'value'),L(lang,'basis')], arr((f.valuation||{}).multiples).slice(0,7).map(function(x){
-        return { cells:['<span class="en">'+e(x.label)+'</span>', '<b class="en">'+e(x.value)+'</b>',
-                 '<span class="mut">'+e(x.basis)+'</span>'] }; }), { num:[1] })
+        return { cells:['<span class="en">'+e(tr(p,lang,x.label))+'</span>', '<b class="en">'+e(x.value)+'</b>',
+                 '<span class="mut">'+e(tr(p,lang,x.basis))+'</span>'] }; }), { num:[1] })
     + sec('06', L(lang,'peers'))
     + tbl(arr((f.peers||{}).columns), arr((f.peers||{}).rows).map(function(r){
         return { __cls:r.is_subject?'hi':'', cells:arr(r.cells).map(function(x){ return '<span class="en">'+e(x)+'</span>'; }) };
@@ -719,26 +844,26 @@ function buildExec(p, lang){
     + '<div class="grid2">'
       + '<div><div class="eyebrow" style="color:var(--good)">'+e(L(lang,'strengths'))+'</div><ul class="blist" style="margin-top:1mm">'
         + arr(pick(p,lang,'decision.strengths', arr(d.strengths))).slice(0,5).map(function(x,i){
-            var en=arr(d.strengths)[i]||{}; return '<li><b>'+e(x.title||en.title)+'</b> — '+e(x.evidence||en.evidence)+'</li>'; }).join('')
+            var en=arr(d.strengths)[i]||{}; return '<li><b>'+e(safeTr(S(en.title), S(x.title)||S(en.title)))+'</b> — '+e(safeTr(S(en.evidence), S(x.evidence)||S(en.evidence)))+'</li>'; }).join('')
       + '</ul></div><div><div class="eyebrow" style="color:var(--bad)">'+e(L(lang,'weaknesses'))+'</div><ul class="blist" style="margin-top:1mm">'
         + arr(pick(p,lang,'decision.weaknesses', arr(d.weaknesses))).slice(0,5).map(function(x,i){
-            var en=arr(d.weaknesses)[i]||{}; return '<li><b>'+e(x.title||en.title)+'</b> — '+e(x.evidence||en.evidence)+'</li>'; }).join('')
+            var en=arr(d.weaknesses)[i]||{}; return '<li><b>'+e(safeTr(S(en.title), S(x.title)||S(en.title)))+'</b> — '+e(safeTr(S(en.evidence), S(x.evidence)||S(en.evidence)))+'</li>'; }).join('')
       + '</ul></div></div>'
     + sec('08', L(lang,'red_flags'))
     + tbl([L(lang,'red_flag'),L(lang,'evidence'),L(lang,'severity')], arr(d.red_flags).map(function(x,i){
         var g = arr(pick(p,lang,'decision.red_flags', []))[i]||{};
-        return { cells:['<b>'+e(g.flag||x.flag)+'</b>','<span class="mut">'+e(g.evidence||x.evidence)+'</span>',
-          '<span class="pill '+sevClass(x.severity)+'">'+e(x.severity)+'</span>'] }; }))
+        return { cells:['<b>'+e(safeTr(S(x.flag), S(g.flag)||S(x.flag)))+'</b>','<span class="mut">'+e(safeTr(S(x.evidence), S(g.evidence)||S(x.evidence)))+'</span>',
+          '<span class="pill '+sevClass(x.severity)+'">'+e(A(lang,x.severity))+'</span>'] }; }))
     + sec('09', L(lang,'scenarios'))
     + cases.map(function(x){
         var col = x.case==='Bear'?'var(--bad)':x.case==='Bull'?'var(--good)':'var(--navy2)';
-        return barRow(S(x.case)+' · ₹'+n(x.value_per_share), (Number(x.value_per_share)||0)/maxV*100,
+        return barRow(A(lang,S(x.case))+' · ₹'+n(x.value_per_share), (Number(x.value_per_share)||0)/maxV*100,
                       pct(x.vs_issue_pct,0), col); }).join('')
     + '<div class="mut" style="margin-top:1.5mm">'+e(L(lang,'scen_caveat'))+'</div>'
     + '<div class="grow"></div>', lang);
 
   out += page(p, 4, TOT, 'The Decision', sec('10', L(lang,'recommendation'))
-    + '<div class="vb"><div class="h">'+e((p.verdict||{}).recommendation||'')+'</div><div class="c">'
+    + '<div class="vb"><div class="h">'+e(A(lang,(p.verdict||{}).recommendation||''))+'</div><div class="c">'
       + '<div class="lead">'+e(pick(p,lang,'verdict.one_liner',(p.verdict||{}).one_liner))+'</div></div></div>'
     + sec('11', L(lang,'allocation'))
     + '<div class="note"><b>'+e((p.verdict||{}).allocation_band||'—')+'</b>'
@@ -748,7 +873,7 @@ function buildExec(p, lang){
         return { cells:[e(tr(p,lang,x.action)),'<b class="en">'+e(x.price)+'</b>','<span class="mut">'+e(tr(p,lang,x.rationale))+'</span>'] }; }), { num:[1] })
     + sec('13', L(lang,'monitoring'))
     + tbl([L(lang,'metric'),L(lang,'current'),L(lang,'desired'),L(lang,'warning')], arr(d.monitoring).slice(0,6).map(function(x){
-        return { cells:[e(tr(p,lang,x.metric)),'<b class="en">'+e(x.current)+'</b>',
+        return { cells:[e(tr(p,lang,x.metric)),'<b class="en">'+e(tr(p,lang,x.current))+'</b>',
                  '<span class="mut">'+e(tr(p,lang,x.desired))+'</span>',
                  '<span class="mut">'+e(tr(p,lang,x.warning))+'</span>'] }; }), { num:[1] })
     + (d.watch_number ? '<div class="note good" style="margin-top:3mm"><b>'
@@ -888,7 +1013,7 @@ function buildVisual(p, lang){
     return tr(p,lang,o.use)+' '+cr(o.amount_cr); }).join('  ·  ');
 
   var p1 = '<div class="vpage">'
-    + vmast(S(m.sector)+' · '+S(m.ipo_type||'Mainboard')+' IPO',
+    + vmast(tr(p,lang,S(m.sector))+' · '+A(lang,S(m.ipo_type||'Mainboard'))+' IPO',
         'IPO Company Research<br><b style="color:#12161C">'+e(m.analysis_datetime||'')+'</b><br>Page 1 of 2')
     + '<div class="vhero"><div class="h">'+e(L(lang,'verdict_h'))+'</div><div class="c">'
       + '<div class="v">'+e(pick(p,lang,'verdict.headline', v.headline))+'</div>'
@@ -897,7 +1022,7 @@ function buildVisual(p, lang){
       + [['ipo_quality','/100'],['long_term','/100'],['listing_gain','/100']].map(function(t){
           return '<div class="vtile"><div class="k">'+e(L(lang,t[0]))+'</div><div class="v en" style="color:'
             + bandColour(sc[t[0]])+'">'+n(sc[t[0]],1)+'<small>'+t[1]+'</small></div>'
-            + '<div class="s">'+e((v.score_bands||{})[t[0]]||bandOf(sc[t[0]]))+'</div></div>'; }).join('')
+            + '<div class="s">'+e(A(lang, (v.score_bands||{})[t[0]]||bandOf(sc[t[0]])))+'</div></div>'; }).join('')
       + '<div class="vtile"><div class="k">'+e(L(lang,'allocation'))+'</div><div class="v en">'
         + e(v.allocation_band||'—')+'</div><div class="s">'+e(L(lang,'of_portfolio'))+'</div></div></div>'
     /* --- NEW: IPO basics + GMP --- */
@@ -931,7 +1056,7 @@ function buildVisual(p, lang){
           return '<tr'+(r.highlight?' class="hi"':'')+'><td>'+e(tr(p,lang,r.label))+'</td>'
             + arr(r.values).map(function(x){ return '<td class="n en">'
                 + (typeof x==='number'? n(x, Math.abs(x)<100?2:0) : e(x))+'</td>'; }).join('')
-            + '<td class="n" style="color:var(--ink3);font-size:16px">'+e(r.trend)+'</td></tr>'; }).join('')
+            + '<td class="n" style="color:var(--ink3);font-size:16px">'+e(tr(p,lang,r.trend))+'</td></tr>'; }).join('')
       + '</tbody></table>'
     + vfoot(1) + '</div>';
 
@@ -963,15 +1088,15 @@ function buildVisual(p, lang){
       + arr(d.red_flags).slice(0,5).map(function(x,i){
           var g = arr(pick(p,lang,'decision.red_flags', []))[i]||{};
           var sv = S(x.severity).toUpperCase();
-          return '<tr><td><b>'+e(g.flag||x.flag)+'</b></td><td style="color:var(--ink2)">'
-            + e(g.evidence||x.evidence)+'</td><td><span class="vpill" style="background:'
+          return '<tr><td><b>'+e(safeTr(S(x.flag), S(g.flag)||S(x.flag)))+'</b></td><td style="color:var(--ink2)">'
+            + e(safeTr(S(x.evidence), S(g.evidence)||S(x.evidence)))+'</td><td><span class="vpill" style="background:'
             + (sv==='CRITICAL'?'var(--crit)':sv==='HIGH'?'var(--bad)':sv==='MEDIUM'?'var(--amber)':'#7C838C')
-            + '">'+e(x.severity)+'</span></td></tr>'; }).join('')
+            + '">'+e(A(lang,x.severity))+'</span></td></tr>'; }).join('')
       + '</tbody></table>'
     + '<div class="vsec">'+e(L(lang,'alloc_levels'))+'</div>'
     + '<div style="border:3px solid var(--navy);border-radius:14px;overflow:hidden">'
       + '<div style="background:var(--navy);color:#fff;padding:11px 18px;font-size:19px;font-weight:800">'
-        + e(v.recommendation||'')+' · '+e(v.allocation_band||'')+'</div>'
+        + e(A(lang,v.recommendation||''))+' · '+e(v.allocation_band||'')+'</div>'
       + '<div style="padding:15px 18px;font-size:18px;line-height:1.55;color:var(--ink2)">'
         + e(pick(p,lang,'decision.allocation_note', d.allocation_note))+'</div></div>'
     + '<table class="vtab" style="margin-top:14px"><tbody>'+levelsOf(p,lang,d).slice(0,3).map(function(x){
@@ -1001,7 +1126,14 @@ function buildVisual(p, lang){
         'var nat=w.scrollHeight;' +
         'if(nat>target){' +
           'var z=Math.max(MIN, Math.floor((target/nat)*1000)/1000);' +
-          'w.style.zoom=z; w.style.height=(target/z)+"px";' +
+          '/* transform, not zoom: html2canvas renders a CSS-zoomed box with the' +
+          ' wrong advance widths, which makes Gujarati words overlap. */' +
+          'var outer=document.createElement("div");' +
+          'outer.style.cssText="height:"+target+"px;overflow:hidden;flex:0 0 auto;width:100%";' +
+          'el.replaceChild(outer, w); outer.appendChild(w);' +
+          'w.style.width=(100/z)+"%";' +
+          'w.style.transformOrigin="top left";' +
+          'w.style.transform="scale("+z+")";' +
         '}' +
       '}' +
     '})();<\/script>'
@@ -1019,7 +1151,7 @@ function scBlock(p, b, lang){
         var val = Number(sl[k])||0;
         return { cells:[e(items[i]), '<b class="en">'+val.toFixed(1)+'</b>',
                         '<span class="en">'+b[6][i]+'</span>',
-                        '<span class="mut">'+e(gsb[k] || tr(p,lang,sb[k]) || '')+'</span>'] }; }), { num:[1,2] });
+                        '<span class="mut">'+e(gsb[k] ? safeTr(S(sb[k]), S(gsb[k])) : (tr(p,lang,sb[k]) || ''))+'</span>'] }; }), { num:[1,2] });
 }
 
 /* The card is deliberately paginated. Every one of the 31 line items that make
@@ -1034,19 +1166,19 @@ function buildScorecard(p, lang){
   BLOCKS.forEach(function(b,i){ var g = blockScore(p,b); total += g; if(i===6) mkt = g; });
 
   var head = '<div class="sc-top"><div style="height:4mm"></div>'
-    + '<div class="eyebrow en">Score Card &nbsp;·&nbsp; '+e(m.ipo_type||'Mainboard')+' &nbsp;·&nbsp; India</div>'
+    + '<div class="eyebrow">'+e(L(lang,'score_card'))+' &nbsp;·&nbsp; '+e(A(lang,m.ipo_type||'Mainboard'))+' &nbsp;·&nbsp; '+e(L(lang,'india'))+'</div>'
     + '<h1 class="en" style="margin-top:1.5mm;font-size:18pt">'+e(m.company||'')+'</h1>'
     + '<div class="mut en" style="margin-top:1mm">'+e(m.analysis_datetime||'')+'</div>'
     + '<div style="height:2.5mm;background:var(--teal);width:26mm;border-radius:1mm;margin:2.5mm 0 3.5mm"></div>'
     + '<div class="tiles">'
       + '<div class="tile"><div class="k">'+e(L(lang,'ipo_quality'))+'</div><div class="v">'+n(total,1)
-        + '<small>/100</small></div><div class="s">'+e(bandOf(total))+'</div></div>'
+        + '<small>/100</small></div><div class="s">'+e(A(lang,bandOf(total)))+'</div></div>'
       + '<div class="tile"><div class="k">'+e(L(lang,'fundamentals'))+'</div><div class="v">'+n(total-mkt,1)
         + '<small>/95</small></div></div>'
       + '<div class="tile"><div class="k">'+e(L(lang,'market_signals'))+'</div><div class="v">'+n(mkt,1)
         + '<small>/5</small></div></div>'
       + '<div class="tile"><div class="k">'+e(L(lang,'recommendation'))+'</div><div class="v" style="font-size:11pt">'
-        + e(v.recommendation||'—')+'</div><div class="s">'+e(v.allocation_band||'')+'</div></div></div></div>';
+        + e(A(lang,v.recommendation)||'—')+'</div><div class="s">'+e(v.allocation_band||'')+'</div></div></div></div>';
 
   var body = BLOCKS.map(function(b){ return '<div class="sc-blk">'+scBlock(p,b,lang)+'</div>'; }).join('')
     + '<div class="sc-blk">' + sec('', L(lang,'total_score'))
@@ -1059,14 +1191,20 @@ function buildScorecard(p, lang){
                                   pc>=70?'var(--teal)':pc>=50?'var(--amber)':'var(--red)') ] }; })
         .concat([{ __cls:'tot', cells:[ '<b>'+L(lang,'ipo_quality')+'</b>',
                    '<b class="en">'+total.toFixed(1)+'</b>', '<span class="en">100</span>',
-                   '<b>'+e(bandOf(total))+'</b>' ] }]), { num:[1,2] }) + '</div>';
+                   '<b>'+e(A(lang,bandOf(total)))+'</b>' ] }]), { num:[1,2] }) + '</div>';
 
   var tail = '<div class="grow"></div>'
     + '<div class="mut sc-disc" style="border-top:.6pt solid var(--rule);padding-top:2.5mm">'
     + e(L(lang,'disclaimer'))+'</div>';
 
-  var pages = page(p,1,2,'Score Card','<div class="sc-main">'+head+body+'</div>'+tail,lang)
-            + page(p,2,2,'Score Card','<div class="sc-spill"></div>'+tail,lang);
+  /* Four shells are emitted; the script packs the blocks into as many as they
+     actually need and removes the rest. Packing beats scaling: html2canvas
+     renders a CSS-zoomed box with the wrong advance widths, which made Gujavati
+     words on a scaled page overlap into each other. */
+  var pages = page(p,1,4,'Score Card','<div class="sc-main">'+head+body+'</div>'+tail,lang)
+            + page(p,2,4,'Score Card','<div class="sc-spill"></div>'+tail,lang)
+            + page(p,3,4,'Score Card','<div class="sc-spill"></div>'+tail,lang)
+            + page(p,4,4,'Score Card','<div class="sc-spill"></div>'+tail,lang);
 
   var CSS2 = '\n.sc-blk{break-inside:avoid}\n.sc-blk table{margin-bottom:0}\n'
            + '.sc-blk .sec{margin:6mm 0 2.5mm}\n.sc-blk .bar{margin:0}\n'
@@ -1074,53 +1212,44 @@ function buildScorecard(p, lang){
            + '.sc-blk .ti{font-size:10.5pt}\n'
            + 'body.gu .sc-blk td,body.gu .sc-blk th{padding-top:1.9mm;padding-bottom:1.9mm}\n';
 
-  /* One page if it honestly fits; otherwise the tail sections spill onto a
-     second page. Nothing is ever clipped — losing half the marks was the bug
-     this replaces. */
-  /* One page when it honestly fits; otherwise the tail sections spill onto a
-     second page. Measure the content block itself — the flex spacer makes the
-     page always look "full", which is how half the marks used to get clipped. */
   var FIT = '<script>(function(){'
     + 'var ps=[].slice.call(document.querySelectorAll(".page"));'
-    + 'var p1=ps[0], p2=ps[1];'
-    + 'var b1=p1.querySelector(".body"), b2=p2.querySelector(".body");'
-    + 'var main=p1.querySelector(".sc-main"), spill=p2.querySelector(".sc-spill");'
-    + 'function avail(bd){ var d=bd.querySelector(".sc-disc");'
+    + 'var boxes=ps.map(function(el){ return el.querySelector(".sc-main")||el.querySelector(".sc-spill"); });'
+    + 'function avail(el){ var bd=el.querySelector(".body"), d=bd.querySelector(".sc-disc");'
       + 'return bd.clientHeight - (d? d.offsetHeight+14 : 0); }'
-    + 'var A1=avail(b1);'
-    + 'if(main.scrollHeight > A1){'
-      + 'var blks=[].slice.call(main.querySelectorAll(".sc-blk"));'
-      + 'for(var i=blks.length-1;i>=1 && main.scrollHeight>A1;i--){'
-        + 'spill.insertBefore(blks[i], spill.firstChild);'
+    /* pack: push what does not fit onto the next page, page by page */
+    + 'for(var i=0;i<ps.length-1;i++){'
+      + 'var A=avail(ps[i]);'
+      + 'var guard=0;'
+      + 'while(boxes[i].scrollHeight>A && guard++<40){'
+        + 'var kids=boxes[i].querySelectorAll(".sc-blk");'
+        + 'if(kids.length<(i===0?2:1)) break;'
+        + 'boxes[i+1].insertBefore(kids[kids.length-1], boxes[i+1].firstChild);'
       + '}'
     + '}'
-    + 'function h(x){ return x.scrollHeight; }'
-    + 'if(spill.children.length){'
-      /* balance the two pages so neither ends with a large empty band */
-      + 'for(;;){'
-        + 'var kids=main.querySelectorAll(".sc-blk");'
-        + 'if(kids.length<2) break;'
-        + 'var last=kids[kids.length-1];'
-        + 'var before=Math.abs(h(main)-h(spill));'
-        + 'spill.insertBefore(last, spill.firstChild);'
-        + 'var after=Math.abs(h(main)-h(spill));'
-        + 'if(after>=before || h(spill)>avail(b2)){ main.appendChild(last); break; }'
-      + '}'
-    + '} else { p2.parentNode.removeChild(p2); }'
+    /* drop the shells nothing landed on */
+    + 'for(var j=ps.length-1;j>=1;j--){'
+      + 'if(!boxes[j].children.length) ps[j].parentNode.removeChild(ps[j]);'
+    + '}'
     + 'var live=[].slice.call(document.querySelectorAll(".page"));'
-    + 'for(var k=0;k<live.length-1;k++){ var d=live[k].querySelector(".sc-disc");'
-      + 'if(d) d.parentNode.removeChild(d); }'
-    + 'for(var j=0;j<live.length;j++){ var el=live[j];'
+    + 'for(var k=0;k<live.length-1;k++){ var dd=live[k].querySelector(".sc-disc");'
+      + 'if(dd) dd.parentNode.removeChild(dd); }'
+    + 'for(var n=0;n<live.length;n++){ var el=live[n];'
       + 'var t=el.querySelector(".pgtot"); if(t) t.textContent=live.length;'
-      + 'var nm=el.querySelector(".pgnum"); if(nm) nm.textContent=(j+1);'
+      + 'var nm=el.querySelector(".pgnum"); if(nm) nm.textContent=(n+1);'
       + 'var bd=el.querySelector(".body");'
       + 'var box=bd.querySelector(".sc-main")||bd.querySelector(".sc-spill");'
-      + 'var A=avail(bd);'
-      /* Shrink the CONTENT, never the sheet — the page stays a true A4 box so
-         the PDF and the PNG keep their aspect ratio. */
-      + 'if(box && box.scrollHeight>A){'
-        + 'var z=Math.max(0.60, Math.floor((A/box.scrollHeight)*1000)/1000);'
-        + 'box.style.zoom=z;'
+      + 'var A2=avail(el);'
+      /* last resort only: one block taller than a whole page. transform:scale is
+         used rather than zoom because html2canvas reproduces it faithfully. */
+      + 'if(box && box.scrollHeight>A2){'
+        + 'var z=Math.max(0.60, Math.floor((A2/box.scrollHeight)*1000)/1000);'
+        + 'var wrap=document.createElement("div");'
+        + 'wrap.style.cssText="height:"+A2+"px;overflow:hidden";'
+        + 'box.parentNode.insertBefore(wrap, box); wrap.appendChild(box);'
+        + 'box.style.width=(100/z)+"%";'
+        + 'box.style.transformOrigin="top left";'
+        + 'box.style.transform="scale("+z+")";'
       + '}'
     + '}'
     + '})();<\/script>';

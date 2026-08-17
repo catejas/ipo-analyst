@@ -225,6 +225,58 @@ details .in{padding:0 14px 14px;}
   border-radius:8px;color:#fff;margin-right:6px;}
 .sv-CRITICAL{background:#a81f1e;} .sv-HIGH{background:var(--red);}
 .sv-MEDIUM{background:var(--yellow);color:#3a2800!important;} .sv-LOW{background:#8e8d86;}
+
+/* Company picker. A <datalist> renders on phones as a one-line strip above the
+   keyboard, and once a value is chosen it will not reopen — so this is a real
+   vertical list that can always be reopened. */
+.pickwrap{position:relative;display:flex;}
+.pickwrap input{width:100%;padding-right:46px;}
+.pickbtn{position:absolute;right:6px;top:50%;transform:translateY(-50%);
+  width:36px;height:36px;border-radius:9px;border:1px solid var(--line);background:var(--surf);
+  color:var(--ink2);font-size:15px;line-height:1;cursor:pointer;display:flex;align-items:center;
+  justify-content:center;padding:0;}
+.pickbtn[aria-expanded="true"]{background:var(--grad-gold);border-color:transparent;color:var(--goldink);}
+.pickpanel{margin-top:8px;border:1px solid var(--line);border-radius:13px;background:var(--surf2);
+  max-height:min(52vh,340px);overflow-y:auto;-webkit-overflow-scrolling:touch;
+  box-shadow:var(--shadow);}
+.pickpanel .pk{display:block;width:100%;text-align:left;background:none;border:0;
+  border-bottom:1px solid var(--line);color:var(--ink);font:inherit;padding:12px 14px;cursor:pointer;}
+.pickpanel .pk:last-child{border-bottom:0;}
+.pickpanel .pk:active,.pickpanel .pk.on{background:var(--surf);}
+.pickpanel .pk b{display:block;font-size:14.5px;font-weight:700;line-height:1.3;}
+.pickpanel .pk span{display:block;font-size:11.5px;color:var(--ink3);margin-top:3px;}
+.pickpanel .pkempty{padding:14px;font-size:13px;color:var(--ink3);}
+.pkchip{display:inline-block;font-size:10px;font-weight:800;padding:1px 6px;border-radius:7px;
+  margin-right:6px;vertical-align:1px;background:var(--surf);border:1px solid var(--line);color:var(--ink2);}
+.pkchip.open{background:rgba(24,160,91,.16);border-color:transparent;color:var(--green);}
+.pkchip.closed{background:rgba(239,106,106,.14);border-color:transparent;color:var(--red);}
+
+/* All Reports row: its own language switch, so one tap produces the whole set. */
+.all-row{border-color:var(--gold);background:var(--surf);}
+.langseg{display:flex;gap:4px;flex:0 0 auto;margin-right:2px;}
+.langseg .lg{border:1px solid var(--line);background:var(--surf);color:var(--ink2);
+  font:inherit;font-size:11.5px;font-weight:800;letter-spacing:.04em;padding:0 9px;height:40px;
+  border-radius:11px;cursor:pointer;}
+.langseg .lg.on{background:var(--grad-navy);border-color:transparent;color:#fff;}
+
+/* Full-screen preview. Opening the document in a new window left users with no
+   way back inside an installed PWA — there is no browser chrome there. */
+#preview{position:fixed;inset:0;z-index:900;background:var(--bg);display:flex;flex-direction:column;}
+#preview .pvbar{display:flex;align-items:center;gap:8px;flex:0 0 auto;
+  padding:calc(env(safe-area-inset-top) + 10px) 12px 10px;background:var(--grad-head);
+  border-bottom:1px solid var(--line);}
+#preview .pvback{display:flex;align-items:center;gap:6px;border:1px solid var(--line);
+  background:var(--surf2);color:var(--ink);font:inherit;font-size:14px;font-weight:800;
+  padding:10px 14px;border-radius:11px;cursor:pointer;}
+#preview .pvttl{flex:1;font-size:13px;font-weight:700;color:var(--ink2);overflow:hidden;
+  text-overflow:ellipsis;white-space:nowrap;}
+#preview .pvsave{border:0;background:var(--grad-gold);color:var(--goldink);font:inherit;
+  font-size:14px;font-weight:800;padding:10px 14px;border-radius:11px;cursor:pointer;}
+#preview .pvbody{flex:1;min-height:0;background:#E9E7E1;overflow:auto;-webkit-overflow-scrolling:touch;}
+#preview iframe{width:100%;height:100%;border:0;display:block;background:#E9E7E1;}
+body.previewing{overflow:hidden;}
+@media print{ body.previewing > *:not(#preview){display:none!important;}
+  #preview{position:static;} #preview .pvbar{display:none!important;} }
 .footer{font-size:11.5px;color:var(--ink3);text-align:center;padding:24px 8px;line-height:1.6;}
 </style>
 </head>
@@ -255,11 +307,15 @@ details .in{padding:0 14px 14px;}
   <div class="card">
     <label for="company">Company name</label>
     <div style="display:flex;gap:8px;">
-      <input type="text" id="company" list="ipoList" placeholder=""
-             autocomplete="off" autocapitalize="words" enterkeyhint="done" style="flex:1;">
+      <div class="pickwrap" style="flex:1;">
+        <input type="text" id="company" placeholder=""
+               autocomplete="off" autocapitalize="words" enterkeyhint="done">
+        <button type="button" class="pickbtn hidden" id="btnPick"
+                aria-label="Show the imported IPO list" aria-expanded="false">&#9662;</button>
+      </div>
       <button class="btn sm" id="btnSearch" style="margin:0;flex:0 0 88px;">Search</button>
     </div>
-    <datalist id="ipoList"></datalist>
+    <div id="ipoPanel" class="pickpanel hidden" role="listbox" aria-label="Imported IPOs"></div>
     <div class="grid2" style="margin-top:8px;">
       <button class="btn sm" id="btnSearchImport" style="margin:0;">Import Search Data</button>
       <button class="btn sm" id="btnSearchDel" style="margin:0;">Delete Search Data</button>
@@ -319,8 +375,9 @@ details .in{padding:0 14px 14px;}
 
     <button class="btn sm hidden" id="btnAddMore">ADD TO THIS ANALYSIS</button>
     <div id="addMoreBox" class="hidden" style="margin-top:10px;">
-      <p class="hint">Paste a second block — the Gujarati block, or the rest of a reply the tool had
-      to cut short. It is merged into the analysis above; nothing already there is overwritten.</p>
+      <p class="hint">Only needed if a reply arrived incomplete. Paste the missing part &mdash; the
+      Gujarati block, or the rest of a reply the tool had to cut short. It is merged into the analysis
+      above; nothing already there is overwritten.</p>
       <textarea id="addMoreText" placeholder="Paste the second data block here…" style="min-height:130px;"></textarea>
       <div class="grid2" style="margin-top:10px;">
         <button class="btn sm pri" id="btnAddMoreSave" style="margin:0;">MERGE</button>
@@ -330,6 +387,15 @@ details .in{padding:0 14px 14px;}
     </div>
     <div id="docTools" class="hidden">
       <label style="margin-top:14px;">Documents</label>
+      <div class="doc-row all-row">
+        <span class="doc-name">All Reports<small>all four documents in one go</small></span>
+        <div class="langseg" role="group" aria-label="Language for All Reports">
+          <button type="button" class="lg on" data-alllang="en">ENG</button>
+          <button type="button" class="lg" data-alllang="gu">GUJ</button>
+        </div>
+        <button class="ico ico-pdf" data-doc="all" data-act="make" title="Generate all reports" aria-label="Generate all reports">PDF</button>
+        <button class="ico ico-sh" data-doc="all" data-act="share" title="Share all reports" aria-label="Share all reports">&#8682;</button>
+      </div>
       <div class="doc-row">
         <span class="doc-name">Company Research Report<small>10 pages · A4 PDF</small></span>
         <button class="ico ico-pdf" data-doc="report" data-act="make" title="Generate PDF" aria-label="Generate PDF">PDF</button>
@@ -350,9 +416,10 @@ details .in{padding:0 14px 14px;}
     <div id="repCard" class="hidden" style="margin-top:12px;"></div>
 
     <button class="btn sm" id="btnContinue" disabled>Continue</button>
-    <p class="note" style="margin-top:6px;">Six files will not fit in one reply. When the model stops
-    with a <b>&#10218;CONTINUE&#10219;</b> marker, tap Continue and it resumes from that exact point &mdash;
-    it is instructed never to compress or skip ahead to fit.</p>
+    <p class="note" style="margin-top:6px;">The framework asks for both data blocks &mdash; English and
+    Gujarati &mdash; in one reply, so one copy and one paste is normally all it takes. If a tool runs out
+    of room it ends with a <b>&#10218;MORE&#10219;</b> marker: tap Continue, then bring the rest across
+    with <b>Add To This Analysis</b>.</p>
     <div class="grid2" style="margin-top:10px;">
       <button class="btn sm" id="btnCopyOut">COPY TEXT</button>
       <button class="btn sm" id="btnPrint">Save as PDF</button>
@@ -389,7 +456,7 @@ details .in{padding:0 14px 14px;}
     <h2>Score Card</h2>
     <div id="scDocs" class="hidden">
       <div class="doc-row" style="margin-top:10px;">
-        <span class="doc-name">Score Card Report<small>1&ndash;2 pages &middot; A4 &middot; all 100 marks</small></span>
+        <span class="doc-name">Score Card Report<small>2&ndash;3 pages &middot; A4 &middot; all 100 marks</small></span>
         <button class="ico ico-pdf" data-doc="score" data-act="make" title="Generate PDF" aria-label="Generate PDF">PDF</button>
         <button class="ico ico-sh" data-doc="score" data-act="share" title="Share PDF" aria-label="Share PDF">&#8682;</button>
         <button class="ico ico-png" data-doc="scorepng" data-act="make" title="Generate PNG" aria-label="Generate PNG">PNG</button>
@@ -483,8 +550,9 @@ details .in{padding:0 14px 14px;}
     <button class="btn sm" id="btnWipe">Erase all local data</button>
   </div>
 
-  <div class="footer">
-    IPO Analyst &middot; <span id="verApp">v3.3</span> &middot; framework <span id="verFw">v3.3</span> &middot; build <span id="verBuild">-</span><br>
+  
+<div class="footer">
+    IPO Analyst &middot; <span id="verApp">v3.5</span> &middot; framework <span id="verFw">v3.5</span> &middot; build <span id="verBuild">-</span><br>
     Research tool only. Not investment advice, not a recommendation, and not a substitute for a SEBI-registered adviser.
     AI output can be wrong or out of date &mdash; verify every figure against the RHP, SEBI filings and the exchanges before acting.
     Equity investment carries the risk of permanent capital loss.
@@ -495,7 +563,7 @@ details .in{padding:0 14px 14px;}
 
 <!-- ======================= PROMPT TEMPLATE ======================= -->
 <script type="text/plain" id="tpl">
-# IPO COMPANY RESEARCH REPORT — FRAMEWORK v3.3
+# IPO COMPANY RESEARCH REPORT — FRAMEWORK v3.5
 
 You are researching an Indian IPO and returning your findings as structured data.
 Read Part 1 for who you are, Part 2 for what to research, Part 3 for what to output.
@@ -787,52 +855,44 @@ This means:
 Write the JSON as your final answer. Before it, you may show your working — the tables and
 reasoning you built — but the JSON is the deliverable that matters.
 
-## 47. THE OUTPUT — TWO BLOCKS, NOT ONE
+## 47. THE OUTPUT — TWO BLOCKS, ONE REPLY
 
-The full payload with both languages in it is longer than a chat model can reliably finish in one
-reply. When it runs out of room it stops mid-JSON, and a cut-off block cannot be read. So the
-output is split in two. **Each block is a separate, complete, valid JSON object.**
+Your reply ends with **two fenced ```json blocks, one after the other**. The user copies the whole
+reply once and pastes it once; the app reads both blocks out of that single paste.
 
-### Block 1 — the analysis, in English. Send this at the end of your first reply.
+They are split in two because one combined object is long enough that models run out of room and
+stop mid-JSON, and a block that stops mid-JSON cannot be read. Two smaller objects, each closed
+properly, survive. **Each block is a complete, valid JSON object in its own right.**
 
-Everything except the `gu` key. This is the block the app needs; the documents cannot be built
-without it.
-
-End the reply with exactly this banner:
+### The banner, then Block 1, then Block 2
 
 ```
 ════════════════════════════════════════
-IPO ANALYST — DATA BLOCK 1 OF 2 (ENGLISH)
-Copy the block below, then paste it into
+IPO ANALYST — DATA PACKAGE
+Copy this whole reply, then paste it into
 the app:  Report → Import Data
 ════════════════════════════════════════
 ```
 
-followed by **one fenced ```json block** and nothing at all after it.
+**Block 1 — the analysis, in English.** Everything except the `gu` key. Section 48 gives its shape.
 
-### Block 2 — the Gujarati translation. Send this only when asked for it.
+**Block 2 — the Gujarati translation.** Section 48B gives its shape. It repeats none of the English:
+same numbers, same names, translated prose only.
 
-After Block 1, stop. If the user replies **"gujarati"** (or the app sends `SEND BLOCK 2`), reply
-with only this, and nothing else:
+Nothing after the second block. No closing remarks, no offers to expand.
 
-```json
-{ "schema": "ipo-analyst/3-gu",
-  "company": "same company name as block 1",
-  "gu": { ... } }
-```
-
-Same banner, but `DATA BLOCK 2 OF 2 (ગુજરાતી)`. The app merges it into the analysis it already
-holds, so you must **not** repeat any English content in Block 2.
-
-If the user only wants English, Block 2 is never sent and the app simply renders the English files.
+If the user asked for **English only**, send Block 1 alone and stop. If they asked for **Gujarati
+only**, send both anyway — the app builds the Gujarati documents from Block 1's figures plus
+Block 2's text, so it needs the pair.
 
 ### Rules that apply to both blocks
 
 1. **Valid JSON.** No comments, no `//`, no trailing commas, no `...`, no placeholder text left in.
-2. The block is the **last thing** in the reply. Nothing after the closing fence.
+2. Each block is closed: every `{` and `[` you opened is closed again.
 3. **If you are running low on room, stop at the end of a complete key**, close the JSON properly,
-   and add the line `⟪MORE⟫` after the block. The app can merge a follow-up block into the same
-   analysis, so a clean short block always beats a cut-off long one. Never stop mid-string.
+   and add the line `⟪MORE⟫` after the block. Then send the rest when the user says `continue` —
+   the app can merge a follow-up block into the same analysis with **Add To This Analysis**. A
+   clean short block always beats a cut-off long one. Never stop mid-string.
 4. Numbers are plain numbers — no `₹`, no commas inside digits, no `%` sign inside a number field.
 5. All rupee amounts in **crore**.
 6. Use `null` when something genuinely cannot be computed. A loss-making company has `"pe": null`,
@@ -844,8 +904,8 @@ If the user only wants English, Block 2 is never sent and the app simply renders
 
 `score_lines` — all 28 of them — and `meta`, `verdict` and `decision` are what the app needs to
 produce anything at all. If you have to shorten something, shorten the long prose fields. **Never
-drop a score line.** Put `score_lines` early in the block, straight after `meta` and `verdict`, so
-that even a reply that gets cut off still carries the scoring.
+drop a score line.** `score_lines` sits early in Block 1 so that even a reply that does get cut off
+still carries the scoring.
 
 ## 48. THE PAYLOAD
 
@@ -1006,10 +1066,11 @@ that even a reply that gets cut off still carries the scoring.
 }
 ```
 
-## 48B. BLOCK 2 — THE GUJARATI PAYLOAD
+## 48B. BLOCK 2 — THE GUJARATI PAYLOAD (same reply, straight after Block 1)
 
-Send this **only when asked**, as a reply on its own. It is a complete JSON object in its own
-right, and it repeats none of the English.
+This is the **second fenced block of the same reply**, immediately after Block 1. It is a complete
+JSON object in its own right, and it repeats none of the English — the app takes every figure from
+Block 1 and only the prose from here.
 
 ```json
 {
@@ -1028,9 +1089,27 @@ right, and it repeats none of the English.
                   "red_flags": [ { "flag": "", "evidence": "" } ],
                   "swot": { "strengths": [], "weaknesses": [], "opportunities": [], "threats": [] },
                   "allocation_note": "", "watch_number": { "title": "", "body": "" },
-                  "levels": [ { "action": "", "rationale": "" } ] },
+                  "levels": [ { "action": "", "rationale": "" } ],
+                  "_levels_note": "one entry per decision.levels entry in Block 1, same order" },
     "people": { "dd_note": "", "governance_note": "" },
-    "score_basis": { "business_model": "તે જ કારણ, ગુજરાતીમાં" },
+    "score_basis": {
+      "_comment_for_you": "ALL 28 keys — the same 28 keys as score_basis in Block 1, each one translated. This is the Basis column of the Score Card; one key here is not enough, and any key you leave out prints in English inside a Gujarati document.",
+      "business_model": "…", "competitive_advantage": "…", "industry_attractiveness": "…",
+      "growth_runway": "…", "revenue_quality": "…",
+      "revenue_growth": "…", "profit_growth": "…", "margins": "…", "roce_roe": "…",
+      "cash_flow": "…", "balance_sheet": "…",
+      "promoter_track_record": "…", "governance": "…", "capital_allocation": "…",
+      "absolute_valuation": "…", "peer_valuation": "…", "growth_adjusted_valuation": "…",
+      "margin_of_safety": "…",
+      "fresh_issue_quality": "…", "use_of_proceeds": "…", "ofs_exit_structure": "…",
+      "business_risks": "…", "financial_risks": "…", "governance_risks": "…", "regulatory_risks": "…",
+      "gmp": "…", "anchor_quality": "…", "subscription_demand": "…"
+    },
+    "text": {
+      "_comment_for_you": "THE SWEEP. After filling everything above, read back through Block 1 and find every remaining English sentence or phrase a reader would see that no key above covers — the note fields on moat sources, operating metrics, balance-sheet items, ratios, governance parameters, due-diligence checks, monitoring metrics, objects of the issue, segment names, scenario assumptions. Put each one here, keyed by the EXACT English string you wrote in Block 1, with the Gujarati as the value. The app looks up every string it renders in this dictionary, so anything you list here is translated and anything you leave out stays in English. This is what makes the Gujarati edition complete rather than half-English.",
+      "Working-capital funding, not asset-building": "…",
+      "Typical for jewellery retail": "…"
+    },
     "labels": {
       "_comment_for_you": "Gujarati for the short label strings you actually used in Block 1 — financial row labels, ratio labels, segment names, operating metric labels, object uses, promoter roles, and trend words. Key = the exact English string you wrote; value = the Gujarati. 25-40 entries is right; you do not need hundreds. Anything missing here simply stays in English.",
       "Revenue from operations": "સંચાલનમાંથી આવક",
@@ -1073,7 +1152,9 @@ The app lays out a **10-page report**, so quantity matters. Aim for these counts
 | `decision.monitoring` | exactly 6 |
 | `decision.levels` | 2–3 |
 | `score_lines` | all 28, always |
+| `gu.score_basis` | **all 28** — one per score line, the same 28 keys as `score_basis` in Block 1 |
 | `gu.decision.levels` | same order and count as `decision.levels` — the action and the rationale in Gujarati; the price stays as written |
+| `gu.text` | every remaining reader-facing English sentence or phrase from Block 1 that no other `gu` key covers — usually 30–60 entries |
 | `gu.labels` | **Block 2 only.** The short label strings you actually used — financial row labels, ratio labels, segment names, operating metric labels, object uses, promoter roles, and the trend words. Aim for 25–40 entries, not hundreds. |
 
 ## 50. CHECK THESE BEFORE YOU SEND
@@ -1083,11 +1164,27 @@ The app lays out a **10-page report**, so quantity matters. Aim for these counts
 - The 28 add up to `verdict.scores.ipo_quality`. **Add them.** If they disagree, fix it.
 - No CRITICAL or HIGH red flag is missing.
 - Every number you could not verify is `null`, and the reason is in `sources.missing`.
-- `gu` is **not** in Block 1 — it travels in Block 2.
+- `gu` is **not** in Block 1 — it travels in Block 2, in the same reply.
 - The JSON parses. Re-read it once for a stray comma before you send.
 - The block is closed: every `{` and `[` you opened is closed again.
+- **Block 2 has 28 entries in `gu.score_basis`.** Count them. This is the single most commonly
+  under-filled key in the whole payload, and every one you skip prints in English in the middle of
+  a Gujarati Score Card.
+- **Block 2 has one `gu.decision.levels` entry for each `decision.levels` entry in Block 1**, in the
+  same order.
+- **Every numeral survives translation.** If the English sentence says `PAT of Rs 110 cr`, the
+  Gujarati must still contain `110`. The app compares the figures in each translated string against
+  its English source and **discards a translation that has lost one**, falling back to English for
+  that line — because the two editions disagreeing on a number is worse than one English sentence.
+  So a dropped figure costs you the translation, silently.
+- **You have done the `gu.text` sweep.** Read Block 1 top to bottom one final time. Every sentence a
+  reader will see — including the short `note` beside a moat source, an operating metric, a
+  balance-sheet line, a ratio, a governance parameter, a due-diligence check, a monitoring metric or
+  an object of the issue — is either translated by a key above or listed in `gu.text`. If you can
+  still find an English sentence in Block 1 that appears in neither, the Gujarati documents will
+  print it in English.
 
-Then output the banner, Block 1, and stop.
+Then output the banner, Block 1, Block 2, and stop.
 
 
 ## 51. GUJARATI — A FULL TRANSLATION, NOT A PARTIAL ONE
@@ -1102,11 +1199,28 @@ Both editions render from this one payload, so the numbers can never diverge.
 - Financial abbreviations: P/E, EV/EBITDA, ROE, ROCE, EBITDA, PAT, CFO, FCF, GMP, OFS, IPO, DRHP,
   RHP, QIB, NII, HNI, CAGR, D/E.
 - **All numerals in Western Arabic digits** (2026, not ૨૦૨૬) — financial readers scan figures.
+  Every figure in an English string must reappear, unchanged, in its Gujarati translation. Translate
+  the words around the number; never round it, drop it, or convert the unit.
 
 ### 51.2 What the app already translates — do not spend effort here
 
 Section titles · table column headings · IPO snapshot row labels · score block and line-item names ·
 chart labels · severity and evidence-standard pills · SWOT quadrant titles · the disclaimer · footers.
+
+### 51.2a The catch-all: `gu.text`
+
+You cannot translate what you do not enumerate, and Block 1 carries far more prose than the named
+`gu` keys cover. `gu.text` closes that gap: it is a flat dictionary from the exact English string to
+its Gujarati. Anything the app renders is looked up there. Treat it as the final sweep of Block 1,
+not an afterthought.
+
+### 51.2b The two keys that are always forgotten
+
+`gu.score_basis` and `gu.decision.levels` are the ones that go missing. They are not optional
+extras: `score_basis` is the **Basis** column that runs down the entire Score Card — 28 short
+sentences — and `levels` is the reasoning beside each price level. Translating a headline and
+leaving these in English produces a document that is Gujarati at the top and English through the
+middle. Fill both completely.
 
 ### 51.3 What you must translate — every key in the `gu` block (Block 2)
 
@@ -2026,33 +2140,60 @@ function unwrapPayload(j){
   return j;
 }
 
-/* The one entry point: give it any reply, get back an object or null. */
+/* Parse one candidate as hard as we can. */
+function readOne(text){
+  var san = sanitiseJson(text);
+  var tries = [
+    { t: san.text,                  note: san.fixes },
+    { t: repairTruncated(san.text), note: san.fixes.concat(['completed a truncated reply']) }
+  ];
+  for(var i = 0; i < tries.length; i++){
+    try{
+      var j = unwrapPayload(JSON.parse(tries[i].t));
+      if(j && typeof j === 'object' && (j.meta || j.verdict || j.score_lines || j.gu || j.schema)){
+        return { data:j, fixes:tries[i].note };
+      }
+    }catch(e){}
+  }
+  var sal = unwrapPayload(salvageTopLevel(san.text));
+  if(sal && (sal.meta || sal.verdict || sal.score_lines || sal.gu)){
+    return { data:sal, fixes:san.fixes.concat(['recovered the part of a cut-off reply that was complete']) };
+  }
+  return null;
+}
+
+/* The one entry point: give it any reply — one block or several — and get back
+   a single merged object. A reply that carries the English analysis and the
+   Gujarati translation as two blocks therefore needs only ONE paste. */
 function readPayload(raw){
   LAST_REPAIRS = [];
   var cands = extractJsonCandidates(raw);
+  var parsed = [];
   for(var c = 0; c < cands.length; c++){
-    var cand = cands[c];
-    var san = sanitiseJson(cand.text);
-    var tries = [
-      { t: san.text,                     note: san.fixes },
-      { t: repairTruncated(san.text),    note: san.fixes.concat(['completed a truncated reply']) }
-    ];
-    for(var i = 0; i < tries.length; i++){
-      try{
-        var j = unwrapPayload(JSON.parse(tries[i].t));
-        if(j && typeof j === 'object' && (j.meta || j.verdict || j.score_lines || j.gu || j.schema)){
-          LAST_REPAIRS = tries[i].note;
-          return j;
-        }
-      }catch(e){}
-    }
-    var sal = unwrapPayload(salvageTopLevel(san.text));
-    if(sal && (sal.meta || sal.verdict || sal.score_lines || sal.gu)){
-      LAST_REPAIRS = san.fixes.concat(['recovered the part of a cut-off reply that was complete']);
-      return sal;
-    }
+    var r = readOne(cands[c].text);
+    if(r) parsed.push(r);
   }
-  return null;
+  if(!parsed.length) return null;
+
+  /* the block carrying the analysis is the base; the rest fill it in */
+  var baseIx = 0;
+  for(var i = 0; i < parsed.length; i++){
+    var d = parsed[i].data;
+    if(d.score_lines && Object.keys(d.score_lines).length){ baseIx = i; break; }
+    if(d.meta && baseIx === 0) baseIx = i;
+  }
+  var out = parsed[baseIx].data;
+  var fixes = parsed[baseIx].fixes.slice();
+  var extra = 0;
+  for(var k = 0; k < parsed.length; k++){
+    if(k === baseIx) continue;
+    deepMerge(out, parsed[k].data);
+    parsed[k].fixes.forEach(function(f){ if(fixes.indexOf(f) < 0) fixes.push(f); });
+    extra++;
+  }
+  if(extra) fixes.push(extra + ' further block(s) in the same paste were merged in');
+  LAST_REPAIRS = fixes;
+  return out;
 }
 
 
@@ -2312,8 +2453,9 @@ function showRecord(id){
   if($('#docMsg')) $('#docMsg').innerHTML = isV3
     ? (gaps.length
         ? (guOnly
-            ? '<b>English documents are ready.</b> For the Gujarati set, reply <b>gujarati</b> to the '
-              + 'AI tool, then paste its second block here with <b>Add To This Analysis</b>.'
+            ? '<b>English documents are ready.</b> The reply carried only the English block. '
+              + 'Paste the Gujarati block with <b>Add To This Analysis</b>, or ask the tool to '
+              + 'resend both blocks and import again.'
             : '<b>Documents will be missing: '+esc(gaps.join(', '))+'.</b> '
               + 'Reply <b>continue</b> to the AI tool and paste the rest here with '
               + '<b>Add To This Analysis</b>.')
@@ -2484,15 +2626,89 @@ var IPO_SEARCH_PROMPT =
  + 'Sort by open date, soonest first. If none fall in the band return an empty ipos array. '
  + 'Do not invent an IPO.';
 
+/* ---------- company picker: a real, reopenable vertical list ---------- */
+var IPO_LIST = [];
+
 function fillIpoList(list){
-  var dl = $('#ipoList');
-  dl.innerHTML = list.map(function(x){
-    var label = x.company + ' — ' + (x.type||'') + (x.open_date? ' · opens '+x.open_date : '')
-              + (x.price_band? ' · ₹'+x.price_band : '');
-    return '<option value="'+esc(x.company)+'">'+esc(label)+'</option>';
-  }).join('');
-  set('ipo.list', JSON.stringify({ ts:Date.now(), list:list }));
+  IPO_LIST = Array.isArray(list) ? list : [];
+  set('ipo.list', JSON.stringify({ ts:Date.now(), list:IPO_LIST }));
+  $('#btnPick').classList.toggle('hidden', !IPO_LIST.length);
+  if(!IPO_LIST.length) closePicker();
+  else drawPicker();
 }
+
+function pickerRows(filter){
+  var q = (filter||'').trim().toLowerCase();
+  return IPO_LIST.filter(function(x){
+    return !q || String(str(x.company)).toLowerCase().indexOf(q) >= 0;
+  });
+}
+
+function drawPicker(filter){
+  var rows = pickerRows(filter), host = $('#ipoPanel');
+  if(!rows.length){
+    host.innerHTML = '<div class="pkempty">' + (IPO_LIST.length
+      ? 'No imported IPO matches that. Clear the box to see all '+IPO_LIST.length+'.'
+      : 'No IPO list yet — tap Search, or Import Search Data.') + '</div>';
+    return;
+  }
+  var cur = $('#company').value.trim().toLowerCase();
+  host.innerHTML = rows.map(function(x, i){
+    var st = String(x.status||'').toLowerCase();
+    var chip = st ? '<i class="pkchip '+(st==='open'?'open':st==='closed'?'closed':'')+'">'
+                    + esc(String(x.status).toUpperCase())+'</i>' : '';
+    var bits = [];
+    if(x.type) bits.push(esc(str(x.type)));
+    if(x.open_date) bits.push('opens '+esc(str(x.open_date)));
+    if(x.close_date) bits.push('closes '+esc(str(x.close_date)));
+    if(x.price_band) bits.push('₹'+esc(str(x.price_band)));
+    var nm = str(x.company);
+    return '<button type="button" class="pk'+(nm.toLowerCase()===cur?' on':'')+'" role="option"'
+         + ' data-pick="'+esc(nm)+'"><b>'+chip+esc(nm)+'</b><span>'+bits.join(' · ')+'</span></button>';
+  }).join('');
+}
+
+/* Opening from inside a click handler has to wait for that click to finish
+   bubbling, or the close-on-outside-click listener shuts it again immediately. */
+function openPickerSoon(){ setTimeout(openPicker, 0); }
+function openPicker(){
+  if(!IPO_LIST.length) return;
+  /* Always open on the FULL list. Filtering by whatever is already in the box
+     is what made a wrong choice impossible to correct — the list came back
+     showing only the name you were trying to replace. Typing filters; opening
+     does not. */
+  drawPicker('');
+  $('#ipoPanel').classList.remove('hidden');
+  $('#btnPick').setAttribute('aria-expanded','true');
+}
+function closePicker(){
+  $('#ipoPanel').classList.add('hidden');
+  $('#btnPick').setAttribute('aria-expanded','false');
+}
+function pickerOpen(){ return !$('#ipoPanel').classList.contains('hidden'); }
+
+/* The chevron toggles, so a wrong choice can always be changed — the datalist
+   this replaces would not reopen once a value had been selected. */
+$('#btnPick').addEventListener('click', function(ev){
+  ev.preventDefault(); ev.stopPropagation();
+  if(pickerOpen()) closePicker(); else { openPicker(); }
+});
+$('#ipoPanel').addEventListener('click', function(ev){
+  var b = ev.target.closest && ev.target.closest('[data-pick]');
+  if(!b) return;
+  $('#company').value = b.dataset.pick;
+  closePicker();
+  refresh();
+  $('#company').blur();
+});
+$('#company').addEventListener('focus', function(){ if(IPO_LIST.length) openPicker(); });
+$('#company').addEventListener('input', function(){ if(pickerOpen()) drawPicker(this.value); });
+document.addEventListener('click', function(ev){
+  if(!pickerOpen()) return;
+  if(ev.target.closest && (ev.target.closest('#ipoPanel') || ev.target.closest('.pickwrap'))) return;
+  closePicker();
+});
+document.addEventListener('keydown', function(ev){ if(ev.key === 'Escape') closePicker(); });
 (function(){ try{ var c=JSON.parse(get('ipo.list','null'));
   if(c && Date.now()-c.ts < 864e5) fillIpoList(c.list); }catch(e){} })();
 
@@ -2518,12 +2734,16 @@ $('#btnSearchSave').addEventListener('click', function(){
   }
   fillIpoList(list);
   $('#searchImportBox').classList.add('hidden'); $('#searchText').value='';
-  $('#searchMsg').innerHTML = '<b>'+list.length+' IPOs loaded.</b> Tap the company box to pick one.';
-  $('#company').focus();
+  $('#searchMsg').innerHTML = '<b>'+list.length+' IPOs loaded.</b> Tap the box or the '
+    + '&#9662; button to pick one — you can reopen the list any time to change it.';
+  openPickerSoon();
 });
 $('#btnSearchDel').addEventListener('click', function(){
   try{ localStorage.removeItem('ipo.list'); }catch(e){}
-  $('#ipoList').innerHTML = '';
+  IPO_LIST = [];
+  $('#ipoPanel').innerHTML = '';
+  $('#btnPick').classList.add('hidden');
+  closePicker();
   $('#searchMsg').textContent = 'Search list cleared. Saved analyses on the Report tab are untouched.';
 });
 
@@ -2560,9 +2780,8 @@ $('#btnSearch').addEventListener('click', function(){
     if(!list.length){ box.textContent = 'No IPOs found in the past 7 days or the next 15 days.'; return; }
     fillIpoList(list);
     box.innerHTML = '<b>'+list.length+' found</b> (as of '+esc(data.as_of||'today')
-      + '). Tap the company box and pick one: ' + list.slice(0,4).map(function(x){
-          return esc(x.company); }).join(' · ') + (list.length>4?' …':'');
-    $('#company').focus();
+      + '). Pick one from the list below the box.';
+    openPickerSoon();
   }).catch(function(err){
     b.disabled=false; b.textContent='Search';
     box.innerHTML = '<b>Search failed.</b> '+esc(err.message);
@@ -2625,8 +2844,18 @@ if('serviceWorker' in navigator){
 </script>
 <script src="vendor/html2canvas.min.js"></script>
 <script src="vendor/jspdf.umd.min.js"></script>
-<script>window.APP_BUILD="2026.08.16.2";</script>
+<script>window.APP_BUILD="2026.08.17.5";</script>
 <script src="render.js"></script>
 <script src="docs.js"></script>
+
+<div id="preview" class="hidden" role="dialog" aria-label="Document preview" aria-modal="true">
+  <div class="pvbar">
+    <button type="button" class="pvback" id="pvBack">&#8592;&nbsp;Back</button>
+    <div class="pvttl" id="pvTitle"></div>
+    <button type="button" class="pvsave" id="pvSave">Save as PDF</button>
+  </div>
+  <div class="pvbody"><iframe id="pvFrame" title="Document preview"></iframe></div>
+</div>
+
 </body>
 </html>

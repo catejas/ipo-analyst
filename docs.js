@@ -59,14 +59,38 @@ function stage(html){
 }
 function unstage(f){ try{ document.body.removeChild(f); }catch(e){} }
 
-/* ---------- PDF: print (vector, best quality) ---------- */
-function openForPrint(html){
-  var w = window.open('', '_blank');
-  if(!w){ msg('Allow pop-ups for this site, then tap Generate PDF again.', true); return false; }
-  w.document.open(); w.document.write(html); w.document.close();
-  setTimeout(function(){ try{ w.focus(); w.print(); }catch(e){} }, 700);
+/* ---------- PDF: preview in-app, print from there ----------
+   This used to be window.open(). Inside an installed PWA that new window has no
+   browser chrome and no back gesture, so the only way out was to kill the app.
+   The document is now shown in a full-screen panel with a Back button, and
+   printing happens from inside it. */
+function showPreview(html, title){
+  var pv = $('#preview'), fr = $('#pvFrame');
+  if(!pv || !fr){ return false; }
+  $('#pvTitle').textContent = title || '';
+  fr.srcdoc = html;
+  pv.classList.remove('hidden');
+  document.body.classList.add('previewing');
+  /* so the phone's own Back gesture closes the preview instead of the app */
+  try{ history.pushState({ preview:1 }, ''); }catch(e){}
   return true;
 }
+function closePreview(){
+  var pv = $('#preview');
+  if(!pv || pv.classList.contains('hidden')) return false;
+  pv.classList.add('hidden');
+  document.body.classList.remove('previewing');
+  $('#pvFrame').srcdoc = '';
+  return true;
+}
+function printPreview(){
+  var fr = $('#pvFrame');
+  try{
+    if(fr && fr.contentWindow){ fr.contentWindow.focus(); fr.contentWindow.print(); return; }
+  }catch(e){}
+  window.print();
+}
+window.IPOPreview = { show:showPreview, close:closePreview, print:printPreview };
 
 /* ---------- PDF as a real file, for sharing ---------- */
 function htmlToPdfBlob(html, sel){
@@ -136,17 +160,83 @@ function needPayload(){
   return p;
 }
 
+
+/* ---------- All Reports: every document, one language, one tap ---------- */
+var ALL_LANG = 'en';
+var ALL_KINDS = [
+  { kind:'report',   ext:'pdf' },
+  { kind:'exec',     ext:'pdf' },
+  { kind:'visual',   ext:'png' },
+  { kind:'scorepng', ext:'png' },
+  { kind:'score',    ext:'pdf' }
+];
+
+/* PDFs are rasterised to a real file here rather than routed through the print
+   dialog, because a batch cannot ask the user to drive five print sheets. */
+function buildAllFiles(p, lang, onStep){
+  var out = [], i = 0;
+  var wanted = ALL_KINDS.filter(function(k){ return k.kind !== 'scorepng'; });
+  function next(){
+    if(i >= wanted.length) return Promise.resolve(out);
+    var k = wanted[i++];
+    onStep(i, wanted.length, k.kind);
+    var html = buildHTML(p, k.kind, lang), sel = selFor(k.kind);
+    if(k.ext === 'png'){
+      return htmlToPngBlobs(html, sel).then(function(blobs){
+        blobs.forEach(function(b, n){
+          out.push(new File([b], fileBase(p, k.kind, lang) + (blobs.length > 1 ? '_p'+(n+1) : '') + '.png',
+                            { type:'image/png' }));
+        });
+        return next();
+      });
+    }
+    return htmlToPdfBlob(html, sel).then(function(blob){
+      out.push(new File([blob], fileBase(p, k.kind, lang) + '.pdf', { type:'application/pdf' }));
+      return next();
+    });
+  }
+  return next();
+}
+
+function doAll(act, msgTarget){
+  MSG_EL = msgTarget || '#docMsg';
+  var p = needPayload(); if(!p) return;
+  var lang = ALL_LANG;
+  var label = lang === 'gu' ? 'Gujarati' : 'English';
+  var names = { report:'research report', exec:'executive summary',
+                visual:'investment summary', score:'score card' };
+  function step(n, total, kind){
+    msg('Building the ' + label + ' set — ' + n + ' of ' + total + ': ' + (names[kind]||kind) + '…');
+  }
+  buildAllFiles(p, lang, step).then(function(files){
+    if(act === 'share'){
+      return share(files, IPODocs.S(p.meta.company) + ' — ' + label).then(function(ok){
+        if(ok){ msg('Shared all ' + files.length + ' ' + label + ' files.'); return; }
+        files.forEach(function(f){ download(f, f.name); });
+        msg('Sharing is not available in this browser, so all ' + files.length + ' '
+          + label + ' files were downloaded instead.');
+      });
+    }
+    files.forEach(function(f){ download(f, f.name); });
+    msg('<b>Saved ' + files.length + ' ' + label + ' files</b> — research report, executive summary, '
+      + 'investment summary and score card. Send images on WhatsApp as a <b>Document, not a Photo</b>.');
+  }).catch(function(err){
+    msg('Could not build the set: ' + err.message, true);
+  });
+}
+
 /* ---------- one delegated handler for every document row ---------- */
 function doAction(kind, act, msgTarget){
+  if(kind === 'all') return doAll(act, msgTarget);
   MSG_EL = msgTarget || '#docMsg';
   var p = needPayload(); if(!p) return;
   var langs = langsWanted();
 
   if(act === 'make' && !isPng(kind)){
-    msg('Opening the print view — choose <b>Save as PDF</b> as the destination.');
-    langs.forEach(function(lg, i){
-      setTimeout(function(){ openForPrint(buildHTML(p, kind, lg)); }, i * 1200);
-    });
+    var lg0 = langs[0];
+    msg('Preview open. Tap <b>Save as PDF</b>, then <b>Back</b> to return to the app.'
+      + (langs.length > 1 ? ' Switch the language and tap PDF again for the other edition.' : ''));
+    showPreview(buildHTML(p, kind, lg0), fileBase(p, kind, lg0) + '.pdf');
     return;
   }
   if(act === 'make'){
@@ -195,11 +285,28 @@ function doAction(kind, act, msgTarget){
 
 document.addEventListener('DOMContentLoaded', function(){
   document.addEventListener('click', function(ev){
-    var b = ev.target.closest && ev.target.closest('[data-doc]');
+    var t = ev.target;
+
+    var lg = t.closest && t.closest('[data-alllang]');
+    if(lg){
+      ALL_LANG = lg.dataset.alllang;
+      var row = lg.closest('.langseg');
+      Array.prototype.forEach.call(row.querySelectorAll('.lg'), function(x){
+        x.classList.toggle('on', x === lg); });
+      return;
+    }
+
+    var b = t.closest && t.closest('[data-doc]');
     if(!b) return;
     var inScore = !!(b.closest('#scDocs'));
     doAction(b.dataset.doc, b.dataset.act, inScore ? '#scMsg' : '#docMsg');
   });
+
+  var back = $('#pvBack'), save = $('#pvSave');
+  if(back) back.addEventListener('click', function(){ try{ history.back(); }catch(e){ closePreview(); } });
+  if(save) save.addEventListener('click', printPreview);
+  window.addEventListener('popstate', function(){ closePreview(); });
+  document.addEventListener('keydown', function(ev){ if(ev.key === 'Escape') closePreview(); });
 });
 
 window.IPODocTools = { currentPayload:currentPayload, buildHTML:buildHTML, doAction:doAction,
