@@ -201,16 +201,15 @@ var ALL_KINDS = [
   { kind:'inst',     ext:'pdf' },
   { kind:'report',   ext:'pdf' },
   { kind:'exec',     ext:'pdf' },
-  { kind:'visual',   ext:'png' },
-  { kind:'scorepng', ext:'png' },
-  { kind:'score',    ext:'pdf' }
+  { kind:'score',    ext:'pdf' },
+  { kind:'visual',   ext:'png' }
 ];
 
 /* PDFs are rasterised to a real file here rather than routed through the print
    dialog, because a batch cannot ask the user to drive five print sheets. */
 function buildAllFiles(p, lang, onStep){
   var out = [], i = 0;
-  var wanted = ALL_KINDS.filter(function(k){ return k.kind !== 'scorepng'; });
+  var wanted = ALL_KINDS.slice();
   function next(){
     if(i >= wanted.length) return Promise.resolve(out);
     var k = wanted[i++];

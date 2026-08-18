@@ -1,4 +1,4 @@
-# IPO COMPANY RESEARCH REPORT — FRAMEWORK v3.9
+# IPO COMPANY RESEARCH REPORT — FRAMEWORK v4.0
 
 You are researching an Indian IPO and returning your findings as structured data.
 Read Part 1 for who you are, Part 2 for what to research, Part 3 for what to output.
@@ -418,6 +418,12 @@ still carries the scoring.
     "why_customers_stay": "max 300 chars",
     "segments": [ { "name": "max 26 chars", "revenue_pct": 45.8, "growth_pct": null,
                     "note": "max 70 chars" } ],
+    "products": [ { "name": "max 34 chars",
+                    "what_it_is": "max 150 chars — plain English, what the customer actually buys",
+                    "customers": "max 60 chars — who buys it",
+                    "revenue_pct": 45.8,
+                    "growth_note": "max 70 chars",
+                    "margin_profile": "High | Above average | Average | Below average | Low | Not disclosed" } ],
     "operating_metrics": [ { "label": "max 26 chars", "value": "max 18 chars" } ],
     "industry": { "classification": "Secular Growth | Cyclical | Mature | Declining | Highly Competitive",
                   "growth_note": "max 200 chars",
@@ -578,6 +584,28 @@ If you genuinely cannot source a section, send the key with an empty array and s
       "note": "max 300 chars — what one unit of this business earns and what it costs to win",
       "rows": [ { "metric": "max 34 chars", "fy24": 0.0, "fy25": 0.0, "fy26": 0.0, "unit": "₹ / %/ x" } ]
     },
+    "operating_metrics": {
+      "note": "max 300 chars — what these say about how the business actually runs",
+      "rows": [ { "metric": "Customer acquisition cost (CAC) | Cash conversion cycle (CCC) | Customer concentration — top 1 | Customer concentration — top 5 | Customer concentration — top 10 | Repeat / retention rate | Revenue per employee | Capacity utilisation | Realisation per unit | Order book / backlog",
+                  "value": "max 20 chars, with unit",
+                  "fy24": null, "fy25": null, "fy26": null,
+                  "unit": "₹ | ₹ cr | % | days | x | count",
+                  "tag": "Official | Derived | Estimated | Not disclosed",
+                  "note": "max 110 chars — how it was arrived at, or why the RHP does not give it" } ]
+    },
+    "balance_sheet": {
+      "note": "max 320 chars — what the balance sheet is telling you that the P&L is not",
+      "assets": [ { "label": "max 28 chars — e.g. Net fixed assets, Inventory, Trade receivables, Cash and equivalents, Intangibles, Other current assets",
+                    "fy24": null, "fy25": null, "fy26": null, "unit": "₹ cr",
+                    "note": "max 90 chars" } ],
+      "borrowings": [ { "label": "max 28 chars — e.g. Long-term borrowings, Short-term borrowings, Current maturities, Lease liabilities",
+                        "fy24": null, "fy25": null, "fy26": null, "unit": "₹ cr",
+                        "note": "max 90 chars" } ],
+      "debt_profile": { "cost_of_debt_pct": null, "debt_equity": null,
+                        "interest_cover": null, "repayment_from_ipo_cr": null,
+                        "note": "max 200 chars — rate, tenor, security, and what the IPO repays" },
+      "working_capital_note": "max 260 chars — how much of the balance sheet is tied up and why"
+    },
     "working_capital": {
       "note": "max 300 chars — why the cycle looks the way it does",
       "days": [ { "label": "Inventory days | Receivable days | Payable days | Cash conversion cycle",
@@ -638,6 +666,10 @@ If you genuinely cannot source a section, send the key with an empty array and s
 
 | Array | How many |
 |---|---|
+| `company.products` | 3–8 — every product or service line the company actually sells, not just the reporting segments |
+| `deep.operating_metrics.rows` | 6–10 — **CAC, cash conversion cycle and customer concentration are compulsory**; add the ones that matter for this sector |
+| `deep.balance_sheet.assets` | 5–8 |
+| `deep.balance_sheet.borrowings` | 2–5, or one row saying the company is debt-free |
 | `deep.unit_economics.rows` | 4–7 — the metrics that actually describe one unit of this business |
 | `deep.working_capital.days` | all four: inventory, receivable, payable, cash conversion cycle |
 | `deep.quarterly.periods` | the last 4 quarters if disclosed; empty array if the company has never reported |
@@ -689,6 +721,31 @@ The app lays out a **10-page report**, so quantity matters. Aim for these counts
 | `gu.decision.levels` | same order and count as `decision.levels` — the action and the rationale in Gujarati; the price stays as written |
 | `gu.text` | every remaining reader-facing English sentence or phrase from Block 1 that no other `gu` key covers — usually 30–60 entries |
 | `gu.labels` | **Block 2 only.** The short label strings you actually used — financial row labels, ratio labels, segment names, operating metric labels, object uses, promoter roles, and the trend words. Aim for 25–40 entries, not hundreds. |
+
+## 49B. THE SECTIONS THAT COME BACK EMPTY — AND WHAT TO DO INSTEAD
+
+Four sections are left blank far more often than the rest: the products and services breakdown, the
+operating metrics, the industry analysis, and the balance sheet. They are blank because the number
+is not printed as a single line in the RHP, not because it is unavailable. **Derive it.**
+
+- **Products and services.** The RHP's "Our Business" chapter describes every product line, who buys
+  it and what it is used for. If revenue by product is not given, use the segment split and say in
+  `growth_note` that the share is segment-level.
+- **Customer acquisition cost (CAC).** Sales and marketing spend for the year ÷ new customers added.
+  If new customers are not disclosed, use the change in the customer count; if that is also absent,
+  give marketing spend as a percentage of revenue and tag it `Derived`.
+- **Cash conversion cycle (CCC).** Inventory days + receivable days − payable days, each computed
+  from the restated financials: `365 × closing balance ÷ (revenue or cost of goods sold)`. Every
+  input for this is in the audited statements. There is no excuse for leaving CCC null.
+- **Customer concentration.** The RHP's risk factors state the share of revenue from the top one,
+  five and ten customers, usually verbatim. Quote it.
+- **Balance sheet.** Assets, borrowings and their movement are in the restated statement of assets
+  and liabilities. Cost of debt = finance cost ÷ average borrowings. Debt/equity and interest cover
+  are two divisions away.
+
+**Only after you have tried to derive it** may a field be null, and then `tag` must say
+`Not disclosed` and `note` must say in one short phrase where you looked. A null with no
+explanation will be treated as work not done.
 
 ## 50. CHECK THESE BEFORE YOU SEND
 
@@ -755,6 +812,33 @@ extras: `score_basis` is the **Basis** column that runs down the entire Score Ca
 sentences — and `levels` is the reasoning beside each price level. Translating a headline and
 leaving these in English produces a document that is Gujarati at the top and English through the
 middle. Fill both completely.
+
+### 51.2c The paths that are missed in practice — check each one by name
+
+Testing finished reports produced by real models found the same fields left in English every time.
+Before you close Block 2, walk this list and confirm each one is covered, either by a `gu` key of the
+same path or by an entry in `gu.text` keyed on the exact English string:
+
+| Path in Block 1 | Why it matters |
+|---|---|
+| `ipo.structure_verdict` | printed in bold on the issue-structure page of three reports |
+| `ipo.listing_gain.verdict` | the sentence under the listing-gain table |
+| `ipo.listing_gain.components[].note` | one short line per component, all of them |
+| `ipo.objects[].verdict` | the assessment beside each use of proceeds |
+| `valuation.ratios[].basis` and `.note` | how each multiple was computed — this is the block that most often prints as English inside a Gujarati table |
+| `people.key_people[].note` and `.background` | the management table |
+| `sources.conflicts[].note` / `.detail` | the data-conflict notes |
+| `company.industry_note`, `valuation.note`, `decision.allocation_note` | long-form notes |
+| `score_basis` — all 28 | see 51.2b |
+
+**Mechanical rule.** Any string value anywhere in Block 1 that is longer than three words, and is not
+a number, a date, a company name, a ticker or a recognised abbreviation, must be reachable in
+Gujarati. If it is not covered by a named `gu` key, put it in `gu.text` keyed on the exact English
+string, character for character, including punctuation. A near-match will not be found.
+
+**The app reports what you missed.** On import it names the uncovered fields on screen. If Tejas
+tells you a field is missing, do not regenerate the whole analysis — send only the missing
+`gu.text` entries as a small JSON object and he will merge them.
 
 ### 51.3 What you must translate — every key in the `gu` block (Block 2)
 
