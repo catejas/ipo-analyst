@@ -1,8 +1,48 @@
-# IPO Analyst — standalone web app  ·  v3.8  ·  build 2026.08.17.8
+# IPO Analyst — standalone web app  ·  v3.9  ·  build 2026.08.18.1
 
 A single-page web app that turns the institutional IPO research protocol into something you can
 run from an icon on your phone. It works on Android and iPhone/iPad, installs to the home screen,
 runs full-screen with no address bar, and works offline for everything except the AI call itself.
+
+## What changed in v3.9
+
+**New: the Institutional Research Report.** A 20–25 page long-form document, generated from the same
+single paste as everything else. It carries the 30 research sections at full depth plus fourteen
+deeper ones the shorter reports never had: unit economics, the working-capital cycle, quarterly
+trend, capital-allocation history, related-party exposure, contingent liabilities, the regulatory
+landscape, a competitive positioning matrix, a reverse DCF of what the issue price already assumes,
+a sensitivity grid, management quality, the bull and bear cases argued in full, what would change
+the view, and the questions to put to management. It opens with a contents page and paginates
+itself, so Gujarati — which runs longer — never clips.
+
+**Charts, in every document.** Before adding any, I tested which chart techniques survive the
+rasteriser that produces the PDFs and PNGs. That turned up a live bug: **CSS `conic-gradient` renders
+as nothing through html2canvas**, so the fresh-issue/OFS donut in the 10-page report has been a blank
+circle in every exported file since it was introduced. Everything is now inline SVG or plain divs,
+both verified to rasterise with real ink:
+
+- a score gauge and a seven-axis radar on the scorecard pages
+- revenue columns with the profit line over them
+- peer P/E comparison bars with the subject highlighted
+- a bear/base/bull ladder against the issue price
+- a use-of-proceeds waterfall, a working-capital column chart and a sensitivity heat grid
+- the fresh-issue donut, now drawn as SVG and actually visible
+
+**Report page rearranged.** The Institutional Research Report sits below All Reports; the Score Card's
+PDF and PNG buttons moved here from the Score Card tab, below Investment Summary. Continue, Copy Text,
+Save as PDF and the raw prompt box are gone — the page was doing too much.
+
+**The verdict card moved to the Score Card**, after the 100 points it summarises, with the tool name
+and import timestamp dropped and a legend explaining what CRITICAL, HIGH, MEDIUM and LOW mean. The
+Score Card now names the company selected on the Report tab automatically.
+
+**Fixed: All Reports share did nothing but open the score card.** Sharing must happen inside a live
+user gesture; building five documents takes half a minute, so by the time the files existed iOS
+rejected the share, and the old download fallback opened the last PDF in a viewer instead of saving
+it. The app now offers a **TAP TO SHARE** button — a fresh gesture — with a save-instead option.
+
+**Logo:** lens moved to top centre with a longer, thicker handle drawn along a true 45° ray from the
+lens centre; the previous handle was offset by half its own thickness, which read as a kink.
 
 ## What changed in v3.8
 

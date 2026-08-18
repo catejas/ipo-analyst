@@ -322,6 +322,101 @@ var T = {
   swot:           ['SWOT summary','SWOT સારાંશ'],
   scorecard:      ['Score Card','સ્કોર કાર્ડ'],
   block:          ['Block','વિભાગ'],
+  ipo_snapshot:   ['IPO snapshot','IPO ઝલક'],
+  revenue_lbl:    ['Revenue (₹ cr)','આવક (₹ કરોડ)'],
+  pat_lbl:        ['Profit after tax (₹ cr)','કરવેરા પછીનો નફો (₹ કરોડ)'],
+  pe_compare:     ['P/E against peers','સમકક્ષો સામે P/E'],
+  score_shape:    ['Where the score comes from','સ્કોર ક્યાંથી આવે છે'],
+  what_it_does:   ['Business overview','વ્યવસાયની ઝાંખી'],
+  amount:         ['Amount','રકમ'],
+  as_of:          ['As of','તારીખે'],
+  case:           ['Case','પરિદૃશ્ય'],
+  catalyst:       ['Catalyst','ઉત્પ્રેરક'],
+  check:          ['Check','ચકાસણી'],
+  company:        ['Company','કંપની'],
+  decision:       ['Decision','નિર્ણય'],
+  direction:      ['Direction','દિશા'],
+  driver:         ['Driver','ચાલક'],
+  fair_value:     ['Fair value','વાજબી મૂલ્ય'],
+  flag:           ['Flag','ચેતવણી'],
+  frequency:      ['Frequency','આવર્તન'],
+  implied_growth: ['Implied growth','સૂચિત વૃદ્ધિ'],
+  margin:         ['Margin','માર્જિન'],
+  mcap:           ['Market capitalisation','બજાર મૂડી'],
+  mode:           ['Failure mode','નિષ્ફળતાનો પ્રકાર'],
+  name:           ['Name','નામ'],
+  object:         ['Object of the issue','ઇશ્યૂનો ઉદ્દેશ'],
+  peer_median:    ['Peer median','સમકક્ષ મધ્યક'],
+  point:          ['Point','મુદ્દો'],
+  ratio:          ['Ratio','ગુણોત્તર'],
+  result:         ['Result','પરિણામ'],
+  rev_share:      ['Revenue share','આવક હિસ્સો'],
+  role:           ['Role','ભૂમિકા'],
+  threshold:      ['Threshold','મર્યાદા'],
+  timing:         ['Timing','સમય'],
+  trigger:        ['Trigger','કારણ'],
+  upside:         ['Upside','સંભવિત વૃદ્ધિ'],
+  primary:        ['Primary sources','પ્રાથમિક સ્રોત'],
+  secondary:      ['Secondary sources','ગૌણ સ્રોત'],
+  dp_unit:        ['Unit economics','એકમ અર્થશાસ્ત્ર'],
+  dp_wc:          ['Working capital cycle','કાર્યકારી મૂડી ચક્ર'],
+  dp_quarterly:   ['Quarterly trend','ત્રિમાસિક વલણ'],
+  dp_capalloc:    ['Capital allocation history','મૂડી ફાળવણીનો ઇતિહાસ'],
+  dp_rpt:         ['Related-party exposure','સંબંધિત-પક્ષ એક્સપોઝર'],
+  dp_contingent:  ['Contingent liabilities','આકસ્મિક જવાબદારીઓ'],
+  dp_regulatory:  ['Regulatory landscape','નિયમનકારી પરિદૃશ્ય'],
+  dp_competition: ['Competitive positioning','સ્પર્ધાત્મક સ્થિતિ'],
+  dp_rdcf:        ['Reverse DCF — what the price assumes','રિવર્સ DCF — ભાવ શું ધારે છે'],
+  dp_sensitivity: ['Sensitivity grid','સંવેદનશીલતા ગ્રીડ'],
+  dp_mgmt:        ['Management quality','સંચાલન ગુણવત્તા'],
+  dp_cases:       ['The bull and bear cases in full','તેજી અને મંદીના કેસ સંપૂર્ણ'],
+  dp_bull:        ['Bull case','તેજીનો કેસ'],
+  dp_bear:        ['Bear case','મંદીનો કેસ'],
+  dp_change_mind: ['What would change our mind','અમારો મત શું બદલશે'],
+  dp_questions:   ['Questions for management','સંચાલન માટે પ્રશ્નો'],
+  dp_implied_margin: ['Implied margin','સૂચિત માર્જિન'],
+  dp_horizon:     ['Horizon (years)','સમયગાળો (વર્ષ)'],
+  unit:           ['Unit','એકમ'],
+  year:           ['Year','વર્ષ'],
+  action:         ['Action','ક્રિયા'],
+  outcome:        ['Outcome','પરિણામ'],
+  party:          ['Party','પક્ષ'],
+  nature:         ['Nature','પ્રકાર'],
+  concern:        ['Concern','ચિંતા'],
+  status:         ['Status','સ્થિતિ'],
+  impact:         ['Impact','અસર'],
+  ir_title:       ['Institutional Research Report','સંસ્થાકીય સંશોધન રિપોર્ટ'],
+  ir_products:    ['Products and services','ઉત્પાદનો અને સેવાઓ'],
+  ir_industry:    ['Industry analysis','ઉદ્યોગ વિશ્લેષણ'],
+  ir_moat:        ['Competitive advantage','સ્પર્ધાત્મક લાભ'],
+  ir_pl:          ['Three-year financial analysis','ત્રણ વર્ષનું નાણાકીય વિશ્લેષણ'],
+  ir_fq:          ['Financial quality','નાણાકીય ગુણવત્તા'],
+  ir_cash:        ['Cash flow and quality of earnings','રોકડ પ્રવાહ અને કમાણીની ગુણવત્તા'],
+  ir_bs:          ['Balance sheet analysis','સરવૈયાનું વિશ્લેષણ'],
+  ir_promoters:   ['Promoter background and due diligence','પ્રમોટર પૃષ્ઠભૂમિ અને ડ્યુ ડિલિજન્સ'],
+  ir_gov:         ['Corporate governance','કોર્પોરેટ ગવર્નન્સ'],
+  ir_anchors:     ['Anchor investors','એન્કર રોકાણકારો'],
+  ir_objects:     ['IPO objectives — where the money goes','IPO ઉદ્દેશ્યો — નાણાં ક્યાં જાય છે'],
+  ir_val:         ['Valuation — the decisive section','મૂલ્યાંકન — નિર્ણાયક વિભાગ'],
+  ir_peers:       ['Peer comparison','સમકક્ષ સરખામણી'],
+  ir_gmp:         ['Grey market premium analysis','ગ્રે માર્કેટ પ્રીમિયમ વિશ્લેષણ'],
+  ir_scen:        ['Bull / base / bear scenarios','તેજી / આધાર / મંદી પરિદૃશ્ય'],
+  ir_lg:          ['Listing-gain assessment','લિસ્ટિંગ ગેઇન મૂલ્યાંકન'],
+  ir_lt:          ['Long-term investment assessment','લાંબા ગાળાનું રોકાણ મૂલ્યાંકન'],
+  ir_alloc:       ['Allocation view','ફાળવણી દૃષ્ટિકોણ'],
+  ir_catalysts:   ['Key catalysts','મુખ્ય ઉત્પ્રેરક'],
+  ir_fail:        ['How this thesis fails','આ થીસીસ કેવી રીતે નિષ્ફળ જાય'],
+  ir_monitor:     ['Quarterly monitoring checklist','ત્રિમાસિક દેખરેખ ચેકલિસ્ટ'],
+  ir_score:       ['The 100-point score','100-પોઇન્ટ સ્કોર'],
+  ir_verdict:     ['Final investment verdict','અંતિમ રોકાણ ચુકાદો'],
+  ir_sources:     ['Source audit, conflicts and limitations','સ્રોત ઓડિટ, વિરોધાભાસ અને મર્યાદાઓ'],
+  ir_segments:    ['Revenue by segment','સેગમેન્ટ પ્રમાણે આવક'],
+  ir_metrics:     ['Operating metrics','સંચાલન માપદંડ'],
+  ir_shareholding:['Shareholding and selling shareholders','શેરહોલ્ડિંગ અને વેચતા શેરહોલ્ડરો'],
+  ir_conflict:    ['Where sources disagree','જ્યાં સ્રોતો અસંમત છે'],
+  ir_missing:     ['What could not be verified','જે ચકાસી શકાયું નથી'],
+  ir_contents:    ['Contents','અનુક્રમણિકા'],
+  ir_none:        ['Not disclosed in the sources reviewed','સમીક્ષા કરેલા સ્રોતોમાં જાહેર કરેલ નથી'],
   line_item:      ['Line item','પેટા બાબત'],
   india:          ['India','ભારત'],
   score_card:     ['Score Card','સ્કોર કાર્ડ'],
@@ -365,6 +460,20 @@ body.gu .en{ font-family:"Helvetica Neue",Helvetica,Arial,sans-serif; line-heigh
      padding:7mm 15mm 3.5mm; border-bottom:.6pt solid var(--rule); }
 .rh .l{ font-size:7pt; font-weight:700; letter-spacing:.13em; text-transform:uppercase; color:var(--navy); }
 .rh .r{ font-size:6.8pt; color:var(--ink3); letter-spacing:.05em; }
+.ch{ margin:3mm 0 2mm; }
+.ch svg{ display:block; max-width:100%; }
+.chbars{ margin:2.5mm 0; }
+.chbar{ display:flex; align-items:center; gap:3mm; margin:1.8mm 0; font-size:8.6pt; }
+.chbar .cl{ flex:0 0 34mm; color:var(--ink2); }
+.chbar .ct{ flex:1; height:4.2mm; background:#EEF1F5; border-radius:2mm; overflow:hidden; }
+.chbar .ct i{ display:block; height:100%; border-radius:0 2mm 2mm 0; }
+.chbar .cv{ flex:0 0 16mm; text-align:right; font-weight:700; }
+.chbar.me .cl{ font-weight:800; color:var(--ink); }
+.chheat{ width:100%; border-collapse:collapse; margin:2.5mm 0; font-size:8.4pt; }
+.chheat th{ padding:1.8mm 2mm; text-align:left; color:var(--ink3); font-weight:700; }
+.chheat td{ padding:2.2mm 2mm; text-align:center; font-weight:700; }
+.chleg{ display:flex; flex-wrap:wrap; gap:4mm; margin-top:1.5mm; font-size:8.4pt; color:var(--ink2); }
+.chleg i{ display:inline-block; width:3mm; height:3mm; border-radius:1mm; margin-right:1.5mm; vertical-align:-0.3mm; }
 .rfw{ border-top:.6pt solid var(--rule); }
 .rfn{ padding:2.2mm 15mm 0; font-size:5.4pt; line-height:1.42; color:var(--ink4);
       text-align:justify; }
@@ -457,17 +566,17 @@ function head(p, label){
   return '<div class="rh"><div class="l en">'+e(S(p.meta.short_name)||S(p.meta.company))+'</div>'
        + '<div class="r en">'+e(label)+'</div></div>';
 }
-function foot(p, i, total, lang){
+function foot(p, i, total, lang, docName){
   return '<div class="rfw">'
        + '<div class="rfn">'+e(L(lang,'footnote'))+'</div>'
-       + '<div class="rf"><div><span class="en">IPO Company Research Report &nbsp;·&nbsp; '
+       + '<div class="rf"><div><span class="en">'+e(docName||'IPO Company Research Report')+' &nbsp;·&nbsp; '
        + e(p.meta.analysis_datetime||'') + '</span> &nbsp;·&nbsp; ' + e(L(lang,'research_only'))
        + '</div><div class="en"><b class="pgnum">'+i+'</b> / <span class="pgtot">'+total+'</span></div></div>'
        + '</div>';
 }
-function page(p, i, total, label, inner, lang){
+function page(p, i, total, label, inner, lang, docName){
   return '<section class="page">'+head(p,label)+'<div class="body">'+inner+'</div>'
-       + foot(p,i,total,lang)+'</section>';
+       + foot(p,i,total,lang,docName)+'</section>';
 }
 function sec(no, title){
   return '<div class="sec"><span class="no en">'+e(no)+'</span><span class="ti">'+e(title)
@@ -571,7 +680,7 @@ function cover(p, lang, docTitle, pages){
     + '<div class="grow"></div>'
     + '<div class="mut" style="border-top:.6pt solid var(--rule);padding-top:2.5mm">'
       + e(L(lang,'disclaimer'))+'</div>';
-  return page(p, 1, pages, 'Verdict', inner, lang);
+  return page(p, 1, pages, 'Verdict', inner, lang, docTitle);
 }
 
 /* ============================ REPORT ============================ */
@@ -605,7 +714,15 @@ function buildReport(p, lang){
   out += cover(p, lang, 'IPO Company Research Report', TOT);
 
   var sl = p.score_lines||{};
+  var scTotal = 0; BLOCKS.forEach(function(bk){ scTotal += blockScore(p,bk); });
   out += page(p, 2, TOT, 'Scorecard', sec('03', L(lang,'score_100'))
+    + chartGauge(scTotal, lang)
+    + '<div style="display:flex;gap:4mm;align-items:flex-start;margin:2mm 0 3mm">'
+      + '<div style="flex:0 0 78mm">'+chartRadar(p, lang)+'</div>'
+      + '<div style="flex:1">'+BLOCKS.map(function(bk){
+          var g2 = blockScore(p,bk);
+          return barRow(bName(bk,lang), bk[2]?g2/bk[2]*100:0, g2.toFixed(1)+' / '+bk[2],
+                        bandColour(bk[2]?g2/bk[2]*100:0)); }).join('')+'</div></div>'
     + BLOCKS.map(function(b){
         var got = blockScore(p,b), items = bItems(b,lang);
         return '<div style="margin-bottom:3mm">'
@@ -632,7 +749,10 @@ function buildReport(p, lang){
   var fpct = tot? (fresh/tot*100) : 0;
   out += page(p, 3, TOT, 'The IPO', sec('05', L(lang,'issue_struct'))
     + '<div style="display:flex;gap:6mm;align-items:center;margin-bottom:3mm">'
-      + '<div class="donut" style="background:conic-gradient(var(--teal) 0 '+fpct.toFixed(1)+'%, var(--navy) '+fpct.toFixed(1)+'% 100%)"></div>'
+      /* was a CSS conic-gradient, which html2canvas draws as nothing — every
+         exported PDF and PNG had a blank circle here. SVG rasterises. */
+      + chartDonut([{ value:fresh, colour:'#0E7C66' }, { value:ofs, colour:'#1E4E8C' }],
+                   { size:112, centre:pct(fpct,0), centreSub:L(lang,'fresh_issue') })
       + '<div class="dlegend"><div><i style="background:var(--teal)"></i><b>'+e(L(lang,'fresh_issue'))+'</b> <span class="en">'+cr(fresh)+' · '+pct(fpct,1)+'</span></div>'
       + '<div><i style="background:var(--navy)"></i><b>'+e(L(lang,'ofs'))+'</b> <span class="en">'+cr(ofs)+' · '+pct(100-fpct,1)+'</span></div>'
       + '<div style="margin-top:1.5mm;color:var(--ink3)">'+e(L(lang,'total'))+' <span class="en">'+cr(tot)+' · '+L(lang,'lot')+' '+n(ipo.lot_size)
@@ -693,6 +813,7 @@ function buildReport(p, lang){
     + '<div class="grow"></div>', lang);
 
   out += page(p, 6, TOT, 'Financials', sec('14', L(lang,'three_yr'))
+    + chartFinancials(p, lang)
     + tbl([L(lang,'rs_crore')].concat(arr(f.years)).concat([L(lang,'trend')]), arr(f.rows).map(function(r){
         return { __cls: r.highlight?'hi':'', cells:[e(tr(p,lang,r.label))]
           .concat(arr(r.values).map(function(x){ return typeof x==='number'? n(x, Math.abs(x)<100?2:0) : e(x); }))
@@ -732,7 +853,9 @@ function buildReport(p, lang){
 
   var val = f.valuation||{}, peers = f.peers||{}, scn = f.scenarios||{};
   var cases = arr(scn.cases), maxV = Math.max.apply(null, cases.map(function(x){ return Number(x.value_per_share)||0; }).concat([1]));
+  var peerCh = chartPeers(p, lang);
   out += page(p, 8, TOT, 'Valuation', sec('18', L(lang,'valuation_at'))
+    + (peerCh ? '<div class="mut" style="margin-bottom:1mm">'+e(L(lang,'pe_compare'))+'</div>'+peerCh : '')
     + '<div class="eyebrow" style="margin-bottom:1.5mm">'+e(L(lang,'verdict'))+': '+e(val.verdict||'—')+'</div>'
     + tbl([L(lang,'multiple'),L(lang,'value'),L(lang,'denom')], arr(val.multiples).map(function(x){
         return { cells:['<span class="en">'+e(tr(p,lang,x.label))+'</span>', '<b class="en">'+e(x.value)+'</b>',
@@ -832,6 +955,7 @@ function buildExec(p, lang){
   out += cover(p, lang, 'Executive Summary', TOT);
 
   out += page(p, 2, TOT, 'The Numbers', sec('03', L(lang,'three_yr'))
+    + chartFinancials(p, lang)
     + tbl([L(lang,'rs_crore')].concat(arr(f.years)).concat([L(lang,'trend')]), arr(f.rows).slice(0,9).map(function(r){
         return { __cls:r.highlight?'hi':'', cells:[e(tr(p,lang,r.label))]
           .concat(arr(r.values).map(function(v){ return typeof v==='number'? n(v,Math.abs(v)<100?2:0):e(v); }))
@@ -845,6 +969,7 @@ function buildExec(p, lang){
         return { cells:['<span class="en">'+e(tr(p,lang,x.label))+'</span>', '<b class="en">'+e(x.value)+'</b>',
                  '<span class="mut">'+e(tr(p,lang,x.basis))+'</span>'] }; }), { num:[1] })
     + sec('06', L(lang,'peers'))
+    + chartPeers(p, lang)
     + tbl(arr((f.peers||{}).columns), arr((f.peers||{}).rows).map(function(r){
         return { __cls:r.is_subject?'hi':'', cells:arr(r.cells).map(function(x){ return '<span class="en">'+e(x)+'</span>'; }) };
       }), { num:[1,2,3,4,5,6,7,8] })
@@ -1278,6 +1403,920 @@ function buildScorecard(p, lang){
          .replace('</body>', FIT+'</body>');
 }
 
+
+
+/* ============================ CHARTS ============================
+   Everything here is inline SVG or plain divs, because that is what the
+   rasteriser behind the PDF and PNG can actually draw. CSS conic-gradient
+   silently renders as nothing through html2canvas — the donut in earlier
+   builds was blank in every exported file — so nothing here relies on it.
+   ============================================================== */
+var CH = { teal:'#0E7C66', navy:'#1E4E8C', navy2:'#2E6BB8', amber:'#E8B84B',
+           gold:'#E08A1E', red:'#CF3B3A', green:'#18A05B', grey:'#C9CFD8', ink:'#1B2430' };
+
+function chNum(v){ return (v==null || isNaN(v)) ? null : Number(v); }
+function chMax(a){ var m = 0; a.forEach(function(x){ if(chNum(x)!=null) m = Math.max(m, Math.abs(Number(x))); }); return m || 1; }
+
+/* Column chart with a value label on each bar. Negative values drop below the axis. */
+function chartColumns(labels, values, opts){
+  opts = opts || {};
+  var W = opts.w || 520, H = opts.h || 150, pad = 22;
+  var vals = values.map(chNum);
+  var hasNeg = vals.some(function(v){ return v != null && v < 0; });
+  var mx = chMax(vals);
+  var n = vals.length || 1;
+  var slot = (W - pad*2) / n, bw = Math.min(slot*0.58, 46);
+  var zeroY = hasNeg ? H*0.62 : H - 26;
+  var avail = hasNeg ? Math.min(zeroY - 16, H - zeroY - 16) : zeroY - 16;
+  var bars = '', labs = '';
+  vals.forEach(function(v, i){
+    var x = pad + slot*i + slot/2;
+    if(v == null){
+      labs += '<text x="'+x.toFixed(1)+'" y="'+(H-8)+'" font-size="10" fill="'+CH.grey+'" text-anchor="middle">—</text>';
+      return;
+    }
+    var h = Math.abs(v)/mx*avail;
+    var y = v >= 0 ? zeroY - h : zeroY;
+    var col = opts.colour || (v < 0 ? CH.red : CH.teal);
+    bars += '<rect x="'+(x-bw/2).toFixed(1)+'" y="'+y.toFixed(1)+'" width="'+bw.toFixed(1)
+         +'" height="'+Math.max(h,1.5).toFixed(1)+'" rx="2" fill="'+col+'"/>';
+    bars += '<text x="'+x.toFixed(1)+'" y="'+(v>=0 ? y-5 : y+h+13).toFixed(1)
+         +'" font-size="11" font-weight="700" fill="'+CH.ink+'" text-anchor="middle">'
+         + e(opts.fmt ? opts.fmt(v) : n2(v)) + '</text>';
+  });
+  labels.forEach(function(t, i){
+    var x = pad + slot*i + slot/2;
+    labs += '<text x="'+x.toFixed(1)+'" y="'+(H-6)+'" font-size="10.5" fill="'+CH.ink+'" text-anchor="middle">'+e(S(t))+'</text>';
+  });
+  return '<div class="ch"><svg viewBox="0 0 '+W+' '+H+'" width="100%" height="'+H+'" preserveAspectRatio="xMidYMid meet">'
+    + '<line x1="'+pad+'" y1="'+zeroY+'" x2="'+(W-pad)+'" y2="'+zeroY+'" stroke="'+CH.grey+'" stroke-width="1"/>'
+    + bars + labs + '</svg></div>';
+}
+
+/* Columns plus a line on a second scale — revenue bars with a margin line. */
+function chartColumnsLine(labels, bars, line, opts){
+  opts = opts || {};
+  var W = opts.w || 520, H = opts.h || 165, pad = 24;
+  var bv = bars.map(chNum), lv = line.map(chNum);
+  var bmx = chMax(bv), lmx = chMax(lv);
+  var n = bv.length || 1, slot = (W - pad*2)/n, bw = Math.min(slot*0.5, 40);
+  var base = H - 28, top = 24, avail = base - top;
+  var out = '', pts = [];
+  bv.forEach(function(v,i){
+    var x = pad + slot*i + slot/2;
+    if(v == null) return;
+    var h = Math.abs(v)/bmx*avail*0.92;
+    out += '<rect x="'+(x-bw/2).toFixed(1)+'" y="'+(base-h).toFixed(1)+'" width="'+bw.toFixed(1)
+        +'" height="'+Math.max(h,1.5).toFixed(1)+'" rx="2" fill="'+(opts.barColour||CH.navy2)+'"/>';
+    out += '<text x="'+x.toFixed(1)+'" y="'+(base-h-5).toFixed(1)+'" font-size="10.5" font-weight="700" fill="'
+        + CH.ink+'" text-anchor="middle">'+e(opts.barFmt?opts.barFmt(v):n2(v))+'</text>';
+  });
+  lv.forEach(function(v,i){
+    if(v == null) return;
+    var x = pad + slot*i + slot/2;
+    var y = base - (v/lmx)*avail*0.68 - 6;
+    pts.push([x,y]);
+  });
+  if(pts.length > 1){
+    out += '<polyline points="'+pts.map(function(q){ return q[0].toFixed(1)+','+q[1].toFixed(1); }).join(' ')
+        + '" fill="none" stroke="'+(opts.lineColour||CH.gold)+'" stroke-width="3" stroke-linejoin="round" stroke-linecap="round"/>';
+    pts.forEach(function(q,i){
+      out += '<circle cx="'+q[0].toFixed(1)+'" cy="'+q[1].toFixed(1)+'" r="4" fill="'+(opts.lineColour||CH.gold)+'"/>';
+      out += '<text x="'+q[0].toFixed(1)+'" y="'+(q[1]-9).toFixed(1)+'" font-size="9.5" fill="'+(opts.lineColour||CH.gold)
+          + '" text-anchor="middle">'+e(opts.lineFmt?opts.lineFmt(lv[i]):n2(lv[i]))+'</text>';
+    });
+  }
+  labels.forEach(function(t,i){
+    var x = pad + slot*i + slot/2;
+    out += '<text x="'+x.toFixed(1)+'" y="'+(H-8)+'" font-size="10.5" fill="'+CH.ink+'" text-anchor="middle">'+e(S(t))+'</text>';
+  });
+  return '<div class="ch"><svg viewBox="0 0 '+W+' '+H+'" width="100%" height="'+H+'" preserveAspectRatio="xMidYMid meet">'
+    + '<line x1="'+pad+'" y1="'+base+'" x2="'+(W-pad)+'" y2="'+base+'" stroke="'+CH.grey+'" stroke-width="1"/>'
+    + out + '</svg></div>';
+}
+
+/* Donut, drawn as a stroked circle because conic-gradient does not rasterise. */
+function chartDonut(parts, opts){
+  opts = opts || {};
+  var size = opts.size || 132, R = size*0.38, C = 2*Math.PI*R, cx = size/2, cy = size/2;
+  var total = parts.reduce(function(a,x){ return a + (Number(x.value)||0); }, 0) || 1;
+  var acc = 0, rings = '';
+  parts.forEach(function(x){
+    var frac = (Number(x.value)||0)/total;
+    rings += '<circle cx="'+cx+'" cy="'+cy+'" r="'+R.toFixed(1)+'" fill="none" stroke="'+x.colour
+          + '" stroke-width="'+(size*0.20).toFixed(1)+'" stroke-dasharray="'+(C*frac).toFixed(2)+' '+C.toFixed(2)
+          + '" stroke-dashoffset="'+(-C*acc).toFixed(2)+'" transform="rotate(-90 '+cx+' '+cy+')"/>';
+    acc += frac;
+  });
+  var centre = opts.centre
+    ? '<text x="'+cx+'" y="'+(cy+2)+'" font-size="'+(size*0.15).toFixed(0)+'" font-weight="700" fill="'
+      + CH.ink+'" text-anchor="middle">'+e(opts.centre)+'</text>'
+      + (opts.centreSub ? '<text x="'+cx+'" y="'+(cy+size*0.15).toFixed(0)+'" font-size="'+(size*0.085).toFixed(0)
+         +'" fill="'+CH.grey+'" text-anchor="middle">'+e(opts.centreSub)+'</text>' : '')
+    : '';
+  return '<svg viewBox="0 0 '+size+' '+size+'" width="'+size+'" height="'+size+'">'+rings+centre+'</svg>';
+}
+
+/* Horizontal comparison bars — the subject highlighted against its peers. */
+function chartPeerBars(rows, opts){
+  opts = opts || {};
+  var mx = chMax(rows.map(function(r){ return r.value; }));
+  return '<div class="chbars">' + rows.map(function(r){
+    var v = chNum(r.value);
+    var w = v == null ? 0 : Math.abs(v)/mx*100;
+    return '<div class="chbar'+(r.me?' me':'')+'">'
+      + '<span class="cl">'+e(S(r.label))+'</span>'
+      + '<span class="ct"><i style="width:'+w.toFixed(1)+'%;background:'
+      + (r.me ? CH.gold : CH.navy2)+'"></i></span>'
+      + '<span class="cv en">'+e(v==null?'—':(opts.fmt?opts.fmt(v):n2(v)))+'</span></div>';
+  }).join('') + '</div>';
+}
+
+/* Scenario ladder: bear / base / bull against the issue price. */
+function chartLadder(cases, issuePrice, lang){
+  var vals = cases.map(function(c){ return chNum(c.value_per_share != null ? c.value_per_share : c.fair_value); });
+  var all = vals.concat([chNum(issuePrice)]).filter(function(x){ return x != null; });
+  if(!all.length) return '';
+  var lo = Math.min.apply(null, all)*0.9, hi = Math.max.apply(null, all)*1.05;
+  var span = (hi - lo) || 1;
+  var W = 520, H = 130, pad = 28, base = H - 24;
+  var slot = (W - pad*2)/(cases.length || 1);
+  var out = '';
+  var ipY = base - ((chNum(issuePrice) - lo)/span)*(base - 26);
+  if(chNum(issuePrice) != null){
+    out += '<line x1="'+pad+'" y1="'+ipY.toFixed(1)+'" x2="'+(W-pad)+'" y2="'+ipY.toFixed(1)
+        + '" stroke="'+CH.gold+'" stroke-width="2" stroke-dasharray="6 4"/>'
+        + '<text x="'+(W-pad)+'" y="'+(ipY-6).toFixed(1)+'" font-size="10" fill="'+CH.gold
+        + '" text-anchor="end">'+e(L(lang,'issue_at'))+' '+n(issuePrice)+'</text>';
+  }
+  cases.forEach(function(c,i){
+    var v = vals[i]; if(v == null) return;
+    var x = pad + slot*i + slot/2;
+    var y = base - ((v - lo)/span)*(base - 26);
+    var col = /bear|મંદી/i.test(S(c.case)) ? CH.red : /bull|તેજી/i.test(S(c.case)) ? CH.green : CH.navy2;
+    out += '<rect x="'+(x-26)+'" y="'+y.toFixed(1)+'" width="52" height="'+(base-y).toFixed(1)+'" rx="3" fill="'+col+'" fill-opacity="0.85"/>'
+        + '<text x="'+x+'" y="'+(y-6).toFixed(1)+'" font-size="11.5" font-weight="700" fill="'+CH.ink
+        + '" text-anchor="middle">₹'+n(v)+'</text>'
+        + '<text x="'+x+'" y="'+(H-6)+'" font-size="10.5" fill="'+CH.ink+'" text-anchor="middle">'+e(A(lang,c.case))+'</text>';
+  });
+  return '<div class="ch"><svg viewBox="0 0 '+W+' '+H+'" width="100%" height="'+H+'" preserveAspectRatio="xMidYMid meet">'
+    + '<line x1="'+pad+'" y1="'+base+'" x2="'+(W-pad)+'" y2="'+base+'" stroke="'+CH.grey+'" stroke-width="1"/>'
+    + out + '</svg></div>';
+}
+
+/* Radar over the seven scoring blocks. */
+function chartRadar(p, lang){
+  /* The viewBox is wider than it is tall so the axis labels at 3 and 9 o'clock
+     have room; at equal width they were being cut off mid-word. */
+  var W = 330, H = 250, cx = W/2, cy = H/2 + 4, R = 74;
+  var pts = [], axes = '', labs = '';
+  BLOCKS.forEach(function(b, i){
+    var frac = b[2] ? Math.max(0, Math.min(1, blockScore(p,b)/b[2])) : 0;
+    var ang = -Math.PI/2 + (2*Math.PI*i)/BLOCKS.length;
+    var ax = cx + Math.cos(ang)*R, ay = cy + Math.sin(ang)*R;
+    axes += '<line x1="'+cx+'" y1="'+cy+'" x2="'+ax.toFixed(1)+'" y2="'+ay.toFixed(1)+'" stroke="'+CH.grey+'" stroke-width="0.8"/>';
+    pts.push([(cx + Math.cos(ang)*R*frac).toFixed(1), (cy + Math.sin(ang)*R*frac).toFixed(1)]);
+    var lx = cx + Math.cos(ang)*(R+15), ly = cy + Math.sin(ang)*(R+15);
+    var anchor = Math.abs(Math.cos(ang)) < 0.3 ? 'middle' : (Math.cos(ang) > 0 ? 'start' : 'end');
+    var nm = S(bName(b,lang));
+    if(nm.length > 22) nm = nm.slice(0,21)+'…';
+    labs += '<text x="'+lx.toFixed(1)+'" y="'+(ly+3).toFixed(1)+'" font-size="8.5" fill="'+CH.ink
+         + '" text-anchor="'+anchor+'">'+e(nm)+'</text>';
+  });
+  var rings = [0.25,0.5,0.75,1].map(function(f){
+    var poly = BLOCKS.map(function(b,i){
+      var ang = -Math.PI/2 + (2*Math.PI*i)/BLOCKS.length;
+      return (cx+Math.cos(ang)*R*f).toFixed(1)+','+(cy+Math.sin(ang)*R*f).toFixed(1); }).join(' ');
+    return '<polygon points="'+poly+'" fill="none" stroke="'+CH.grey+'" stroke-width="0.7"/>';
+  }).join('');
+  return '<div class="ch"><svg viewBox="0 0 '+W+' '+H+'" width="100%" height="'+H+'" preserveAspectRatio="xMidYMid meet">'
+    + rings + axes
+    + '<polygon points="'+pts.map(function(q){ return q[0]+','+q[1]; }).join(' ')
+    + '" fill="'+CH.navy2+'" fill-opacity="0.30" stroke="'+CH.navy+'" stroke-width="2.5"/>'
+    + labs + '</svg></div>';
+}
+
+/* Simple horizontal gauge for a 0-100 score. */
+function chartGauge(value, lang){
+  var W = 520, H = 54, pad = 12, v = Math.max(0, Math.min(100, Number(value)||0));
+  var bands = [[0,45,CH.red],[45,55,CH.gold],[55,65,CH.amber],[65,75,CH.teal],[75,100,CH.green]];
+  var track = bands.map(function(b){
+    var x = pad + (W-pad*2)*b[0]/100, w = (W-pad*2)*(b[1]-b[0])/100;
+    return '<rect x="'+x.toFixed(1)+'" y="18" width="'+w.toFixed(1)+'" height="14" fill="'+b[2]+'" fill-opacity="0.30"/>';
+  }).join('');
+  var x = pad + (W-pad*2)*v/100;
+  return '<div class="ch"><svg viewBox="0 0 '+W+' '+H+'" width="100%" height="'+H+'" preserveAspectRatio="xMidYMid meet">'
+    + track
+    + '<rect x="'+pad+'" y="18" width="'+((W-pad*2)*v/100).toFixed(1)+'" height="14" fill="'+bandColourHex(v)+'"/>'
+    + '<polygon points="'+x.toFixed(1)+',14 '+(x-6).toFixed(1)+',4 '+(x+6).toFixed(1)+',4" fill="'+CH.ink+'"/>'
+    + '<text x="'+x.toFixed(1)+'" y="46" font-size="12" font-weight="700" fill="'+CH.ink
+    + '" text-anchor="middle">'+v.toFixed(1)+' / 100</text>'
+    + '</svg></div>';
+}
+function bandColourHex(v){ v=Number(v)||0;
+  return v>=75?CH.green:v>=65?CH.teal:v>=55?CH.amber:v>=45?CH.gold:CH.red; }
+
+/* Waterfall for use of proceeds. */
+function chartWaterfall(items, lang){
+  if(!items.length) return '';
+  var W = 520, H = 150, pad = 20, base = H - 34;
+  var mx = chMax(items.map(function(x){ return x.amount_cr; }));
+  var slot = (W - pad*2)/items.length, bw = Math.min(slot*0.6, 54);
+  var out = '';
+  items.forEach(function(x,i){
+    var v = chNum(x.amount_cr); if(v == null) return;
+    var h = Math.abs(v)/mx*(base-30);
+    var cx2 = pad + slot*i + slot/2;
+    out += '<rect x="'+(cx2-bw/2).toFixed(1)+'" y="'+(base-h).toFixed(1)+'" width="'+bw.toFixed(1)
+        + '" height="'+Math.max(h,2).toFixed(1)+'" rx="2" fill="'+CH.navy2+'"/>'
+        + '<text x="'+cx2.toFixed(1)+'" y="'+(base-h-5).toFixed(1)+'" font-size="10.5" font-weight="700" fill="'
+        + CH.ink+'" text-anchor="middle">'+n(v)+'</text>';
+    var words = S(tr(items[i].__p||{}, lang, x.use)).split(/\s+/).slice(0,3).join(' ');
+    out += '<text x="'+cx2.toFixed(1)+'" y="'+(base+14)+'" font-size="8.5" fill="'+CH.ink
+        + '" text-anchor="middle">'+e(words)+'</text>';
+  });
+  return '<div class="ch"><svg viewBox="0 0 '+W+' '+H+'" width="100%" height="'+H+'" preserveAspectRatio="xMidYMid meet">'
+    + '<line x1="'+pad+'" y1="'+base+'" x2="'+(W-pad)+'" y2="'+base+'" stroke="'+CH.grey+'" stroke-width="1"/>'
+    + out + '</svg></div>';
+}
+
+/* Heat row for a sensitivity grid. */
+function chartHeat(cols, rows, lang){
+  if(!rows.length) return '';
+  var all = [];
+  rows.forEach(function(r){ arr(r.cells).forEach(function(c){ var v=chNum(c); if(v!=null) all.push(v); }); });
+  if(!all.length) return '';
+  var lo = Math.min.apply(null, all), hi = Math.max.apply(null, all), span = (hi-lo)||1;
+  function col(v){
+    var f = (v-lo)/span;
+    return f>0.8?CH.green:f>0.6?CH.teal:f>0.4?CH.amber:f>0.2?CH.gold:CH.red;
+  }
+  return '<table class="chheat"><thead><tr><th></th>'
+    + cols.map(function(c){ return '<th>'+e(S(c))+'</th>'; }).join('')+'</tr></thead><tbody>'
+    + rows.map(function(r){
+        return '<tr><th>'+e(S(r.label))+'</th>'
+          + arr(r.cells).map(function(c){
+              var v = chNum(c);
+              return '<td style="background:'+(v==null?CH.grey:col(v))+';color:#fff">'+(v==null?'—':n(v))+'</td>'; }).join('')
+          + '</tr>'; }).join('')
+    + '</tbody></table>';
+}
+function n2(v){ return n(v, Math.abs(Number(v))<100 ? 1 : 0); }
+
+
+/* Pull a numeric series out of financials.rows by matching its label. */
+function rowSeries(f, re){
+  var hit = arr(f.rows).filter(function(r){ return re.test(S(r.label)); })[0];
+  return hit ? arr(hit.values).map(function(v){ return (v==null||isNaN(v))?null:Number(v); }) : [];
+}
+function chartLegend(items){
+  return '<div class="chleg">'+items.map(function(x){
+    return '<span><i style="background:'+x.colour+'"></i>'+e(x.label)+'</span>'; }).join('')+'</div>';
+}
+/* Revenue columns with the profit line over them — the single most useful
+   picture in the whole document, and it replaces reading three table rows. */
+function chartFinancials(p, lang){
+  var f = p.financials||{};
+  var years = arr(f.years).length ? arr(f.years) : ['FY24','FY25','FY26'];
+  var rev = rowSeries(f, /revenue|turnover|આવક/i);
+  var pat = rowSeries(f, /profit after tax|\bPAT\b|net profit|નફો/i);
+  if(!rev.filter(function(x){return x!=null;}).length) return '';
+  var out = chartColumnsLine(years, rev, pat, {
+    barColour:'#2E6BB8', lineColour:'#E08A1E',
+    barFmt:function(v){ return n(v,0); }, lineFmt:function(v){ return n(v,0); } });
+  return out + chartLegend([{ label:L(lang,'revenue_lbl'), colour:'#2E6BB8' },
+                            { label:L(lang,'pat_lbl'), colour:'#E08A1E' }]);
+}
+/* Peer multiple comparison with the subject highlighted. */
+function chartPeers(p, lang){
+  var f = p.financials||{}, pr = f.peers||{};
+  var rows = [];
+  if(Array.isArray(pr.rows) && pr.rows.length){
+    var cols = arr(pr.columns).map(function(c){ return S(c).toLowerCase(); });
+    var peIx = cols.findIndex(function(c){ return /p\/e|pe/.test(c); });
+    if(peIx > 0){
+      pr.rows.forEach(function(r){
+        var cells = arr(r.cells);
+        rows.push({ label:S(cells[0]), value:parseFloat(String(cells[peIx]).replace(/[^\d.\-]/g,'')),
+                    me:!!r.is_subject });
+      });
+    }
+  } else if(Array.isArray(f.peers)){
+    f.peers.forEach(function(x){ rows.push({ label:S(x.name), value:chNum(x.pe), me:!!x.is_subject }); });
+  }
+  rows = rows.filter(function(r){ return r.value != null && !isNaN(r.value); });
+  if(rows.length < 2) return '';
+  return chartPeerBars(rows, { fmt:function(v){ return n(v,1)+'×'; } });
+}
+
+/* ==================== INSTITUTIONAL RESEARCH REPORT ====================
+   The long-form edition: all 30 research sections at full depth, rendered
+   from the same imported payload as every other document. Sections are
+   emitted as self-contained blocks and packed into pages by measurement, so
+   Gujarati — which runs materially longer than English — paginates itself
+   instead of being squeezed or clipped.
+   ===================================================================== */
+function irSec(no, title, body){
+  return '<div class="ir-blk">' + sec(no, title) + body + '</div>';
+}
+function irNote(t){ return t ? '<div class="note">'+e(t)+'</div>' : ''; }
+function irNone(lang){ return '<div class="note mut">'+e(L(lang,'ir_none'))+'</div>'; }
+function irList(items){
+  if(!items.length) return '';
+  return '<ul class="ir-ul">'+items.map(function(x){ return '<li>'+x+'</li>'; }).join('')+'</ul>';
+}
+
+function buildInstitutional(p, lang){
+  p = safePayload(p);
+  lang = lang || 'en';
+  var m=p.meta||{}, f=p.financials||{}, c=p.company||{}, pe=p.people||{}, d=p.decision||{},
+      ipo=p.ipo||{}, v=p.verdict||{}, src=p.sources||{}, sl=p.score_lines||{}, sb=p.score_basis||{};
+  var gsb = (lang==='gu' && p.gu && p.gu.score_basis) ? p.gu.score_basis : {};
+  var TOT = 25;
+  var B = [];
+
+  /* 01 executive summary */
+  B.push(irSec('01', L(lang,'verdict_h'),
+      '<div class="vb"><div class="h">'+e(A(lang, v.recommendation||''))+'</div><div class="c">'
+    + '<div class="v">'+e(pick(p,lang,'verdict.headline', v.headline))+'</div>'
+    + '<div class="lead" style="margin-top:2mm">'+e(pick(p,lang,'verdict.one_liner', v.one_liner))+'</div></div></div>'
+    + irList(arr(pick(p,lang,'verdict.thesis', arr(v.thesis))).map(function(t){ return e(S(t)); }))));
+
+  /* 02 IPO snapshot */
+  var irFresh = Number(ipo.fresh_cr)||0, irOfs = Number(ipo.ofs_cr)||0;
+  var irTot = irFresh + irOfs;
+  B.push(irSec('02', L(lang,'ipo_snapshot'),
+    (irTot ? '<div style="display:flex;gap:6mm;align-items:center;margin-bottom:3mm">'
+      + '<div style="flex:0 0 34mm">'
+      + chartDonut([{ value:irFresh, colour:CH.teal }, { value:irOfs, colour:CH.navy }],
+                   { size:118, centre:pct(irFresh/irTot*100,0), centreSub:L(lang,'fresh_issue') })
+      + '</div><div style="flex:1">'
+      + chartLegend([{ label:L(lang,'fresh_issue')+' — '+cr(irFresh), colour:CH.teal },
+                     { label:L(lang,'ofs')+' — '+cr(irOfs), colour:CH.navy }])
+      + '</div></div>' : '')
+    + tbl([L(lang,'line_item'), L(lang,'value')], [
+      { cells:[L(lang,'issue_period'), '<span class="en">'+e(m.open_date||'—')+' — '+e(m.close_date||'—')+'</span>'] },
+      { cells:[L(lang,'price_band'), '<span class="en">₹'+e(ipo.price_band||'—')+' · '+L(lang,'issue_at')+' ₹'+n(ipo.issue_price)+'</span>'] },
+      { cells:[L(lang,'issue_size'), '<span class="en">'+cr(ipo.issue_size_cr)+'</span>'] },
+      { cells:[L(lang,'fresh_issue'), '<span class="en">'+cr(ipo.fresh_cr)+'</span>'] },
+      { cells:[L(lang,'ofs'), '<span class="en">'+cr(ipo.ofs_cr)+'</span>'] },
+      { cells:[L(lang,'lot'), '<span class="en">'+n(ipo.lot_size)+' · ₹'+n(ipo.min_investment)+'</span>'] },
+      { cells:[L(lang,'subscription'), '<span class="en">'+(ipo.subscription&&ipo.subscription.overall!=null?n(ipo.subscription.overall,1)+'×':'—')+'</span>'] },
+      { cells:[L(lang,'gmp'), '<span class="en">'+(ipo.gmp&&ipo.gmp.value!=null?'₹'+n(ipo.gmp.value)+' ('+pct(ipo.gmp.pct)+')':'—')+'</span>'] },
+      { cells:['Exchanges', '<span class="en">'+e(m.exchanges||m.exchange||'—')+'</span>'] },
+      { cells:['Listing', '<span class="en">'+e(m.listing_date||'—')+'</span>'] }
+    ])));
+
+  /* 03 business overview */
+  B.push(irSec('03', L(lang,'what_it_does'),
+      '<div class="lead">'+e(pick(p,lang,'company.what_it_does', c.what_it_does))+'</div>'
+    + irNote(pick(p,lang,'company.how_it_earns', c.how_it_earns))
+    + irNote(pick(p,lang,'company.why_customers_stay', c.why_customers_stay))));
+
+  /* 04 products and segments */
+  B.push(irSec('04', L(lang,'ir_products'),
+    arr(c.segments).length
+      ? tbl([L(lang,'segment'), L(lang,'rev_share'), L(lang,'growth'), L(lang,'margin')],
+          arr(c.segments).map(function(x){
+            return { cells:[e(tr(p,lang,x.name)), pct(x.revenue_share_pct), pct(x.growth_pct), pct(x.margin_pct)] }; }),
+          { num:[1,2,3] })
+      : irNone(lang)));
+
+  /* 05 operating metrics */
+  B.push(irSec('05', L(lang,'ir_metrics'),
+    arr(c.operating_metrics).length
+      ? tbl([L(lang,'metric')].concat(arr(f.years).length?arr(f.years):['FY24','FY25','FY26']).concat([L(lang,'trend')]),
+          arr(c.operating_metrics).map(function(x){
+            return { cells:[e(tr(p,lang,x.metric)), n(x.fy24), n(x.fy25), n(x.fy26),
+                     '<span class="mut">'+e(tr(p,lang,x.trend))+'</span>'] }; }), { num:[1,2,3] })
+      : irNone(lang)));
+
+  /* 06 industry */
+  B.push(irSec('06', L(lang,'ir_industry'),
+      irNote(pick(p,lang,'company.industry_growth_note', c.industry_growth_note))
+    + (arr(c.drivers).length
+      ? tbl([L(lang,'driver'), L(lang,'note')], arr(c.drivers).map(function(x,i){
+          var g = arr(pick(p,lang,'company.drivers', []))[i];
+          return { cells:['<b>'+e(S(g&&g.driver)||tr(p,lang,x.driver))+'</b>',
+                          '<span class="mut">'+e(S(g&&g.note)||tr(p,lang,x.note))+'</span>'] }; }))
+      : '')));
+
+  /* 07 moat */
+  B.push(irSec('07', L(lang,'ir_moat'),
+      irNote(pick(p,lang,'company.moat_note', c.moat_note))
+    + (arr(c.moat_sources).length
+      ? tbl([L(lang,'source_adv'), L(lang,'verdict'), L(lang,'evidence')], arr(c.moat_sources).map(function(x){
+          return { cells:[e(tr(p,lang,x.source)),
+            '<span class="pill" style="background:var(--navy2)">'+e(A(lang,x.strength||x.verdict))+'</span>',
+            '<span class="mut">'+e(tr(p,lang,x.note||x.evidence))+'</span>'] }; }))
+      : '')));
+
+  /* 08 three-year P&L */
+  B.push(irSec('08', L(lang,'ir_pl'),
+    chartFinancials(p, lang)
+    + (arr(f.rows).length
+      ? tbl([L(lang,'rs_crore')].concat(arr(f.years)).concat([L(lang,'trend')]),
+          arr(f.rows).map(function(r){
+            return { __cls:r.highlight?'hi':'', cells:[e(tr(p,lang,r.label))]
+              .concat(arr(r.values).map(function(x){ return n(x, Math.abs(Number(x))<100?2:0); }))
+              .concat(['<span class="mut">'+e(tr(p,lang,r.trend))+'</span>']) }; }),
+          { num:[1,2,3] })
+      : irNone(lang))));
+
+  /* 09 ratios */
+  B.push(irSec('09', L(lang,'ir_fq'),
+    arr(f.ratios).length
+      ? tbl([L(lang,'ratio')].concat(arr(f.years).length?arr(f.years):['FY24','FY25','FY26']).concat([L(lang,'direction')]),
+          arr(f.ratios).map(function(x){
+            return { cells:[e(tr(p,lang,x.label)), n(x.fy24,2), n(x.fy25,2), n(x.fy26,2),
+                     '<span class="mut">'+e(tr(p,lang,x.direction))+'</span>'] }; }), { num:[1,2,3] })
+      : irNone(lang)));
+
+  /* 10 cash flow and earnings quality */
+  B.push(irSec('10', L(lang,'ir_cash'),
+      irNote(pick(p,lang,'financials.earnings_quality_note', f.earnings_quality_note))
+    + (arr(f.eq_flags).length
+      ? tbl([L(lang,'flag'), L(lang,'severity'), L(lang,'note')], arr(f.eq_flags).map(function(x,i){
+          var g = arr(pick(p,lang,'financials.eq_flags', []))[i];
+          return { cells:['<b>'+e(S(g&&g.flag)||tr(p,lang,x.flag))+'</b>',
+            '<span class="pill '+sevClass(x.severity)+'">'+e(A(lang,x.severity))+'</span>',
+            '<span class="mut">'+e(S(g&&g.note)||tr(p,lang,x.note))+'</span>'] }; }))
+      : '')));
+
+  /* 11 balance sheet */
+  B.push(irSec('11', L(lang,'ir_bs'),
+    arr(f.balance_sheet).length
+      ? tbl([L(lang,'line_item'), 'FY25', 'FY26', L(lang,'note')], arr(f.balance_sheet).map(function(x){
+          return { cells:[e(tr(p,lang,x.label)), n(x.fy25), n(x.fy26),
+                   '<span class="mut">'+e(tr(p,lang,x.note))+'</span>'] }; }), { num:[1,2] })
+      : irNone(lang)));
+
+  /* 12 promoters */
+  B.push(irSec('12', L(lang,'ir_promoters'),
+      irNote(pick(p,lang,'people.dd_note', pe.dd_note))
+    + (arr(pe.promoters).length
+      ? tbl([L(lang,'name'), L(lang,'role'), L(lang,'background')], arr(pe.promoters).map(function(x){
+          return { cells:['<b class="en">'+e(str(x.name))+'</b>', e(tr(p,lang,x.role)),
+                   '<span class="mut">'+e(tr(p,lang,x.background||x.note))+'</span>'] }; }))
+      : '')
+    + (arr(pe.dd_checks).length
+      ? tbl([L(lang,'check'), L(lang,'result'), L(lang,'note')], arr(pe.dd_checks).map(function(x){
+          return { cells:[e(tr(p,lang,x.check)),
+            '<span class="pill" style="background:var(--navy2)">'+e(A(lang,x.result))+'</span>',
+            '<span class="mut">'+e(tr(p,lang,x.note))+'</span>'] }; }))
+      : '')));
+
+  /* 13 governance */
+  B.push(irSec('13', L(lang,'ir_gov'),
+      irNote(pick(p,lang,'people.governance_note', pe.governance_note))
+    + (arr(pe.governance_params).length
+      ? tbl([L(lang,'parameter'), L(lang,'assessment'), L(lang,'note')], arr(pe.governance_params).map(function(x){
+          return { cells:[e(tr(p,lang,x.parameter)),
+            '<span class="pill" style="background:var(--navy2)">'+e(A(lang,x.assessment))+'</span>',
+            '<span class="mut">'+e(tr(p,lang,x.note))+'</span>'] }; }))
+      : '')));
+
+  /* 14 anchors */
+  var an = ipo.anchors||{};
+  B.push(irSec('14', L(lang,'ir_anchors'),
+      tbl([L(lang,'line_item'), L(lang,'value')], [
+        { cells:[L(lang,'total'), '<span class="en">'+cr(an.total_cr)+'</span>'] },
+        { cells:['MF share', '<span class="en">'+pct(an.mf_share_pct)+'</span>'] },
+        { cells:['Lock-in', '<span class="en">'+e(str(an.lockin)||'—')+'</span>'] }
+      ])
+    + (arr(an.names||an.top).length
+      ? irList(arr(an.names||an.top).map(function(x){
+          return '<span class="en">'+e(typeof x==='string'?x:(str(x.name)+(x.amount_cr!=null?' — '+cr(x.amount_cr):'')))+'</span>'; }))
+      : '')));
+
+  /* 15 objects */
+  arr(ipo.objects).forEach(function(o){ o.__p = p; });
+  B.push(irSec('15', L(lang,'ir_objects'),
+    (arr(ipo.objects).length ? chartWaterfall(arr(ipo.objects), lang) : '')
+    + (arr(ipo.objects).length
+      ? tbl([L(lang,'object'), L(lang,'amount'), L(lang,'note')], arr(ipo.objects).map(function(x){
+          return { cells:[e(tr(p,lang,x.use)), '<span class="en">'+cr(x.amount_cr)+'</span>',
+                   '<span class="mut">'+e(tr(p,lang,x.note))+'</span>'] }; }), { num:[1] })
+      : irNone(lang))));
+
+  /* 16 valuation */
+  var val = f.valuation||{};
+  B.push(irSec('16', L(lang,'ir_val'),
+      irNote(pick(p,lang,'financials.valuation_note', f.valuation_note))
+    + tbl([L(lang,'metric'), L(lang,'value'), L(lang,'peer_median')], [
+        { cells:['P/E', n(val.pe,1), n(val.peer_pe,1)] },
+        { cells:['EV/EBITDA', n(val.ev_ebitda,1), n(val.peer_ev_ebitda,1)] },
+        { cells:['P/B', n(val.pb,1), n(val.peer_pb,1)] },
+        { cells:[L(lang,'mcap'), cr(val.mcap_cr), '—'] },
+        { cells:[L(lang,'implied_growth'), pct(val.implied_growth_pct), '—'] }
+      ], { num:[1,2] })));
+
+  /* 17 peers */
+  var irPeerCh = chartPeers(p, lang);
+  B.push(irSec('17', L(lang,'ir_peers'),
+    (irPeerCh ? '<div class="mut" style="margin-bottom:1mm">'+e(L(lang,'pe_compare'))+'</div>'+irPeerCh : '')
+    + (arr(f.peers).length
+      ? tbl([L(lang,'company'), 'P/E', L(lang,'growth'), L(lang,'margin'), 'ROCE'],
+          arr(f.peers).map(function(x){
+            return { cells:['<b class="en">'+e(str(x.name))+'</b>', n(x.pe,1), pct(x.growth_pct), pct(x.margin_pct), pct(x.roce_pct)] }; }),
+          { num:[1,2,3,4] })
+      : irNone(lang))
+    + irNote(pick(p,lang,'financials.peers_note', f.peers_note))));
+
+  /* 18 GMP */
+  var g = ipo.gmp||{};
+  B.push(irSec('18', L(lang,'ir_gmp'),
+      tbl([L(lang,'line_item'), L(lang,'value')], [
+        { cells:[L(lang,'gmp'), '<span class="en">'+(g.value!=null?'₹'+n(g.value):'—')+'</span>'] },
+        { cells:['%', '<span class="en">'+pct(g.pct)+'</span>'] },
+        { cells:[L(lang,'as_of'), '<span class="en">'+e(str(g.as_of)||'—')+'</span>'] }
+      ])
+    + '<div class="note bad">'+e(L(lang,'unofficial'))+'</div>'));
+
+  /* 19 strengths */
+  B.push(irSec('19', L(lang,'strengths'),
+    irList(arr(pick(p,lang,'decision.strengths', arr(d.strengths))).map(function(x,i){
+      var en = arr(d.strengths)[i]||{};
+      return '<b>'+e(safeTr(S(en.title), S(x.title)||S(en.title)))+'</b> — '
+           + e(safeTr(S(en.evidence), S(x.evidence)||S(en.evidence))); }))));
+
+  /* 20 weaknesses */
+  B.push(irSec('20', L(lang,'weaknesses'),
+    irList(arr(pick(p,lang,'decision.weaknesses', arr(d.weaknesses))).map(function(x,i){
+      var en = arr(d.weaknesses)[i]||{};
+      return '<b>'+e(safeTr(S(en.title), S(x.title)||S(en.title)))+'</b> — '
+           + e(safeTr(S(en.evidence), S(x.evidence)||S(en.evidence))); }))));
+
+  /* 21 red flag register */
+  B.push(irSec('21', L(lang,'red_flags'),
+    arr(d.red_flags).length
+      ? tbl([L(lang,'red_flag'), L(lang,'evidence'), L(lang,'severity')], arr(d.red_flags).map(function(x,i){
+          var gg = arr(pick(p,lang,'decision.red_flags', []))[i]||{};
+          return { cells:['<b>'+e(safeTr(S(x.flag), S(gg.flag)||S(x.flag)))+'</b>',
+            '<span class="mut">'+e(safeTr(S(x.evidence), S(gg.evidence)||S(x.evidence)))+'</span>',
+            '<span class="pill '+sevClass(x.severity)+'">'+e(A(lang,x.severity))+'</span>'] }; }))
+      : irNone(lang)));
+
+  /* 22 scenarios */
+  var cases = arr((f.scenarios||{}).cases||f.scenarios);
+  B.push(irSec('22', L(lang,'ir_scen'),
+    (cases.length ? chartLadder(cases, ipo.issue_price, lang) : '')
+    + (cases.length
+      ? tbl([L(lang,'case'), L(lang,'fair_value'), L(lang,'upside'), L(lang,'note')], cases.map(function(x){
+          return { cells:['<b>'+e(A(lang,x.case))+'</b>',
+                   '<span class="en">₹'+n(x.value_per_share!=null?x.value_per_share:x.fair_value)+'</span>',
+                   pct(x.upside_pct), '<span class="mut">'+e(tr(p,lang,x.note||x.assumption))+'</span>'] }; }),
+          { num:[1,2] })
+      : irNone(lang))
+    + irNote(pick(p,lang,'financials.scenarios_note', f.scenarios_note))));
+
+  /* 23 listing gain */
+  var lg = ipo.listing_gain||{};
+  B.push(irSec('23', L(lang,'ir_lg'),
+    arr(lg.components).length
+      ? tbl([L(lang,'component'), L(lang,'max'), L(lang,'score'), L(lang,'basis')],
+          arr(lg.components).map(function(x){
+            return { cells:[e(tr(p,lang,x.factor)), n(x.max), '<b>'+n(x.score,0)+'</b>',
+                     '<span class="mut">'+e(tr(p,lang,x.note))+'</span>'] }; })
+            .concat([{ __cls:'tot', cells:[L(lang,'lg_score'),'100','<b>'+n(lg.score,0)+'</b>',''] }]),
+          { num:[1,2] })
+      : irNone(lang))
+    + irNote(lg.verdict));
+
+  /* 24 long term */
+  B.push(irSec('24', L(lang,'ir_lt'),
+      '<div class="tiles">'
+    + '<div class="tile"><div class="k">'+e(L(lang,'ipo_quality'))+'</div><div class="v">'
+      + n((v.scores||{}).ipo_quality,1)+'<small>/100</small></div></div>'
+    + '<div class="tile"><div class="k">'+e(L(lang,'long_term'))+'</div><div class="v">'
+      + n((v.scores||{}).long_term,1)+'<small>/100</small></div></div>'
+    + '<div class="tile"><div class="k">'+e(L(lang,'listing_gain'))+'</div><div class="v">'
+      + n((v.scores||{}).listing_gain,1)+'<small>/100</small></div></div></div>'
+    + irNote(pick(p,lang,'decision.watch_number.body', (d.watch_number||{}).body))));
+
+  /* 25 allocation */
+  B.push(irSec('25', L(lang,'ir_alloc'),
+      irNote(pick(p,lang,'decision.allocation_note', d.allocation_note))
+    + (arr(d.levels).length
+      ? tbl([L(lang,'action'), L(lang,'price'), L(lang,'rationale')], levelsOf(p,lang,d).map(function(x){
+          return { cells:[e(tr(p,lang,x.action)), '<b class="en">'+e(str(x.price))+'</b>',
+                   '<span class="mut">'+e(tr(p,lang,x.rationale))+'</span>'] }; }))
+      : '')));
+
+  /* 26 catalysts */
+  B.push(irSec('26', L(lang,'ir_catalysts'),
+    arr(d.catalysts).length
+      ? tbl([L(lang,'catalyst'), L(lang,'timing'), L(lang,'note')], arr(d.catalysts).map(function(x){
+          return { cells:['<b>'+e(tr(p,lang,x.catalyst))+'</b>', '<span class="en">'+e(str(x.timing))+'</span>',
+                   '<span class="mut">'+e(tr(p,lang,x.note))+'</span>'] }; }))
+      : irNone(lang)));
+
+  /* 27 failure modes */
+  B.push(irSec('27', L(lang,'ir_fail'),
+    arr(d.failure_modes).length
+      ? tbl([L(lang,'mode'), L(lang,'trigger'), L(lang,'note')], arr(d.failure_modes).map(function(x){
+          return { cells:['<b>'+e(tr(p,lang,x.mode))+'</b>', e(tr(p,lang,x.trigger)),
+                   '<span class="mut">'+e(tr(p,lang,x.note))+'</span>'] }; }))
+      : irNone(lang)));
+
+  /* 28 monitoring */
+  B.push(irSec('28', L(lang,'ir_monitor'),
+    arr(d.monitoring).length
+      ? tbl([L(lang,'metric'), L(lang,'frequency'), L(lang,'threshold')], arr(d.monitoring).map(function(x){
+          return { cells:[e(tr(p,lang,x.metric)), e(A(lang,x.frequency)),
+                   '<span class="mut">'+e(tr(p,lang,x.threshold))+'</span>'] }; }))
+      : irNone(lang)));
+
+  /* 29 the 100-point score, every line item with its basis */
+  var total = 0; BLOCKS.forEach(function(bk){ total += blockScore(p,bk); });
+  /* 29 the 100-point score. Emitted as several blocks rather than one, because a
+     single block taller than a page cannot be split cleanly and was clipping. */
+  B.push(irSec('29', L(lang,'ir_score'),
+      chartGauge(total, lang)
+    + '<div style="display:flex;gap:4mm;align-items:flex-start;margin:2mm 0 3mm">'
+      + '<div style="flex:0 0 78mm">'+chartRadar(p, lang)+'</div>'
+      + '<div style="flex:1">'+BLOCKS.map(function(bk2){
+          var g3 = blockScore(p,bk2);
+          return barRow(bName(bk2,lang), bk2[2]?g3/bk2[2]*100:0, g3.toFixed(1)+' / '+bk2[2],
+                        bandColour(bk2[2]?g3/bk2[2]*100:0)); }).join('')+'</div></div>'));
+
+  BLOCKS.forEach(function(bk){
+    var got = blockScore(p,bk), items = bItems(bk,lang);
+    B.push('<div class="ir-blk">'
+      + sec('', bName(bk,lang)+' — '+got.toFixed(1)+' / '+bk[2])
+      + tbl([L(lang,'line_item'), L(lang,'score'), L(lang,'max'), L(lang,'basis')],
+          bk[3].map(function(k,i){
+            var vv = Number(sl[k])||0;
+            return { cells:[e(items[i]), '<b class="en">'+vv.toFixed(1)+'</b>',
+              '<span class="en">'+bk[6][i]+'</span>',
+              '<span class="mut">'+e(gsb[k] ? safeTr(S(sb[k]), S(gsb[k])) : (tr(p,lang,sb[k])||''))+'</span>'] }; }),
+          { num:[1,2] })
+      + '</div>');
+  });
+
+  /* 30 sources */
+  B.push(irSec('30', L(lang,'ir_sources'),
+      (arr(src.primary).length ? '<div class="note"><b>'+e(L(lang,'primary'))+'</b> '
+        + arr(src.primary).map(function(x){ return e(S(x)); }).join(' · ')+'</div>' : '')
+    + (arr(src.secondary).length ? '<div class="note"><b>'+e(L(lang,'secondary'))+'</b> '
+        + arr(src.secondary).map(function(x){ return e(S(x)); }).join(' · ')+'</div>' : '')
+    + (arr(src.conflicts).length
+      ? sec('', L(lang,'ir_conflict')) + tbl([L(lang,'point'), 'A', 'B', L(lang,'decision')],
+          arr(src.conflicts).map(function(x){
+            return { cells:[e(tr(p,lang,x.point)), e(tr(p,lang,x.a)), e(tr(p,lang,x.b)),
+                     '<span class="mut">'+e(tr(p,lang,x.decision))+'</span>'] }; }))
+      : '')
+    + (arr(src.missing).length
+      ? sec('', L(lang,'ir_missing')) + irList(arr(src.missing).map(function(x){ return e(S(x)); }))
+      : '')));
+
+  /* ---------------- deep research sections ---------------- */
+  var dp = p.deep || {};
+  function has(o){ return o && (arr(o.rows).length || arr(o.days).length || arr(o.items).length
+                    || arr(o.history).length || arr(o.periods).length || arr(o.assumptions).length); }
+
+  if(has(dp.unit_economics)){
+    var ue = dp.unit_economics;
+    B.push(irSec('31', L(lang,'dp_unit'),
+        irNote(tr(p,lang,ue.note))
+      + tbl([L(lang,'metric')].concat(arr(f.years).length?arr(f.years):['FY24','FY25','FY26']).concat([L(lang,'unit')]),
+          arr(ue.rows).map(function(x){
+            return { cells:[e(tr(p,lang,x.metric)), n(x.fy24,2), n(x.fy25,2), n(x.fy26,2),
+                     '<span class="mut en">'+e(S(x.unit))+'</span>'] }; }), { num:[1,2,3] })));
+  }
+
+  if(has(dp.working_capital)){
+    var wc = dp.working_capital, wd = arr(wc.days);
+    B.push(irSec('32', L(lang,'dp_wc'),
+        irNote(tr(p,lang,wc.note))
+      + chartColumns(wd.map(function(x){ return S(tr(p,lang,x.label)).split(' ')[0]; }),
+                     wd.map(function(x){ return x.fy26; }), { h:150, colour:CH.navy2,
+                     fmt:function(v){ return n(v,0); } })
+      + tbl([L(lang,'metric')].concat(arr(f.years).length?arr(f.years):['FY24','FY25','FY26']),
+          wd.map(function(x){
+            return { cells:[e(tr(p,lang,x.label)), n(x.fy24,0), n(x.fy25,0), n(x.fy26,0)] }; }), { num:[1,2,3] })));
+  }
+
+  if(arr((dp.quarterly||{}).periods).length){
+    var qt = dp.quarterly;
+    B.push(irSec('33', L(lang,'dp_quarterly'),
+        irNote(tr(p,lang,qt.note))
+      + chartColumnsLine(arr(qt.periods), arr(qt.revenue), arr(qt.pat),
+          { barColour:CH.navy2, lineColour:CH.gold, h:170 })
+      + chartLegend([{ label:L(lang,'revenue_lbl'), colour:CH.navy2 },
+                     { label:L(lang,'pat_lbl'), colour:CH.gold }])));
+  }
+
+  if(has(dp.capital_allocation)){
+    var ca = dp.capital_allocation;
+    B.push(irSec('34', L(lang,'dp_capalloc'),
+        irNote(tr(p,lang,ca.note))
+      + tbl([L(lang,'year'), L(lang,'action'), L(lang,'amount'), L(lang,'outcome')],
+          arr(ca.history).map(function(x){
+            return { cells:['<span class="en">'+e(S(x.year))+'</span>', e(tr(p,lang,x.action)),
+                     '<span class="en">'+cr(x.amount_cr)+'</span>',
+                     '<span class="mut">'+e(tr(p,lang,x.outcome))+'</span>'] }; }), { num:[2] })));
+  }
+
+  if(has(dp.related_party)){
+    var rp = dp.related_party;
+    B.push(irSec('35', L(lang,'dp_rpt'),
+        irNote(tr(p,lang,rp.note))
+      + tbl([L(lang,'party'), L(lang,'nature'), L(lang,'amount'), L(lang,'concern')],
+          arr(rp.items).map(function(x){
+            var cc = S(x.concern).toUpperCase();
+            return { cells:['<b>'+e(tr(p,lang,x.party))+'</b>', e(tr(p,lang,x.nature)),
+              '<span class="en">'+cr(x.amount_cr)+'</span>',
+              '<span class="pill '+(cc==='HIGH'?'sv-high':cc==='MEDIUM'?'sv-med':'sv-low')+'">'
+                + e(A(lang,x.concern))+'</span>'] }; }), { num:[2] })));
+  }
+
+  if(has(dp.contingent)){
+    var cg = dp.contingent;
+    B.push(irSec('36', L(lang,'dp_contingent'),
+        irNote(tr(p,lang,cg.note))
+      + tbl([L(lang,'line_item'), L(lang,'amount'), L(lang,'status')],
+          arr(cg.items).map(function(x){
+            return { cells:[e(tr(p,lang,x.item)), '<span class="en">'+cr(x.amount_cr)+'</span>',
+                     '<span class="mut">'+e(tr(p,lang,x.status))+'</span>'] }; }), { num:[1] })));
+  }
+
+  if(has(dp.regulatory)){
+    var rg = dp.regulatory;
+    B.push(irSec('37', L(lang,'dp_regulatory'),
+        irNote(tr(p,lang,rg.note))
+      + tbl([L(lang,'parameter'), L(lang,'impact'), L(lang,'note')],
+          arr(rg.items).map(function(x){
+            var im = S(x.impact);
+            return { cells:[e(tr(p,lang,x.rule)),
+              '<span class="pill" style="background:'+(/neg/i.test(im)?'var(--bad)':/pos/i.test(im)?'var(--good)':'var(--navy2)')+'">'
+                + e(A(lang,x.impact))+'</span>',
+              '<span class="mut">'+e(tr(p,lang,x.note))+'</span>'] }; }))));
+  }
+
+  var cmx = (dp.competition||{}).matrix||{};
+  if(arr(cmx.rows).length){
+    B.push(irSec('38', L(lang,'dp_competition'),
+        irNote(tr(p,lang,(dp.competition||{}).note))
+      + tbl(arr(cmx.columns).map(function(c){ return tr(p,lang,c); }), arr(cmx.rows).map(function(r){
+          return { __cls:r.is_subject?'hi':'', cells:[ '<b class="en">'+e(S(r.name))+'</b>' ]
+            .concat(arr(r.cells).map(function(c){ return '<span class="mut">'+e(tr(p,lang,c))+'</span>'; })) }; }))));
+  }
+
+  var rd = dp.reverse_dcf||{};
+  if(arr(rd.assumptions).length || rd.implied_growth_pct != null){
+    B.push(irSec('39', L(lang,'dp_rdcf'),
+        irNote(tr(p,lang,rd.note))
+      + '<div class="tiles">'
+        + '<div class="tile"><div class="k">'+e(L(lang,'implied_growth'))+'</div><div class="v">'
+          + pct(rd.implied_growth_pct)+'</div></div>'
+        + '<div class="tile"><div class="k">'+e(L(lang,'dp_implied_margin'))+'</div><div class="v">'
+          + pct(rd.implied_margin_pct)+'</div></div>'
+        + '<div class="tile"><div class="k">'+e(L(lang,'dp_horizon'))+'</div><div class="v en">'
+          + n(rd.horizon_years,0)+'</div></div></div>'
+      + (arr(rd.assumptions).length
+        ? tbl([L(lang,'driver'), L(lang,'value'), L(lang,'note')], arr(rd.assumptions).map(function(x){
+            return { cells:[e(tr(p,lang,x.driver)), '<b class="en">'+e(S(x.value))+'</b>',
+                     '<span class="mut">'+e(tr(p,lang,x.comment))+'</span>'] }; })) : '')
+      + irNote(tr(p,lang,rd.verdict))));
+  }
+
+  var sen = dp.sensitivity||{};
+  if(arr(sen.rows).length){
+    B.push(irSec('40', L(lang,'dp_sensitivity'),
+        irNote(tr(p,lang,sen.note))
+      + chartHeat(arr(sen.columns), arr(sen.rows).map(function(r){
+          return { label:S(tr(p,lang,r.label)), cells:arr(r.cells) }; }), lang)
+      + '<div class="mut" style="font-size:8.4pt">'+e(S(tr(p,lang,sen.row_label)))
+        + ' × ' + e(S(tr(p,lang,sen.col_label)))+'</div>'));
+  }
+
+  if(has(dp.management_quality)){
+    var mq = dp.management_quality;
+    B.push(irSec('41', L(lang,'dp_mgmt'),
+        irNote(tr(p,lang,mq.note))
+      + tbl([L(lang,'parameter'), L(lang,'assessment'), L(lang,'evidence')],
+          arr(mq.items).map(function(x){
+            return { cells:[e(tr(p,lang,x.trait)),
+              '<span class="pill" style="background:var(--navy2)">'+e(A(lang,x.assessment))+'</span>',
+              '<span class="mut">'+e(tr(p,lang,x.evidence))+'</span>'] }; }))));
+  }
+
+  if(S(dp.bull_case_detail) || S(dp.bear_case_detail)){
+    B.push(irSec('42', L(lang,'dp_cases'),
+        (S(dp.bull_case_detail) ? '<div class="note ok"><b>'+e(L(lang,'dp_bull'))+'</b><br>'
+          + e(tr(p,lang,dp.bull_case_detail))+'</div>' : '')
+      + (S(dp.bear_case_detail) ? '<div class="note bad" style="margin-top:2.5mm"><b>'+e(L(lang,'dp_bear'))+'</b><br>'
+          + e(tr(p,lang,dp.bear_case_detail))+'</div>' : '')));
+  }
+
+  if(arr(dp.what_would_change_our_mind).length){
+    B.push(irSec('43', L(lang,'dp_change_mind'),
+      irList(arr(dp.what_would_change_our_mind).map(function(x){ return e(tr(p,lang,x)); }))));
+  }
+  if(arr(dp.key_questions_for_management).length){
+    B.push(irSec('44', L(lang,'dp_questions'),
+      irList(arr(dp.key_questions_for_management).map(function(x){ return e(tr(p,lang,x)); }))));
+  }
+
+  /* contents — an institutional report is navigated, not read straight through */
+  var TITLES = [
+    L(lang,'verdict_h'), L(lang,'ipo_snapshot'), L(lang,'what_it_does'), L(lang,'ir_products'),
+    L(lang,'ir_metrics'), L(lang,'ir_industry'), L(lang,'ir_moat'), L(lang,'ir_pl'),
+    L(lang,'ir_fq'), L(lang,'ir_cash'), L(lang,'ir_bs'), L(lang,'ir_promoters'),
+    L(lang,'ir_gov'), L(lang,'ir_anchors'), L(lang,'ir_objects'), L(lang,'ir_val'),
+    L(lang,'ir_peers'), L(lang,'ir_gmp'), L(lang,'strengths'), L(lang,'weaknesses'),
+    L(lang,'red_flags'), L(lang,'ir_scen'), L(lang,'ir_lg'), L(lang,'ir_lt'),
+    L(lang,'ir_alloc'), L(lang,'ir_catalysts'), L(lang,'ir_fail'), L(lang,'ir_monitor'),
+    L(lang,'ir_score'), L(lang,'ir_sources')
+  ];
+  TITLES = TITLES.concat([
+    L(lang,'dp_unit'), L(lang,'dp_wc'), L(lang,'dp_quarterly'), L(lang,'dp_capalloc'),
+    L(lang,'dp_rpt'), L(lang,'dp_contingent'), L(lang,'dp_regulatory'), L(lang,'dp_competition'),
+    L(lang,'dp_rdcf'), L(lang,'dp_sensitivity'), L(lang,'dp_mgmt'), L(lang,'dp_cases'),
+    L(lang,'dp_change_mind'), L(lang,'dp_questions')
+  ]).slice(0, B.length);
+  var toc = '<div class="ir-blk">' + sec('', L(lang,'ir_contents'))
+    + '<div class="ir-toc">' + TITLES.map(function(t,i){
+        return '<div class="ir-toc-row"><span class="en">'+(i<9?'0':'')+(i+1)+'</span><b>'+e(t)+'</b></div>';
+      }).join('') + '</div></div>';
+  B.unshift(toc);
+
+  /* ---- assemble: cover, then blocks packed into as many pages as needed ---- */
+  var shells = '';
+  for(var i = 2; i <= TOT + 6; i++){
+    shells += page(p, i, TOT, L(lang,'ir_title'),
+      '<div class="ir-box">' + (i === 2 ? B.join('') : '') + '</div><div class="grow"></div>',
+      lang, 'Institutional Research Report');
+  }
+
+  /* Deliberately more generous than the 10-page edition: larger body type, more
+     leading and real space between sections. This is the desk-read document. */
+  var CSS2 = '\n.ir-blk{ break-inside:avoid; margin-bottom:6mm; }\n'
+    + '.ir-blk table{ margin-bottom:2mm; font-size:9.2pt; }\n'
+    + '.ir-blk td,.ir-blk th{ padding-top:2.6mm; padding-bottom:2.6mm; }\n'
+    + 'body.gu .ir-blk table{ font-size:9.2pt; }\n'
+    + 'body.gu .ir-blk td,body.gu .ir-blk th{ padding-top:2.2mm; padding-bottom:2.2mm; }\n'
+    + '.ir-blk .sec{ margin:7mm 0 3mm; }\n'
+    + '.ir-blk .ti{ font-size:12pt; }\n'
+    + '.ir-blk .note{ font-size:9.4pt; line-height:1.62; margin-top:2.5mm; }\n'
+    + 'body.gu .ir-blk .note{ line-height:1.78; }\n'
+    + '.ir-blk .lead{ font-size:10.4pt; line-height:1.6; }\n'
+    + 'body.gu .ir-blk .lead{ line-height:1.8; }\n'
+    + '.ir-ul{ margin:2.5mm 0 3mm 5mm; padding:0; }\n'
+    + '.ir-ul li{ margin:2.4mm 0; line-height:1.6; font-size:9.6pt; }\n'
+    + 'body.gu .ir-ul li{ line-height:1.82; }\n'
+    + '.ir-toc{ margin-top:3mm; column-count:2; column-gap:9mm; }\n'
+    + '.ir-toc-row{ display:flex; gap:4mm; align-items:baseline; padding:1.9mm 0;'
+    + ' border-bottom:.4pt solid var(--rule); font-size:8.8pt;'
+    + ' break-inside:avoid; -webkit-column-break-inside:avoid; }\n'
+    + '.ir-toc-row span{ color:var(--ink4); font-weight:700; flex:0 0 9mm; }\n'
+    + '.ir-box{ display:block; }\n';
+
+  var FIT = '<script>(function(){'
+    + 'var ps=[].slice.call(document.querySelectorAll(".page")).slice(1);'
+    + 'var boxes=ps.map(function(el){ return el.querySelector(".ir-box"); });'
+    + 'function avail(el){ var bd=el.querySelector(".body"); return bd.clientHeight - 6; }'
+    /* push what does not fit onto the next page, one block at a time */
+    + 'for(var i=0;i<ps.length-1;i++){'
+      + 'var A=avail(ps[i]), guard=0;'
+      + 'while(boxes[i].scrollHeight>A && guard++<400){'
+        + 'var kids=boxes[i].querySelectorAll(".ir-blk");'
+        + 'if(kids.length<1) break;'
+        + 'if(kids.length===1){'
+          /* a single block taller than a page: split its children instead */
+          + 'var only=kids[0], parts=only.children;'
+          + 'if(parts.length<2) break;'
+          + 'var carry=document.createElement("div"); carry.className="ir-blk";'
+          + 'while(only.scrollHeight>A-10 && only.children.length>1){'
+            + 'carry.insertBefore(only.children[only.children.length-1], carry.firstChild); }'
+          + 'if(!carry.children.length) break;'
+          + 'boxes[i+1].insertBefore(carry, boxes[i+1].firstChild);'
+          + 'continue;'
+        + '}'
+        + 'boxes[i+1].insertBefore(kids[kids.length-1], boxes[i+1].firstChild);'
+      + '}'
+    + '}'
+    + 'for(var j=ps.length-1;j>=0;j--){'
+      + 'if(!boxes[j].children.length) ps[j].parentNode.removeChild(ps[j]);'
+    + '}'
+    + 'var live=[].slice.call(document.querySelectorAll(".page"));'
+    + 'for(var k=0;k<live.length;k++){'
+      + 'var t=live[k].querySelector(".pgtot"); if(t) t.textContent=live.length;'
+      + 'var nm=live[k].querySelector(".pgnum"); if(nm) nm.textContent=(k+1);'
+    + '}'
+    + '})();<\/script>';
+
+  return shell(S(m.company)+' — '+L(lang,'ir_title'), lang==='gu'?'gu':'',
+    cover(p, lang, 'Institutional Research Report', TOT) + shells, CSS2)
+    .replace('</body>', FIT+'</body>');
+}
+
 global.IPODocs = { buildReport:buildReport, buildExec:buildExec, buildVisual:buildVisual,
+                   buildInstitutional:buildInstitutional,
+                   charts:{ financials:chartFinancials, radar:chartRadar, gauge:chartGauge,
+                            peers:chartPeers, donut:chartDonut, ladder:chartLadder,
+                            columns:chartColumns, columnsLine:chartColumnsLine,
+                            waterfall:chartWaterfall, heat:chartHeat },
                    buildScorecard:buildScorecard, BLOCKS:BLOCKS, S:S };
 })(window);

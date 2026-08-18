@@ -27,12 +27,14 @@ function langsWanted(){
 function fileBase(p, kind, lang){
   var raw = (window.IPODocs && IPODocs.S) ? IPODocs.S(p.meta && (p.meta.short_name || p.meta.company)) : '';
   var nm = (raw || 'IPO').replace(/[^A-Za-z0-9]+/g,'_').replace(/^_+|_+$/g,'');
-  var k = kind==='report' ? 'IPO_Company_Research_Report'
+  var k = kind==='inst' ? 'IPO_Institutional_Research_Report'
+        : kind==='report' ? 'IPO_Company_Research_Report'
         : kind==='exec' ? 'IPO_Executive_Summary'
         : (kind==='score'||kind==='scorepng') ? 'IPO_Score_Card' : 'IPO_Investment_Summary';
   return nm + '_' + k + '_' + lang.toUpperCase();
 }
 function buildHTML(p, kind, lang){
+  if(kind === 'inst')   return IPODocs.buildInstitutional(p, lang);
   if(kind === 'report') return IPODocs.buildReport(p, lang);
   if(kind === 'exec')   return IPODocs.buildExec(p, lang);
   if(kind === 'score' || kind === 'scorepng') return IPODocs.buildScorecard(p, lang);
@@ -143,12 +145,44 @@ function download(blob, name){
   a.href = url; a.download = name; document.body.appendChild(a); a.click();
   setTimeout(function(){ URL.revokeObjectURL(url); document.body.removeChild(a); }, 1500);
 }
+/* Sharing has to happen inside a live user gesture. Building a five-document set
+   takes half a minute, so by the time the files exist the tap that started it has
+   expired and iOS rejects navigator.share with NotAllowedError. The old code then
+   fell back to downloading each file — and on iOS a programmatic download of a PDF
+   blob opens it in a viewer rather than saving, so the last file in the batch (the
+   score card) appeared on screen and nothing was shared. That is the bug.
+
+   Now: try to share; if the gesture has gone, hold the finished files and offer a
+   button. The user's tap on that button is a fresh gesture, and the share works. */
+var PENDING_SHARE = null;
+
+function canShareFiles(files){
+  try{ return !!(navigator.canShare && navigator.canShare({ files:files })); }catch(e){ return false; }
+}
+
+function shareNow(files, title){
+  if(!navigator.share) return Promise.resolve({ ok:false, reason:'unsupported' });
+  if(!canShareFiles(files)) return Promise.resolve({ ok:false, reason:'unsupported' });
+  return navigator.share({ files:files, title:title })
+    .then(function(){ return { ok:true }; })
+    .catch(function(err){
+      var name = (err && err.name) || '';
+      if(name === 'AbortError') return { ok:true, cancelled:true };     /* user closed the sheet */
+      return { ok:false, reason: name === 'NotAllowedError' ? 'gesture' : 'failed', err:err };
+    });
+}
+
+/* Offer a second tap rather than silently dumping five downloads. */
+function offerShare(files, title, note){
+  PENDING_SHARE = { files:files, title:title };
+  msg((note || '') + '<button type="button" class="btn sm pri" id="btnShareNow" style="margin-top:10px;">'
+    + 'TAP TO SHARE ' + files.length + ' FILE' + (files.length > 1 ? 'S' : '')
+    + '</button><button type="button" class="btn sm" id="btnSaveInstead" style="margin-top:8px;">'
+    + 'Save to this device instead</button>');
+}
+
 function share(files, title){
-  if(navigator.canShare && navigator.canShare({ files:files })){
-    return navigator.share({ files:files, title:title }).then(function(){ return true; })
-      .catch(function(){ return false; });
-  }
-  return Promise.resolve(false);
+  return shareNow(files, title).then(function(r){ return r.ok; });
 }
 
 function needPayload(){
@@ -164,6 +198,7 @@ function needPayload(){
 /* ---------- All Reports: every document, one language, one tap ---------- */
 var ALL_LANG = 'en';
 var ALL_KINDS = [
+  { kind:'inst',     ext:'pdf' },
   { kind:'report',   ext:'pdf' },
   { kind:'exec',     ext:'pdf' },
   { kind:'visual',   ext:'png' },
@@ -203,23 +238,31 @@ function doAll(act, msgTarget){
   var p = needPayload(); if(!p) return;
   var lang = ALL_LANG;
   var label = lang === 'gu' ? 'Gujarati' : 'English';
-  var names = { report:'research report', exec:'executive summary',
-                visual:'investment summary', score:'score card' };
+  var names = { inst:'institutional research report', report:'research report',
+                exec:'executive summary', visual:'investment summary', score:'score card' };
   function step(n, total, kind){
     msg('Building the ' + label + ' set — ' + n + ' of ' + total + ': ' + (names[kind]||kind) + '…');
   }
   buildAllFiles(p, lang, step).then(function(files){
     if(act === 'share'){
-      return share(files, IPODocs.S(p.meta.company) + ' — ' + label).then(function(ok){
-        if(ok){ msg('Shared all ' + files.length + ' ' + label + ' files.'); return; }
+      var title = IPODocs.S(p.meta.company) + ' — ' + label;
+      return shareNow(files, title).then(function(r){
+        if(r.ok){ msg(r.cancelled ? '' : 'Shared all ' + files.length + ' ' + label + ' files.'); return; }
+        if(r.reason === 'gesture'){
+          offerShare(files, title, '<b>' + files.length + ' ' + label + ' files are ready.</b> '
+            + 'Building them took longer than the phone allows a share to stay open, so tap once more '
+            + 'to send them. ');
+          return;
+        }
         files.forEach(function(f){ download(f, f.name); });
         msg('Sharing is not available in this browser, so all ' + files.length + ' '
-          + label + ' files were downloaded instead.');
+          + label + ' files were saved instead.');
       });
     }
     files.forEach(function(f){ download(f, f.name); });
-    msg('<b>Saved ' + files.length + ' ' + label + ' files</b> — research report, executive summary, '
-      + 'investment summary and score card. Send images on WhatsApp as a <b>Document, not a Photo</b>.');
+    msg('<b>Saved ' + files.length + ' ' + label + ' files</b> — institutional research report, '
+      + 'research report, executive summary, investment summary and score card. '
+      + 'Send images on WhatsApp as a <b>Document, not a Photo</b>.');
   }).catch(function(err){
     msg('Could not build the set: ' + err.message, true);
   });
@@ -264,10 +307,15 @@ function doAction(kind, act, msgTarget){
     htmlToPngBlobs(buildHTML(p, kind, lg), selFor(kind)).then(function(blobs){
       var files = blobs.map(function(b,i){
         return new File([b], fileBase(p,kind,lg)+(blobs.length>1?'_p'+(i+1):'')+'.png', { type:'image/png' }); });
-      return share(files, IPODocs.S(p.meta.company)).then(function(ok){
-        if(!ok){ files.forEach(function(f,i){ download(blobs[i], f.name); });
-                 msg('Sharing is not available in this browser, so the images were downloaded instead.'); }
-        else msg('Shared.');
+      var ttl = IPODocs.S(p.meta.company);
+      return shareNow(files, ttl).then(function(r){
+        if(r.ok){ msg(r.cancelled ? '' : 'Shared.'); return; }
+        if(r.reason === 'gesture'){
+          offerShare(files, ttl, '<b>The images are ready.</b> Tap once more to send them. ');
+          return;
+        }
+        files.forEach(function(f,i){ download(blobs[i], f.name); });
+        msg('Sharing is not available in this browser, so the images were saved instead.');
       });
     }).catch(function(err){ msg('Could not render the images: '+err.message, true); });
   } else {
@@ -275,9 +323,15 @@ function doAction(kind, act, msgTarget){
     htmlToPdfBlob(buildHTML(p, kind, lg), selFor(kind)).then(function(blob){
       var name = fileBase(p, kind, lg)+'.pdf';
       var file = new File([blob], name, { type:'application/pdf' });
-      return share([file], IPODocs.S(p.meta.company)).then(function(ok){
-        if(!ok){ download(blob, name); msg('Sharing is not available in this browser, so the file was downloaded instead.'); }
-        else msg('Shared.');
+      var ttl2 = IPODocs.S(p.meta.company);
+      return shareNow([file], ttl2).then(function(r){
+        if(r.ok){ msg(r.cancelled ? '' : 'Shared.'); return; }
+        if(r.reason === 'gesture'){
+          offerShare([file], ttl2, '<b>The PDF is ready.</b> Tap once more to send it. ');
+          return;
+        }
+        download(blob, name);
+        msg('Sharing is not available in this browser, so the file was saved instead.');
       });
     }).catch(function(err){ msg('Could not build the PDF: '+err.message, true); });
   }
@@ -293,6 +347,23 @@ document.addEventListener('DOMContentLoaded', function(){
       var row = lg.closest('.langseg');
       Array.prototype.forEach.call(row.querySelectorAll('.lg'), function(x){
         x.classList.toggle('on', x === lg); });
+      return;
+    }
+
+    if(t.id === 'btnShareNow' && PENDING_SHARE){
+      var ps = PENDING_SHARE;
+      shareNow(ps.files, ps.title).then(function(r){
+        if(r.ok){ PENDING_SHARE = null; msg(r.cancelled ? '' : 'Shared ' + ps.files.length + ' file(s).'); }
+        else { ps.files.forEach(function(f){ download(f, f.name); });
+               PENDING_SHARE = null;
+               msg('That did not go through, so the files were saved to this device instead.'); }
+      });
+      return;
+    }
+    if(t.id === 'btnSaveInstead' && PENDING_SHARE){
+      PENDING_SHARE.files.forEach(function(f){ download(f, f.name); });
+      msg('Saved ' + PENDING_SHARE.files.length + ' file(s) to this device.');
+      PENDING_SHARE = null;
       return;
     }
 
