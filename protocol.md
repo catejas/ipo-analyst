@@ -1,4 +1,4 @@
-# IPO COMPANY RESEARCH REPORT — FRAMEWORK v4.0
+# IPO COMPANY RESEARCH REPORT — FRAMEWORK v4.1
 
 You are researching an Indian IPO and returning your findings as structured data.
 Read Part 1 for who you are, Part 2 for what to research, Part 3 for what to output.
@@ -51,11 +51,97 @@ subscription and GMP all change daily.
 
 **Where information comes from, in order of trust:**
 
-1. **Best** — SEBI, the DRHP / RHP / prospectus, the company's own site, NSE, BSE, audited accounts
-2. **Good** — IPO Ji, Moneycontrol, Economic Times, Business Standard, Mint, Reuters, Bloomberg, broker research
-3. **Careful** — grey market premium sites, forums, YouTube, social media
+1. **Primary filings** — SEBI, the DRHP / RHP / prospectus, the company's own site, NSE and BSE
+   corporate announcements, audited and restated accounts. The anchor allotment is filed as a PDF
+   circular on the BSE and NSE sites the day before the issue opens; look for it there rather than
+   waiting for a news write-up.
+2. **Regulatory, legal and credit records — search these every time, they are free and public.**
+   Most analyses skip them, and they are where the disqualifying facts live.
+   - **Indian Kanoon** (`indiankanoon.org`) — full text of ITAT, CESTAT, GST appellate, NCLT, NCLAT,
+     High Court and Supreme Court judgments. Search the company, every promoter, and the material
+     subsidiaries by name. This is how a large tax dispute is found without the prospectus.
+   - **Credit rating rationales** — ICRA, CRISIL, CARE, India Ratings, Acuité. Free PDFs on the
+     agency sites. They carry working-capital intensity, every sanctioned bank facility with its
+     limit, interest cover, the group's shareholding structure, the revenue contribution of any
+     merger, and the agency's own written upgrade and downgrade triggers.
+   - **SEBI orders and enforcement**, **NCLT / NCLAT** cause lists and orders, **IBBI** for
+     insolvency, **CCI** for competition matters, **MCA / corporate filing aggregators** for
+     directorships, charges and group companies.
+3. **Structured financial data** — Screener, Trendlyne, Finology, Chittorgarh, InvestorGain, IPO Ji.
+   Good for the ratio and KPI tables. Cross-check any figure against a filing before relying on it.
+4. **Media and broker research** — Moneycontrol, Economic Times, Business Standard, Mint, Reuters,
+   Bloomberg. Best source for material disputes that are too recent for a judgment to exist.
+5. **Careful** — grey market premium sites, forums, YouTube, social media.
 
-Never treat item 3 as proof of a fact. Use it only for market sentiment.
+Never treat item 5 as proof of a fact. Use it only for market sentiment.
+
+**A figure is not unavailable until you have tried tier 2.** Rating rationales and case databases
+routinely carry what the aggregators omit. Saying a number could not be found, without having
+searched them, is work not done.
+
+## 4A. THE SEARCH BATTERY
+
+Run these before you conclude anything is unavailable. Replace the bracket with the actual name.
+
+**Filings and figures**
+`[company] RHP` · `[company] DRHP SEBI` · `[company] IPO price band lot size` ·
+`[company] restated financial statements` · `[company] anchor allotment BSE circular`
+
+**Credit and liquidity**
+`[company] ICRA rating rationale` · `[company] CRISIL rating` · `[company] CARE ratings` ·
+`[company] bank facilities rated` · `[company] working capital limits`
+
+**Litigation and enforcement — run every one of these**
+`[company] indiankanoon` · `[company] ITAT order` · `[company] GST demand` ·
+`[company] income tax search` · `[company] show cause notice` · `[company] NCLT` ·
+`[promoter name] SEBI order` · `[promoter name] fraud` · `[promoter name] wilful default` ·
+`[company] auditor resignation` · `[company] penalty` · `[company] litigation`
+
+**Business and industry**
+`[company] products revenue split` · `[company] customers concentration` ·
+`[company] capacity utilisation` · `[company] competitors India` · `[sector] market size India`
+
+**Sentiment, last and least**
+`[company] IPO GMP` · `[company] IPO subscription status` · `[company] IPO review`
+
+## 4B. COMPUTATION DISCIPLINE
+
+**Show the arithmetic.** Any figure you derive must state its formula. `Derived: 365 × 864.23 ÷
+1,985.13 = 159 days` is acceptable. `approximately 160 days` is not.
+
+**Run the reconciliation ladder before you publish, and report any line that fails.**
+
+| Check | Should hold |
+|---|---|
+| EPS × share count | = PAT |
+| NAV per share × share count | = net worth |
+| P/E × EPS | = issue price |
+| Share capital + reserves | = net worth |
+| ROCE × capital employed | = EBIT, which must be **less than** EBITDA |
+| Fresh issue ÷ issue price | = fresh shares; fresh + OFS shares = total offered |
+| Sum of objects | ≤ fresh issue |
+| Segment percentages | = 100 |
+
+A failed check is a finding, not an inconvenience. If ROCE implies an EBIT above EBITDA, the
+company is using a narrower capital-employed definition — say so and do not reuse the ratio.
+If two sources give different EPS, the difference is usually minority interest; work out which.
+
+**The formula bank.** Use these exactly; do not improvise.
+
+- Inventory days = 365 × inventory ÷ cost of goods sold · Receivable days = 365 × trade receivables
+  ÷ revenue · Payable days = 365 × trade payables ÷ cost of goods sold · **CCC** = inventory +
+  receivable − payable days
+- Net working capital days = (current assets − current liabilities) ÷ revenue × 365, and separately
+  the rating agency's NWC ÷ operating income × 365. **Report both and the gap between them.**
+- Cost of debt = finance cost ÷ average borrowings · Interest cover = EBIT ÷ finance cost
+- Cash conversion = CFO ÷ PAT · Accrual ratio = (PAT − CFO) ÷ average total assets
+- FCF = CFO − purchase of property, plant and equipment. If capex is not separately disclosed, use
+  cash used in investing and label it a proxy, because acquisitions contaminate it
+- Effective tax rate = total tax ÷ profit before tax, against the 25.17% statutory rate
+- Earnings yield = EPS ÷ issue price. Compare it with the 10-year government bond yield
+- PEG = P/E ÷ earnings growth. Compute it twice — on reported growth and on **organic** growth
+  with any acquisition stripped out. The second is the honest one
+- Promoter cash-out = OFS ÷ total issue size · Fresh issue as a share of post-issue market cap
 
 **Use the newest document.** DRHP → updated DRHP → RHP → prospectus. If the final price is not
 yet fixed, say so. Never invent an issue price.
@@ -449,6 +535,20 @@ still carries the scoring.
                           "cfo_pat": null, "fcf_pat": null,
                           "flags": ["max 130 chars each"],
                           "note": "max 400 chars" },
+    "cash_flow": {
+      "note": "max 300 chars — units, whether consolidated or standalone, and any year that is missing",
+      "rows": [ { "label": "Cash from operations | Cash used in investing | Cash from financing | Free cash flow (proxy)",
+                  "values": [0, 0, 0], "trend": "max 20 chars", "highlight": false } ],
+      "kpis": { "cfo_pat": [ { "year": "FY26", "value": 0.0 } ],
+                "cfo_ebitda_pct": null,
+                "accrual_ratio": null,
+                "capex_pct_of_revenue": null,
+                "wc_absorption_pct_of_incremental_revenue": null },
+      "divergence": { "flag": "None | Watch | Serious",
+                      "note": "max 240 chars — profit rising while operating cash falls is the single most useful warning in an IPO. Say plainly whether it is happening" },
+      "funding_verdict": "Self-funding | Partially self-funding | Dependent on external capital",
+      "funding_note": "max 240 chars — did borrowings rather than operations pay for the capex"
+    },
     "balance_sheet": { "rating": "Strong | Healthy | Moderate | Stretched | Weak",
                        "items": [ { "label": "max 24 chars", "value": "max 30 chars",
                                     "tone": "good | warn | bad" } ] },
@@ -457,6 +557,14 @@ still carries the scoring.
                        "basis": "max 90 chars",
                        "label_tag": "Official | Derived | Estimated" } ],
       "note": "max 340 chars",
+      "anchors": { "earnings_yield_pct": null, "gsec_10y_pct": null,
+                   "yield_gap_note": "max 140 chars — what the investor gives up against a risk-free alternative",
+                   "peg_reported": null, "peg_organic": null,
+                   "peg_note": "max 160 chars — why the two differ, if they do",
+                   "implied_growth_pct": null },
+      "reconciliation": [ { "check": "EPS x shares = PAT | NAV x shares = net worth | ROCE x capital employed = EBIT | Objects sum <= fresh issue | Segment percentages = 100",
+                            "result": "Ties | Does not tie | Could not test",
+                            "note": "max 130 chars — the arithmetic, and what a failure implies" } ],
       "discipline": [ { "question": "max 44 chars", "answer": "Yes | No | Partly",
                         "evidence": "max 110 chars" } ] },
     "peers": { "columns": ["Company", "Revenue", "Margin", "ROE", "ROCE", "P/E", "P/B"],
@@ -622,14 +730,59 @@ If you genuinely cannot source a section, send the key with an empty array and s
       "note": "max 300 chars — how well management has spent money before",
       "history": [ { "year": "FY24", "action": "max 44 chars", "amount_cr": 0.0, "outcome": "max 70 chars" } ]
     },
-    "related_party": {
-      "note": "max 300 chars",
-      "items": [ { "party": "max 34 chars", "nature": "max 44 chars", "amount_cr": 0.0,
-                   "concern": "None | Low | Medium | High" } ]
+    "litigation": {
+      "note": "max 320 chars — the shape of the legal exposure and how it was established",
+      "matters": [ { "forum": "ITAT | GST appellate | CESTAT | High Court | Supreme Court | NCLT | NCLAT | SEBI | CCI | ED | Other",
+                     "against": "Company | Subsidiary | Promoter | Director | Group company",
+                     "matter": "max 90 chars — what the dispute is about",
+                     "amount_cr": 0.0,
+                     "status": "Pending | Under appeal | Resolved in favour | Resolved against | Settled | Unquantified",
+                     "year": "FY24 or 2023, as reported",
+                     "tag": "Official | Reported | Derived" } ],
+      "disputed_total_cr": 0.0,
+      "pct_of_net_worth": 0.0,
+      "pct_of_pat": 0.0,
+      "verdict": "max 220 chars — what the exposure means for an investor, in plain English"
     },
-    "contingent": {
-      "note": "max 260 chars — tax demands, disputes, guarantees",
-      "items": [ { "item": "max 54 chars", "amount_cr": 0.0, "status": "max 34 chars" } ]
+    "group_structure": {
+      "note": "max 260 chars — how the group is put together and what consolidates",
+      "entities": [ { "name": "max 40 chars", "stake_pct": 0.0,
+                      "basis": "Subsidiary | Step-down subsidiary | Joint venture | Associate",
+                      "activity": "max 50 chars" } ],
+      "related_party_note": "max 240 chars — the nature of dealings between them, and any concern; amounts are in the prospectus and are not required here"
+    },
+    "credit": {
+      "note": "max 280 chars — what the rating agency says that the accounts do not",
+      "agency": "ICRA | CRISIL | CARE | India Ratings | Acuite | None found",
+      "rating": "max 22 chars, e.g. [ICRA]A- (Stable)",
+      "outlook": "Positive | Stable | Negative | Watch",
+      "rating_date": "2025-11",
+      "history": [ { "date": "2024-08", "action": "Assigned | Upgraded | Downgraded | Reaffirmed",
+                     "rating": "max 22 chars" } ],
+      "facilities": [ { "type": "Cash credit | Term loan | Bank guarantee | Letter of credit | Unallocated",
+                        "limit_cr": 0.0, "note": "max 60 chars" } ],
+      "wc_intensity": [ { "year": "FY25", "nwc_pct_of_income": 0.0 } ],
+      "interest_cover": null, "debt_ebitda": null,
+      "sensitivities": [ { "direction": "Upgrade | Downgrade", "trigger": "max 120 chars" } ]
+    },
+    "issue_structure": {
+      "note": "max 280 chars — what the structure of this issue tells you about intent",
+      "promoter_cashout_pct": 0.0,
+      "fresh_pct_of_market_cap": 0.0,
+      "objects_split": { "growth_capex_pct": 0.0, "debt_repayment_pct": 0.0, "general_corporate_pct": 0.0 },
+      "gcp_within_sebi_cap": true,
+      "promoter_cost_of_acquisition": { "weighted_avg": null, "issue_price": null,
+                                        "multiple": null, "note": "max 120 chars" },
+      "drhp_delta": { "changed": true, "fresh_then_cr": null, "fresh_now_cr": null,
+                      "ofs_then": null, "ofs_now": null, "note": "max 160 chars" },
+      "recent_bonus_or_placement": "max 160 chars, or 'None in the preceding twelve months'"
+    },
+    "concentration": {
+      "note": "max 260 chars",
+      "customers": [ { "year": "FY26", "top10_pct": 0.0 } ],
+      "raw_materials": [ { "input": "max 26 chars", "pct_of_purchases": 0.0 } ],
+      "end_markets": [ { "market": "max 26 chars", "pct_of_revenue": 0.0 } ],
+      "geography": [ { "region": "Domestic | Exports | max 20 chars", "pct_of_revenue": 0.0 } ]
     },
     "regulatory": {
       "note": "max 260 chars",
@@ -672,6 +825,13 @@ If you genuinely cannot source a section, send the key with an empty array and s
 | `deep.operating_metrics.rows` | 6–10 — **CAC, cash conversion cycle and customer concentration are compulsory**; add the ones that matter for this sector |
 | `deep.balance_sheet.assets` | 5–8 |
 | `deep.balance_sheet.borrowings` | 2–5, or one row saying the company is debt-free |
+| `deep.litigation.matters` | every matter you can establish; **an empty array is only acceptable if you searched Indian Kanoon, NCLT and SEBI orders and found nothing** |
+| `deep.credit.facilities` | every rated facility, or state that no rating was found |
+| `deep.credit.sensitivities` | the agency's own upgrade and downgrade triggers, both directions |
+| `deep.group_structure.entities` | every subsidiary, joint venture and associate that consolidates |
+| `deep.concentration.raw_materials` | 2–5 inputs, with share of purchases |
+| `financials.cash_flow.rows` | all four lines, three years |
+| `financials.valuation.reconciliation` | all five checks, each marked Ties, Does not tie, or Could not test |
 | `deep.unit_economics.rows` | 4–7 — the metrics that actually describe one unit of this business |
 | `deep.working_capital.days` | all four: inventory, receivable, payable, cash conversion cycle |
 | `deep.quarterly.periods` | the last 4 quarters if disclosed; empty array if the company has never reported |
@@ -783,6 +943,24 @@ you genuinely cannot open it, say which document you could not reach and why, in
 **Only after you have tried to derive it** may a field be null, and then `tag` must say
 `Not disclosed` and `note` must say in one short phrase where you looked. A null with no
 explanation will be treated as work not done.
+
+## 49C. LITIGATION IS A RED FLAG SOURCE, NOT A FORMALITY
+
+A tax demand or a tribunal matter large enough to matter is the single most common thing an IPO
+analysis misses, and the one most likely to change a decision. It is also findable for free.
+
+**Search Indian Kanoon by name** — the company, every promoter individually, and any material
+subsidiary. Judgments name the amount and the forum. Then search SEBI orders, NCLT and NCLAT, and
+recent media, because a dispute raised this year will be in the press before it is in a judgment.
+
+For every matter record the forum, whether it is against the company, a subsidiary or a promoter
+personally, what it is about, the amount, the status and the year. Then total it and express the
+total as a percentage of net worth and of PAT. **That percentage is the finding.** A dispute of a
+few crore against a large net worth is noise; one that approaches or exceeds annual profit is the
+headline.
+
+Anything above 10% of net worth must also appear in `decision.red_flags`. The app will add it if
+you do not, so it is better that you frame it properly.
 
 ## 50. CHECK THESE BEFORE YOU SEND
 

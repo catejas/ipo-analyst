@@ -1,4 +1,4 @@
-# IPO Analyst — standalone web app  ·  v4.0  ·  build 2026.08.18.4
+# IPO Analyst — standalone web app  ·  v4.1  ·  build 2026.08.18.5
 
 A single-page web app that turns the institutional IPO research protocol into something you can
 run from an icon on your phone. It works on Android and iPhone/iPad, installs to the home screen,

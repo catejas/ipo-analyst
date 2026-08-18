@@ -109,7 +109,37 @@ var VOCAB_GU = {
   'Half-yearly':'અર્ધવાર્ષિક', 'Daily':'દૈનિક',
   /* investor and issue words that are not abbreviations */
   'Retail':'રિટેલ', 'Mainboard':'મેઇનબોર્ડ', 'Fresh issue':'નવો ઇશ્યૂ',
-  'Listing':'લિસ્ટિંગ', 'Anchor':'એન્કર', 'Unofficial':'બિનસત્તાવાર'
+  'Listing':'લિસ્ટિંગ', 'Anchor':'એન્કર', 'Unofficial':'બિનસત્તાવાર',
+  /* balance sheet and earnings-quality ratings */
+  'Healthy':'સ્વસ્થ', 'Stretched':'ખેંચાયેલું', 'Red flag':'ચેતવણી સંકેત',
+  'High':'ઊંચું', 'Low':'નીચું',
+  /* issue structure verdicts */
+  'Growth capital':'વૃદ્ધિ મૂડી', 'Balance-sheet repair':'સરવૈયા સુધારણા',
+  'Partial exit':'આંશિક એક્ઝિટ', 'Primarily shareholder exit':'મુખ્યત્વે શેરહોલ્ડર એક્ઝિટ',
+  /* litigation status and forum party */
+  'Under appeal':'અપીલ હેઠળ', 'Resolved in favour':'તરફેણમાં ઉકેલાયું',
+  'Resolved against':'વિરુદ્ધ ઉકેલાયું', 'Settled':'સમાધાન થયું',
+  'Unquantified':'રકમ નક્કી નથી', 'Company':'કંપની', 'Subsidiary':'પેટાકંપની',
+  'Promoter':'પ્રમોટર', 'Director':'ડિરેક્ટર', 'Group company':'જૂથ કંપની',
+  /* group structure basis */
+  'Step-down subsidiary':'પેટા-પેટાકંપની', 'Joint venture':'સંયુક્ત સાહસ',
+  'Associate':'સહયોગી',
+  /* credit */
+  'Upgrade':'અપગ્રેડ', 'Downgrade':'ડાઉનગ્રેડ', 'Watch':'નિરીક્ષણ હેઠળ',
+  'Assigned':'સોંપાયું', 'Upgraded':'અપગ્રેડ થયું', 'Downgraded':'ડાઉનગ્રેડ થયું',
+  'Reaffirmed':'પુનઃપુષ્ટિ', 'Cash credit':'કેશ ક્રેડિટ', 'Term loan':'ટર્મ લોન',
+  'Bank guarantee':'બેંક ગેરંટી', 'Letter of credit':'લેટર ઓફ ક્રેડિટ',
+  'Unallocated':'ફાળવેલ નથી',
+  /* cash flow verdicts */
+  'Self-funding':'સ્વ-ભંડોળ', 'Partially self-funding':'આંશિક સ્વ-ભંડોળ',
+  'Dependent on external capital':'બાહ્ય મૂડી પર નિર્ભર',
+  'Serious':'ગંભીર',
+  /* reconciliation results */
+  'Ties':'મેળ ખાય છે', 'Does not tie':'મેળ ખાતું નથી', 'Could not test':'ચકાસી શકાયું નથી',
+  /* margin profile */
+  'Above average':'સરેરાશથી ઉપર', 'Average':'સરેરાશ', 'Below average':'સરેરાશથી નીચે',
+  /* reported tag */
+  'Reported':'નોંધાયેલ', 'Partly':'આંશિક રીતે'
 };
 
 /* Financial shorthand that stays English by design, per section 51.1. */
@@ -207,6 +237,55 @@ var T = {
   exchanges:      ['Exchanges','એક્સચેન્જ'],
   ir_products:    ['Products and services — what the company actually sells','ઉત્પાદનો અને સેવાઓ — કંપની ખરેખર શું વેચે છે'],
   ir_segments:    ['Revenue mix by segment','સેગમેન્ટ પ્રમાણે આવક મિશ્રણ'],
+  ir_litigation:  ['Litigation and disputed demands','મુકદ્દમા અને વિવાદિત માંગણીઓ'],
+  ir_credit:      ['Credit profile and bank facilities','ધિરાણ પ્રોફાઇલ અને બેંક સુવિધાઓ'],
+  ir_group:       ['Group structure','જૂથ માળખું'],
+  ir_issue_kpi:   ['Issue structure and governance signals','ઇશ્યૂ માળખું અને ગવર્નન્સ સંકેતો'],
+  ir_concentration:['Concentration risk','કેન્દ્રીકરણ જોખમ'],
+  ir_cashflow:    ['Cash flow analysis','રોકડ પ્રવાહ વિશ્લેષણ'],
+  forum:          ['Forum','મંચ'],
+  against:        ['Against','વિરુદ્ધ'],
+  matter:         ['Matter','બાબત'],
+  disputed_total: ['Total disputed','કુલ વિવાદિત'],
+  pct_net_worth:  ['Of net worth','નેટવર્થના'],
+  pct_pat:        ['Of PAT','PAT ના'],
+  rating_lbl:     ['Rating','રેટિંગ'],
+  outlook_lbl:    ['Outlook','દૃષ્ટિકોણ'],
+  facility:       ['Facility','સુવિધા'],
+  limit_lbl:      ['Limit','મર્યાદા'],
+  wc_intensity:   ['Working capital intensity','કાર્યકારી મૂડી તીવ્રતા'],
+  upgrade_trig:   ['Upgrade trigger','અપગ્રેડ ટ્રિગર'],
+  downgrade_trig: ['Downgrade trigger','ડાઉનગ્રેડ ટ્રિગર'],
+  entity:         ['Entity','એન્ટિટી'],
+  stake:          ['Stake','હિસ્સો'],
+  basis_lbl:      ['Basis','આધાર'],
+  activity:       ['Activity','પ્રવૃત્તિ'],
+  cashout:        ['Promoter cash-out','પ્રમોટર કેશ-આઉટ'],
+  fresh_of_mcap:  ['Fresh issue of market cap','માર્કેટ કેપમાં ફ્રેશ ઇશ્યૂ'],
+  cost_of_acq:    ['Promoter cost of acquisition','પ્રમોટરની સંપાદન કિંમત'],
+  drhp_delta:     ['DRHP to RHP change','DRHP થી RHP ફેરફાર'],
+  input_lbl:      ['Input','ઇનપુટ'],
+  of_purchases:   ['Of purchases','ખરીદીના'],
+  end_market:     ['End market','અંતિમ બજાર'],
+  of_revenue:     ['Of revenue','આવકના'],
+  earnings_yield: ['Earnings yield','કમાણી ઉપજ'],
+  gsec_10y:       ['10-year G-sec','10-વર્ષ G-sec'],
+  peg_reported:   ['PEG on reported growth','નોંધાયેલ વૃદ્ધિ પર PEG'],
+  peg_organic:    ['PEG on organic growth','ઓર્ગેનિક વૃદ્ધિ પર PEG'],
+  reconciliation: ['Reconciliation checks','સમાધાન ચકાસણી'],
+  check_lbl:      ['Check','ચકાસણી'],
+  result_lbl:     ['Result','પરિણામ'],
+  cfo_pat:        ['Cash conversion (CFO / PAT)','રોકડ રૂપાંતરણ (CFO / PAT)'],
+  divergence:     ['Profit versus cash','નફો વિરુદ્ધ રોકડ'],
+  funding_verdict:['Funding verdict','ભંડોળ ચુકાદો'],
+  trigger_lbl:    ['Trigger','ટ્રિગર'],
+  top10_customers:['Top 10 customers as a share of revenue','આવકમાં ટોચના 10 ગ્રાહકોનો હિસ્સો'],
+  region_lbl:     ['Region','પ્રદેશ'],
+  debt_repay:     ['Debt repayment','દેવાની ચુકવણી'],
+  accrual_ratio:  ['Accrual ratio','ઉપચય ગુણોત્તર'],
+  capex_intensity:['Capex intensity','કેપેક્સ તીવ્રતા'],
+  wc_absorption:  ['Working capital absorption','કાર્યકારી મૂડી શોષણ'],
+  trend:          ['Trend','વલણ'],
   mechanism:      ['How it plays out','તે કેવી રીતે થાય છે'],
   priority:       ['Priority','પ્રાથમિકતા'],
   scenario:       ['Scenario','પરિદૃશ્ય'],
@@ -847,7 +926,30 @@ function safePayload(p){
   p.gu = p.gu || {};
   if(!S(p.meta.company)) p.meta.company = S(p.meta.short_name) || 'IPO';
   if(!S(p.meta.short_name)) p.meta.short_name = S(p.meta.company);
+  escalateLitigation(p);
   return p;
+}
+
+/* A disputed demand worth more than a tenth of net worth is a red flag whether
+   or not the model chose to call it one. The app adds it so it cannot be
+   talked down, and it is marked as added by the app rather than by the tool. */
+function escalateLitigation(p){
+  var lit = (p.deep && p.deep.litigation) || {};
+  var pctNW = Number(lit.pct_of_net_worth);
+  if(!isFinite(pctNW) || pctNW < 10) return;
+  p.decision = p.decision || {};
+  var flags = p.decision.red_flags = arr(p.decision.red_flags);
+  var already = flags.some(function(x){
+    return /litigation|dispute|demand|tax|gst/i.test(S(x.flag) + ' ' + S(x.evidence)); });
+  if(already) return;
+  var total = lit.disputed_total_cr != null ? '₹' + n(lit.disputed_total_cr) + ' cr' : 'The disputed amount';
+  flags.unshift({
+    flag: 'Disputed demands are large against net worth',
+    evidence: total + ' under dispute, ' + n(pctNW, 1) + '% of net worth'
+            + (lit.pct_of_pat != null ? ' and ' + n(lit.pct_of_pat, 1) + '% of annual profit' : '')
+            + '. Flagged automatically from the litigation record.',
+    severity: pctNW >= 25 ? 'CRITICAL' : 'HIGH'
+  });
 }
 
 function buildReport(p, lang){
@@ -1103,6 +1205,54 @@ function buildReport(p, lang){
   /* data-spill: the company report is allowed to run to an eleventh page when
      a payload is unusually rich, rather than being shrunk or — as it was
      before — silently clipped. */
+  /* KPI page: the signals that do not need the prospectus — credit, litigation
+     exposure, cash conversion and what the issue structure says about intent. */
+  var kdp = p.deep||{}, klit = kdp.litigation||{}, kcr = kdp.credit||{},
+      kis = kdp.issue_structure||{}, kcf = (p.financials||{}).cash_flow||{},
+      kcfk = kcf.kpis||{}, kdvg = kcf.divergence||{}, kcn = kdp.concentration||{};
+  var kpiRows = [];
+  function kpiRow(label, value, tone, note){
+    if(value == null || value === '') return;
+    kpiRows.push({ cells:[e(label), '<b class="en" style="color:'
+      + (tone==='bad'?'var(--bad)':tone==='warn'?'var(--amber)':tone==='good'?'var(--good)':'var(--ink)')
+      + '">'+value+'</b>', '<span class="mut">'+e(note||'')+'</span>'] });
+  }
+  kpiRow(L(lang,'rating_lbl'), S(kcr.rating)||null, 'plain', A(lang,kcr.outlook));
+  kpiRow(L(lang,'disputed_total'), klit.disputed_total_cr!=null? cr(klit.disputed_total_cr):null,
+         Number(klit.pct_of_net_worth)>=10?'bad':'plain',
+         klit.pct_of_net_worth!=null? pct(klit.pct_of_net_worth,1)+' '+L(lang,'pct_net_worth'):'');
+  (arr(kcfk.cfo_pat).slice(-1)).forEach(function(x){
+    kpiRow(L(lang,'cfo_pat'), pct(x.value,0), Number(x.value)<60?'bad':Number(x.value)<85?'warn':'good', S(x.year)); });
+  kpiRow(L(lang,'divergence'), S(kdvg.flag)? A(lang,kdvg.flag):null,
+         /serious/i.test(S(kdvg.flag))?'bad':/watch/i.test(S(kdvg.flag))?'warn':'good', '');
+  kpiRow(L(lang,'cashout'), kis.promoter_cashout_pct!=null? pct(kis.promoter_cashout_pct,1):null,
+         Number(kis.promoter_cashout_pct)>=70?'bad':'plain', '');
+  kpiRow(L(lang,'cost_of_acq'), (kis.promoter_cost_of_acquisition||{}).multiple!=null
+         ? n(kis.promoter_cost_of_acquisition.multiple,1)+'x' : null, 'plain',
+         tr(p,lang,(kis.promoter_cost_of_acquisition||{}).note));
+  kpiRow(L(lang,'wc_intensity'), arr(kcr.wc_intensity).length
+         ? pct(arr(kcr.wc_intensity).slice(-1)[0].nwc_pct_of_income,1) : null, 'plain', '');
+  kpiRow(L(lang,'top10_customers'), arr(kcn.customers).length
+         ? pct(arr(kcn.customers).slice(-1)[0].top10_pct,1) : null, 'plain', '');
+  if(kpiRows.length){
+    /* The page-total in every footer is corrected by the packer at render time,
+       so appending a page here does not leave page 1 saying "of 10". */
+    TOT = 11;
+    out += page(p, 11, TOT, 'Key Signals', sec('28', L(lang,'ir_issue_kpi'))
+      + tbl([L(lang,'parameter'), L(lang,'value_lbl'), L(lang,'note')], kpiRows, { num:[1] })
+      + (arr(klit.matters).length ? sec('29', L(lang,'ir_litigation'))
+          + tbl([L(lang,'forum'), L(lang,'matter'), L(lang,'amount'), L(lang,'status')],
+              arr(klit.matters).map(function(x){
+                return { cells:['<span class="en">'+e(S(x.forum))+'</span>',
+                         '<span class="mut">'+e(tr(p,lang,x.matter))+'</span>',
+                         '<b class="en">'+cr(x.amount_cr)+'</b>',
+                         '<span class="mut">'+e(A(lang,x.status))+'</span>'] }; }), { num:[2] })
+          + (S(klit.verdict)? '<div class="note" style="margin-top:2mm">'+e(tr(p,lang,klit.verdict))+'</div>' : '')
+        : '')
+      + '<div class="grow"></div>', lang);
+  }
+
+
   return shell(S(m.company)+' — IPO Company Research Report', lang==='gu'?'gu':'', out)
          .replace('<body class=', '<body data-spill="1" class=');
 }
@@ -2077,6 +2227,36 @@ function irSections(lang, gate){
             '<span class="pill '+sevClass(x.severity)+'">'+e(A(lang,x.severity))+'</span>',
             '<span class="mut">'+e(S(g.note)||tr(p,lang,x.note))+'</span>'] }; })));
 
+  /* Cash flow, properly. Profit rising while operating cash falls is the most
+     useful warning an IPO gives, so it is stated as a verdict, not buried. */
+  var cf = f.cash_flow||{}, cfr = arr(cf.rows), cfk = cf.kpis||{}, dvg = cf.divergence||{};
+  push(L(lang,'ir_cashflow'),
+      note(tr(p,lang,cf.note))
+    + (cfr.length ? chartColumns(arr(f.years).length?arr(f.years):['FY24','FY25','FY26'],
+        (rowSeries(cfr, /operat/i)||[]), { h:140, colour:CH.teal, fmt:function(x){ return n(x,0); } }) : '')
+    + T2([L(lang,'line_item')].concat(arr(f.years).length?arr(f.years):['FY24','FY25','FY26'])
+          .concat([L(lang,'trend')]),
+        cfr.map(function(x){
+          var v = arr(x.values);
+          return { __cls:x.highlight?'hi':'',
+                   cells:[e(tr(p,lang,x.label)), n(v[0],2), n(v[1],2), n(v[2],2),
+                          '<span class="mut">'+e(tr(p,lang,x.trend))+'</span>'] }; }), { num:[1,2,3] })
+    + (arr(cfk.cfo_pat).length
+      ? '<div class="tiles">'+arr(cfk.cfo_pat).map(function(x){
+          var v = Number(x.value);
+          return '<div class="tile"><div class="k">'+e(S(x.year))+' '+e(L(lang,'cfo_pat'))
+            + '</div><div class="v" style="color:'+(v<60?'var(--bad)':v<85?'var(--amber)':'var(--good)')
+            + '">'+pct(x.value,0)+'</div></div>'; }).join('')+'</div>' : '')
+    + kv([[L(lang,'accrual_ratio'), cfk.accrual_ratio!=null? n(cfk.accrual_ratio,3) : null],
+          [L(lang,'capex_intensity'), cfk.capex_pct_of_revenue!=null? pct(cfk.capex_pct_of_revenue,1) : null],
+          [L(lang,'wc_absorption'), cfk.wc_absorption_pct_of_incremental_revenue!=null
+            ? pct(cfk.wc_absorption_pct_of_incremental_revenue,1) : null]])
+    + (S(dvg.flag) ? '<div class="note'+(/serious/i.test(S(dvg.flag))?' bad':/watch/i.test(S(dvg.flag))?' warn':'')
+        + '"><b>'+e(L(lang,'divergence'))+' — '+e(A(lang,dvg.flag))+'</b> '+e(tr(p,lang,dvg.note))+'</div>' : '')
+    + (S(cf.funding_verdict) ? '<div class="note"><b>'+e(L(lang,'funding_verdict'))+' — '
+        + e(A(lang,cf.funding_verdict))+'</b> '+e(tr(p,lang,cf.funding_note))+'</div>' : ''),
+    '', cfr.length);
+
   /* 11 balance sheet */
   var bs = f.balance_sheet||{};
   /* This printed only the scalar keys and silently ignored bs.items, so the
@@ -2162,9 +2342,43 @@ function irSections(lang, gate){
           return { cells:['<span class="en">'+e(tr(p,lang,x.label))+'</span>',
                    '<b class="en">'+e(S(x.value))+'</b>',
                    '<span class="mut">'+e(tr(p,lang,x.basis))+'</span>'] }; }), { num:[1] })
+    /* Anchors: what the buyer gives up against a risk-free alternative, and
+       whether the growth being paid for is real or was acquired. */
+    + (function(){ var a = val.anchors||{};
+        if(a.earnings_yield_pct==null && a.peg_reported==null && a.implied_growth_pct==null) return '';
+        return '<div class="tiles">'
+          + '<div class="tile"><div class="k">'+e(L(lang,'earnings_yield'))+'</div><div class="v">'
+            + pct(a.earnings_yield_pct,2)+'</div><div class="s">'+e(L(lang,'gsec_10y'))+' '
+            + pct(a.gsec_10y_pct,2)+'</div></div>'
+          + (a.peg_reported!=null ? '<div class="tile"><div class="k">'+e(L(lang,'peg_reported'))
+              + '</div><div class="v en">'+n(a.peg_reported,2)+'</div></div>' : '')
+          + (a.peg_organic!=null ? '<div class="tile"><div class="k">'+e(L(lang,'peg_organic'))
+              + '</div><div class="v en" style="color:'+(Number(a.peg_organic)>2?'var(--bad)':'var(--ink)')
+              + '">'+n(a.peg_organic,2)+'</div></div>' : '')
+          + (a.implied_growth_pct!=null ? '<div class="tile"><div class="k">'+e(L(lang,'implied_growth'))
+              + '</div><div class="v">'+pct(a.implied_growth_pct,1)+'</div></div>' : '')
+          + '</div>'
+          + (S(a.yield_gap_note)? note(tr(p,lang,a.yield_gap_note)) : '')
+          + (S(a.peg_note)? note(tr(p,lang,a.peg_note)) : '');
+      })()
+    /* The reconciliation ladder. A check that does not tie is a finding. */
+    + (arr(val.reconciliation).length
+      ? '<div class="ir-sub">'+e(L(lang,'reconciliation'))+'</div>'
+        + T2([L(lang,'check_lbl'), L(lang,'result_lbl'), L(lang,'note')],
+            arr(val.reconciliation).map(function(x){
+              var bad = /does not tie/i.test(S(x.result));
+              return { cells:['<span class="en">'+e(tr(p,lang,x.check))+'</span>',
+                       '<span class="pill '+(bad?'sv-high':/could not/i.test(S(x.result))?'sv-med':'sv-low')+'">'
+                         + e(A(lang,x.result))+'</span>',
+                       '<span class="mut">'+e(tr(p,lang,x.note))+'</span>'] }; }))
+      : '')
+    /* The contract calls these question / answer / evidence. The old code read
+       test / label / verdict / value, so the column was blank. */
     + (arr(val.discipline).length
-      ? T2([L(lang,'parameter'), L(lang,'assessment')], arr(val.discipline).map(function(x){
-          return { cells:[e(tr(p,lang,x.test||x.label)), '<span class="mut">'+e(tr(p,lang,x.verdict||x.value))+'</span>'] }; }))
+      ? T2([L(lang,'parameter'), L(lang,'assessment'), L(lang,'evidence')], arr(val.discipline).map(function(x){
+          return { cells:[e(tr(p,lang,x.question||x.test||x.label)),
+                   '<b>'+e(A(lang,x.answer||x.verdict||x.value))+'</b>',
+                   '<span class="mut">'+e(tr(p,lang,x.evidence))+'</span>'] }; }))
       : ''),
     S(val.verdict) ? A(lang,val.verdict) : '');
 
@@ -2259,6 +2473,107 @@ function irSections(lang, gate){
        not found is dead space; the limitation belongs in the source audit. */
     push(title, note(tr(p,lang,blk.note)) + T2(cols, rows, opts), '', rows.length);
   }
+
+  /* Litigation — the section most likely to change a decision, and the one
+     that used to depend on the prospectus. Indian Kanoon and the tribunal
+     portals carry the material matters, so it is sourced from the web now. */
+  var lit = dp.litigation||{}, lmat = arr(lit.matters);
+  push(L(lang,'ir_litigation'),
+      note(tr(p,lang,lit.note))
+    + ((lit.disputed_total_cr!=null || lit.pct_of_net_worth!=null)
+      ? '<div class="tiles">'
+        + '<div class="tile"><div class="k">'+e(L(lang,'disputed_total'))+'</div><div class="v en">'
+          + cr(lit.disputed_total_cr)+'</div></div>'
+        + '<div class="tile"><div class="k">'+e(L(lang,'pct_net_worth'))+'</div><div class="v" style="color:'
+          + (Number(lit.pct_of_net_worth)>=10?'var(--bad)':'var(--ink)')+'">'+pct(lit.pct_of_net_worth,1)+'</div></div>'
+        + '<div class="tile"><div class="k">'+e(L(lang,'pct_pat'))+'</div><div class="v">'+pct(lit.pct_of_pat,1)+'</div></div></div>'
+      : '')
+    + T2([L(lang,'forum'), L(lang,'against'), L(lang,'matter'), L(lang,'amount'), L(lang,'status')],
+        lmat.map(function(x){
+          return { cells:['<span class="en">'+e(S(x.forum))+'</span>', e(A(lang,x.against)),
+                   '<span class="mut">'+e(tr(p,lang,x.matter))+'</span>',
+                   '<b class="en">'+cr(x.amount_cr)+'</b>',
+                   '<span class="pill '+(/against|pending/i.test(S(x.status))?'sv-med':'sv-low')+'">'
+                     + e(A(lang,x.status))+'</span>'] }; }), { num:[3] })
+    + note(tr(p,lang,lit.verdict)), '', lmat.length);
+
+  /* Credit profile — the rating agency sees things the accounts do not show. */
+  var cr_ = dp.credit||{}, fac = arr(cr_.facilities), sens = arr(cr_.sensitivities);
+  push(L(lang,'ir_credit'),
+      note(tr(p,lang,cr_.note))
+    + kv([[L(lang,'rating_lbl'), S(cr_.rating)? '<span class="en">'+e(S(cr_.rating))+'</span>' : null],
+          [L(lang,'outlook_lbl'), S(cr_.outlook)? e(A(lang,cr_.outlook)) : null],
+          [L(lang,'interest_cover'), cr_.interest_cover!=null? n(cr_.interest_cover,2)+'x' : null],
+          ['Debt / EBITDA', cr_.debt_ebitda!=null? n(cr_.debt_ebitda,2)+'x' : null]])
+    + (fac.length ? T2([L(lang,'facility'), L(lang,'limit_lbl'), L(lang,'note')], fac.map(function(x){
+        return { cells:[e(A(lang,x.type)), '<b class="en">'+cr(x.limit_cr)+'</b>',
+                 '<span class="mut">'+e(tr(p,lang,x.note))+'</span>'] }; }), { num:[1] }) : '')
+    + (arr(cr_.wc_intensity).length
+      ? chartColumns(arr(cr_.wc_intensity).map(function(x){ return S(x.year); }),
+          arr(cr_.wc_intensity).map(function(x){ return x.nwc_pct_of_income; }),
+          { h:130, colour:CH.gold, fmt:function(x){ return n(x,1)+'%'; } })
+        + '<div class="mut" style="font-size:8pt">'+e(L(lang,'wc_intensity'))+'</div>' : '')
+    + (sens.length ? T2([L(lang,'parameter'), L(lang,'trigger_lbl')], sens.map(function(x){
+        return { cells:['<span class="pill '+(/upgr/i.test(S(x.direction))?'sv-low':'sv-med')+'">'
+                   + e(A(lang,x.direction))+'</span>',
+                 '<span class="mut">'+e(tr(p,lang,x.trigger))+'</span>'] }; })) : ''),
+    '', fac.length + sens.length + (S(cr_.rating)?1:0));
+
+  /* Group structure — replaces the related-party amounts, which are RHP-only. */
+  var grp = dp.group_structure||{}, ents = arr(grp.entities);
+  push(L(lang,'ir_group'),
+      note(tr(p,lang,grp.note))
+    + T2([L(lang,'entity'), L(lang,'stake'), L(lang,'basis_lbl'), L(lang,'activity')],
+        ents.map(function(x){
+          return { cells:['<b class="en">'+e(S(x.name))+'</b>', pct(x.stake_pct,2),
+                   e(A(lang,x.basis)), '<span class="mut">'+e(tr(p,lang,x.activity))+'</span>'] }; }),
+        { num:[1] })
+    + note(tr(p,lang,grp.related_party_note)), '', ents.length);
+
+  /* Issue structure signals — arithmetic on figures already in the payload. */
+  var isk = dp.issue_structure||{}, osp = isk.objects_split||{}, pca = isk.promoter_cost_of_acquisition||{},
+      dlt = isk.drhp_delta||{};
+  push(L(lang,'ir_issue_kpi'),
+      note(tr(p,lang,isk.note))
+    + ((isk.promoter_cashout_pct!=null || isk.fresh_pct_of_market_cap!=null)
+      ? '<div class="tiles">'
+        + '<div class="tile"><div class="k">'+e(L(lang,'cashout'))+'</div><div class="v" style="color:'
+          + (Number(isk.promoter_cashout_pct)>=70?'var(--bad)':'var(--ink)')+'">'
+          + pct(isk.promoter_cashout_pct,1)+'</div></div>'
+        + '<div class="tile"><div class="k">'+e(L(lang,'fresh_of_mcap'))+'</div><div class="v">'
+          + pct(isk.fresh_pct_of_market_cap,1)+'</div></div>'
+        + (pca.multiple!=null ? '<div class="tile"><div class="k">'+e(L(lang,'cost_of_acq'))
+            + '</div><div class="v en">'+n(pca.multiple,1)+'x</div><div class="s en">₹'+n(pca.weighted_avg)
+            + ' → ₹'+n(pca.issue_price)+'</div></div>' : '')
+        + '</div>' : '')
+    + ((osp.growth_capex_pct!=null || osp.debt_repayment_pct!=null)
+      ? chartPeerBars([
+          { label:S(L(lang,'growth')), value:Number(osp.growth_capex_pct)||0 },
+          { label:S(L(lang,'debt_repay')), value:Number(osp.debt_repayment_pct)||0 },
+          { label:'GCP', value:Number(osp.general_corporate_pct)||0 }], { suffix:'%', h:96 }) : '')
+    + (S(pca.note)? note(tr(p,lang,pca.note)) : '')
+    + (dlt.changed ? '<div class="note"><b>'+e(L(lang,'drhp_delta'))+'</b> '+e(tr(p,lang,dlt.note))+'</div>' : '')
+    + (S(isk.recent_bonus_or_placement)? note(tr(p,lang,isk.recent_bonus_or_placement)) : ''),
+    '', (isk.promoter_cashout_pct!=null || osp.growth_capex_pct!=null) ? 1 : 0);
+
+  /* Concentration — what replaces the top-1 and top-5 customer detail. */
+  var cn = dp.concentration||{};
+  function cnTable(list, cols, k1, k2){
+    return arr(list).length ? T2(cols, arr(list).map(function(x){
+      return { cells:[e(tr(p,lang,x[k1])), pct(x[k2],1)] }; }), { num:[1] }) : '';
+  }
+  push(L(lang,'ir_concentration'),
+      note(tr(p,lang,cn.note))
+    + (arr(cn.customers).length
+      ? chartColumns(arr(cn.customers).map(function(x){ return S(x.year); }),
+          arr(cn.customers).map(function(x){ return x.top10_pct; }),
+          { h:130, colour:CH.navy2, fmt:function(x){ return n(x,1)+'%'; } })
+        + '<div class="mut" style="font-size:8pt">'+e(L(lang,'top10_customers'))+'</div>' : '')
+    + cnTable(cn.raw_materials, [L(lang,'input_lbl'), L(lang,'of_purchases')], 'input', 'pct_of_purchases')
+    + cnTable(cn.end_markets, [L(lang,'end_market'), L(lang,'of_revenue')], 'market', 'pct_of_revenue')
+    + cnTable(cn.geography, [L(lang,'region_lbl'), L(lang,'of_revenue')], 'region', 'pct_of_revenue'),
+    '', arr(cn.customers).length + arr(cn.raw_materials).length
+        + arr(cn.end_markets).length + arr(cn.geography).length);
 
   /* Products and services — the breakdown, not the reporting segments. */
   var prods = arr(c.products);
