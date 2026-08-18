@@ -472,7 +472,7 @@ body.previewing{overflow:hidden;}
     "..." shortcuts, a missing closing fence — and falls back to reading the scoring table from the
     prose. Anything still missing is listed for you to complete before saving.</p>
     <textarea id="importText" placeholder="Paste the whole reply here — the File 7 data block if you have it, otherwise just the report text…" style="min-height:170px;"></textarea>
-    <label for="importSrc">Which tool produced it</label>
+    <label for="importSrc">Which tool produced it <span class="hint" id="srcAuto"></span></label>
     <select id="importSrc">
       <option>Gemini</option><option>ChatGPT</option><option>Claude</option>
       <option>Perplexity</option><option>Other</option>
@@ -496,22 +496,15 @@ body.previewing{overflow:hidden;}
     <input type="text" id="scName" placeholder="Company name" autocomplete="off" readonly>
     <p class="note" id="scNameNote">Follows the analysis selected on the Report tab.</p>
     <div id="sheet"></div>
-    <div class="total">
-      <div style="display:flex;align-items:flex-end;justify-content:space-between;gap:12px;">
-        <div>
-          <div class="big" id="tScore">0.0</div>
-          <div class="band" id="tBand">&mdash;</div>
-        </div>
-        <div style="text-align:right;font-size:12px;color:var(--ink3);line-height:1.5;">
-          Fundamentals <b id="tFund" style="color:var(--ink)">0</b>/95<br>
-          Market signals <b id="tMkt" style="color:var(--ink)">0</b>/5
-        </div>
-      </div>
-      <div class="bar" aria-readonly="true" title="Set by the imported analysis"><i id="tBar" style="width:0%"></i><u style="left:45%"></u><u style="left:55%"></u><u style="left:65%"></u><u style="left:75%"></u><u style="left:85%"></u></div>
-      <div class="grid2" style="margin-top:11px;">
-        <button class="btn sm" id="btnScReset" style="margin:0;">Reset</button>
-        <button class="btn sm" id="btnScCopy" style="margin:0;">Copy summary</button>
-      </div>
+    <!-- The running total used to sit here, repeating what the verdict card
+         below already says. The elements are kept, hidden, because the scoring
+         maths and the Copy-summary text still read them. -->
+    <div class="total" hidden>
+      <div class="big" id="tScore">0.0</div><div class="band" id="tBand">&mdash;</div>
+      <b id="tFund">0</b><b id="tMkt">0</b>
+      <div class="bar"><i id="tBar" style="width:0%"></i></div>
+      <button id="btnScReset" type="button">Reset</button>
+      <button id="btnScCopy" type="button">Copy summary</button>
     </div>
   </div>
 
@@ -975,7 +968,9 @@ still carries the scoring.
     "exchanges": "NSE, BSE",
     "open_date": "2026-08-12", "close_date": "2026-08-14",
     "listing_date": "2026-08-19",
-    "languages": ["en", "gu"]
+    "languages": ["en", "gu"],
+    "tool": "Claude | ChatGPT | Gemini | Perplexity | Other — the assistant writing this reply",
+    "tool_model": "the model name you are running as, if you know it, else omit"
   },
 
   "verdict": {
@@ -1356,6 +1351,41 @@ is not printed as a single line in the RHP, not because it is unavailable. **Der
 - **Balance sheet.** Assets, borrowings and their movement are in the restated statement of assets
   and liabilities. Cost of debt = finance cost ÷ average borrowings. Debt/equity and interest cover
   are two divisions away.
+
+- **Working capital days.** Inventory days = 365 × inventory ÷ cost of goods sold (or revenue if COGS
+  is not broken out). Receivable days = 365 × trade receivables ÷ revenue. Payable days = 365 × trade
+  payables ÷ purchases or COGS. All three balances are on the restated statement of assets and
+  liabilities, for all three years. Compute them; do not report that they were "not disclosed".
+  If the RHP truly does not break out the three balances, the cycle is still
+  derivable: credit-rating agencies (ICRA, CRISIL, CARE) publish net working capital as a percentage
+  of operating income for exactly these companies, and NWC days = that percentage × 365. Cross-check
+  it against (current assets − current liabilities) ÷ revenue × 365 from the balance sheet. Two
+  independent routes agreeing to within a day or two is a usable number; report it as `Derived` and
+  say which two routes you used.
+- **Rating rationales are a primary source.** ICRA, CRISIL and CARE publish free rationales on rated
+  issuers that carry working-capital intensity, facility limits, group structure, merger history and
+  segment commentary. Search for them by company name before concluding a figure is unavailable.
+- **Quarterly trend.** If the RHP carries no quarterly split — most Indian RHPs do not — say so in one
+  clause inside `deep.quarterly.note` and leave `periods` empty. This is the one section where an
+  empty array is legitimate. Do not invent quarters.
+- **Capital allocation history.** The RHP's history chapter, the objects of earlier issues, and the
+  three-year movement in fixed assets, borrowings and reserves show what management did with the
+  money. Two or three entries with year, action, amount and outcome are always derivable.
+- **Contingent liabilities.** They are a numbered note to the restated financials — usually tax
+  demands, disputed statutory dues, guarantees and letters of credit. If the note says "Nil", write a
+  single row saying Nil, with the amount 0. An empty array means you did not look.
+- **Regulatory landscape.** Name the specific rules that bind this company: the licences it holds, the
+  standards it certifies to, the duties on its inputs, and any pending change. Generic "Make in India"
+  commentary is not a regulatory analysis.
+- **Competitive positioning.** Name real competitors, listed or not, from the RHP's own competition
+  section. If none is listed, use the peer set you already built for the valuation section.
+- **Reverse DCF.** Work backwards from the market capitalisation at the upper band: what growth rate,
+  held for the horizon at the current margin, justifies the price? If cash flows are not disclosed,
+  run it on PAT, say so in `note`, and still give `implied_growth_pct` a number.
+
+**Banned phrasing.** "Not disclosed in the secondary sources reviewed", "should be sourced directly
+from the RHP", and anything of that shape means the work was not done. The RHP *is* your source. If
+you genuinely cannot open it, say which document you could not reach and why, in one clause.
 
 **Only after you have tried to derive it** may a field be null, and then `tag` must say
 `Not disclosed` and `note` must say in one short phrase where you looked. A null with no
@@ -2581,6 +2611,38 @@ function coNameOf(d, r){
       || (typeof d.company === 'string' ? str(d.company) : '')
       || str(r && r.company) || '';
 }
+/* Which tool produced the reply.
+   The contract now carries meta.tool, so in the normal case the user never has
+   to answer this. Failing that the raw text is sniffed for the tool's own
+   signature, and only then does the dropdown matter. */
+var TOOL_SIGS = [
+  ['Claude',     /\bclaude\b|anthropic/i],
+  ['ChatGPT',    /\bchatgpt\b|\bopenai\b|\bgpt-[0-9]/i],
+  ['Gemini',     /\bgemini\b|google ai studio|\bbard\b/i],
+  ['Perplexity', /\bperplexity\b/i]
+];
+function detectTool(raw, d){
+  var fromPayload = d && d.meta && str(d.meta.tool);
+  if(fromPayload){
+    for(var i=0;i<TOOL_SIGS.length;i++)
+      if(new RegExp(TOOL_SIGS[i][0],'i').test(fromPayload)) return { name:TOOL_SIGS[i][0], how:'stated in the reply' };
+    return { name:'Other', how:'stated in the reply' };
+  }
+  var head = String(raw||'').slice(0, 4000);
+  for(var j=0;j<TOOL_SIGS.length;j++)
+    if(TOOL_SIGS[j][1].test(head)) return { name:TOOL_SIGS[j][0], how:'recognised from the reply' };
+  return null;
+}
+function applyDetectedTool(raw, d){
+  var t = detectTool(raw, d), note = $('#srcAuto'), sel = $('#importSrc');
+  if(!sel) return;
+  if(t){
+    sel.value = t.name;
+    if(note) note.textContent = '— ' + t.name + ', ' + t.how;
+  } else if(note){
+    note.textContent = '— not stated in the reply, please pick';
+  }
+}
 function docGaps(d){
   var g = [];
   if(!d) return ['everything'];
@@ -3032,6 +3094,7 @@ $('#btnDoImport').addEventListener('click', function(){
   if(!raw){ $('#importMsg').textContent = 'Nothing pasted.'; return; }
   var res = parseImport(raw);
   $('#importMsg').innerHTML = res.warn.length ? '<b>Note.</b> '+esc(res.warn.join(' ')) : '';
+  applyDetectedTool(raw, res.data);
   showReview(res, raw);
 });
 $('#btnSaveImport').addEventListener('click', function(){
@@ -3045,7 +3108,8 @@ $('#btnSaveImport').addEventListener('click', function(){
   ORDER.forEach(function(k){
     if(d.score_lines[k] === undefined){ d.score_lines[k] = 0; d.incomplete.push(k); } });
   if(d.scores.ipo_quality == null) d.scores.ipo_quality = sumLines(d.score_lines);
-  var src = $('#importSrc').value || 'unknown';
+  var det = detectTool(pendingImport.raw, d);
+  var src = (det && det.name) || $('#importSrc').value || 'unknown';
   var coName = coNameOf(d) || formVals().company || 'Untitled';
   if(d.meta && !str(d.meta.company)) d.meta.company = coName;
   var rec = { id:'r'+Date.now(), ts:Date.now(), source:src, company:coName,
@@ -3413,7 +3477,7 @@ if('serviceWorker' in navigator){
 </script>
 <script src="vendor/html2canvas.min.js"></script>
 <script src="vendor/jspdf.umd.min.js"></script>
-<script>window.APP_BUILD="2026.08.18.3";</script>
+<script>window.APP_BUILD="2026.08.18.4";</script>
 <script src="render.js"></script>
 <script src="docs.js"></script>
 

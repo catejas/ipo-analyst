@@ -206,6 +206,12 @@ var T = {
   unofficial:     ['unofficial','અનધિકૃત'],
   exchanges:      ['Exchanges','એક્સચેન્જ'],
   ir_products:    ['Products and services — what the company actually sells','ઉત્પાદનો અને સેવાઓ — કંપની ખરેખર શું વેચે છે'],
+  ir_segments:    ['Revenue mix by segment','સેગમેન્ટ પ્રમાણે આવક મિશ્રણ'],
+  mechanism:      ['How it plays out','તે કેવી રીતે થાય છે'],
+  priority:       ['Priority','પ્રાથમિકતા'],
+  scenario:       ['Scenario','પરિદૃશ્ય'],
+  probability:    ['Probability','સંભાવના'],
+  warning_sign:   ['Warning sign','ચેતવણી સંકેત'],
   ir_opmetrics:   ['Operating metrics — CAC, cash conversion and customer concentration','ઓપરેટિંગ મેટ્રિક્સ — CAC, રોકડ રૂપાંતરણ અને ગ્રાહક કેન્દ્રીકરણ'],
   ir_bsheet:      ['Balance sheet — assets, borrowings and working capital','બેલેન્સ શીટ — સંપત્તિ, ઉધાર અને કાર્યકારી મૂડી'],
   product:        ['Product / service','ઉત્પાદન / સેવા'],
@@ -604,6 +610,22 @@ function sectorHtml(p, lang){
   if(!raw) return '';
   var t = sectorText(p, lang);
   return (lang==='gu' && S(t)===raw) ? '<span class="en">'+e(raw)+'</span>' : e(t);
+}
+/* Colour for a due-diligence result. "Unverified" is a genuine amber state — it
+   means the check could not be completed, not that the company is clean. */
+/* Severity-style pill class for High / Medium / Low style values. */
+function prioClass(v){
+  var t = S(v).toLowerCase();
+  if(/high/.test(t)) return 'sv-high';
+  if(/med/.test(t))  return 'sv-med';
+  return 'sv-low';
+}
+function ddColour(r){
+  var t = S(r).toLowerCase();
+  if(/verified|clear|clean/.test(t)) return 'var(--good)';
+  if(/reported|disclosed/.test(t))   return 'var(--navy2)';
+  if(/allegation|adverse|pending/.test(t)) return 'var(--bad)';
+  return 'var(--amber)';
 }
 function gmpTile(ipo, lang){
   var g = (ipo||{}).gmp || {};
@@ -1915,9 +1937,16 @@ function irSections(lang, gate){
   /* A section is emitted only when it has something to say. Printing a heading
      over "Not disclosed" was the single biggest source of dead space in the
      previous build — it filled pages with nothing. */
-  function push(title, body, badge){
+  /* A "data section" — one whose point is a table, a chart or a list — is only
+     worth a numbered heading if it actually carries rows. Several sections were
+     printing a heading over a single sentence explaining that the figure could
+     not be found; that is dead space, and the limitation belongs in the source
+     audit instead. Prose sections (the bear case, what would change our mind)
+     are unaffected: they pass no count and are judged on their text. */
+  function push(title, body, badge, count){
     var ix = IX++;
     var has = !!(body && S(String(body).replace(/<[^>]*>/g,'')).trim());
+    if(count !== undefined && !count) has = false;
     present[ix] = has;
     if(gate ? !gate[ix] : !has) return;
     NO++;
@@ -1977,16 +2006,17 @@ function irSections(lang, gate){
     + note(pick(p,lang,'company.how_it_earns', c.how_it_earns))
     + note(pick(p,lang,'company.why_customers_stay', c.why_customers_stay)));
 
-  /* 04 segments */
+  /* 04 segments — the reported split. The product-by-product breakdown is a
+     separate section further down. */
   var segs = arr(c.segments);
-  push(L(lang,'ir_products'),
+  push(L(lang,'ir_segments'),
       (segs.length ? chartColumns(segs.map(function(x){ return S(tr(p,lang,x.name)).slice(0,14); }),
           segs.map(function(x){ return x.revenue_pct; }),
           { h:140, colour:CH.navy2, fmt:function(x){ return n(x,1)+'%'; } }) : '')
     + T2([L(lang,'segment'), L(lang,'rev_share'), L(lang,'growth'), L(lang,'note')],
         segs.map(function(x){
           return { cells:[e(tr(p,lang,x.name)), pct(x.revenue_pct), pct(x.growth_pct),
-                   '<span class="mut">'+e(tr(p,lang,x.note))+'</span>'] }; }), { num:[1,2] }));
+                   '<span class="mut">'+e(tr(p,lang,x.note))+'</span>'] }; }), { num:[1,2] }), '', segs.length);
 
   /* 05 operating metrics — {label, value} */
   var om = arr(c.operating_metrics);
@@ -2049,11 +2079,21 @@ function irSections(lang, gate){
 
   /* 11 balance sheet */
   var bs = f.balance_sheet||{};
-  push(L(lang,'ir_bs'),
-      kv(Object.keys(bs).filter(function(k){ return typeof bs[k] !== 'object' && bs[k] != null; })
-        .slice(0,10).map(function(k){
+  /* This printed only the scalar keys and silently ignored bs.items, so the
+     section came out as a single word — the rating — and nothing else. */
+  var bsItems = arr(bs.items);
+  push(L(lang,'ir_bs') + (S(bs.rating) ? ' — ' + A(lang, bs.rating) : ''),
+      T2([L(lang,'line_item'), L(lang,'value_lbl')], bsItems.map(function(x){
+        var t = S(x.tone).toLowerCase();
+        return { cells:[e(tr(p,lang,x.label)),
+                 '<b class="en" style="color:'
+                   + (t==='good'?'var(--good)':t==='bad'?'var(--bad)':t==='warn'?'var(--amber)':'var(--ink)')
+                   + '">'+e(S(x.value))+'</b>'] }; }))
+    + kv(Object.keys(bs).filter(function(k){
+          return typeof bs[k] !== 'object' && bs[k] != null && k !== 'rating' && k !== 'note'; })
+        .slice(0,8).map(function(k){
           return [e(tr(p,lang,k.replace(/_/g,' '))), '<span class="en">'+e(S(bs[k]))+'</span>']; }))
-    + note(tr(p,lang,bs.note)));
+    + note(tr(p,lang,bs.note)), '', bsItems.length);
 
   /* 12 promoters */
   push(L(lang,'ir_promoters'),
@@ -2066,11 +2106,15 @@ function irSections(lang, gate){
         arr(pe.promoters).map(function(x){
           return { cells:['<b class="en">'+e(S(x.name))+'</b>', e(tr(p,lang,x.role)),
                    '<span class="mut">'+e(tr(p,lang,x.background||x.note))+'</span>'] }; }))
+    /* The Note column read x.note, but the payload field is `finding` — so the
+       column was blank in every report ever produced. The pill is also coloured
+       by the result now instead of being uniformly navy. */
     + T2([L(lang,'check'), L(lang,'result'), L(lang,'note')],
         arr(pe.due_diligence||pe.dd_checks).map(function(x){
+          var r = S(x.result||x.standard);
           return { cells:[e(tr(p,lang,x.check)),
-            '<span class="pill" style="background:var(--navy2)">'+e(A(lang,x.result||x.standard))+'</span>',
-            '<span class="mut">'+e(tr(p,lang,x.note))+'</span>'] }; })));
+            '<span class="pill" style="background:'+ddColour(r)+'">'+e(A(lang,r))+'</span>',
+            '<span class="mut">'+e(tr(p,lang,x.note||x.finding))+'</span>'] }; })));
 
   /* 13 governance */
   var gov = pe.governance||{};
@@ -2173,18 +2217,32 @@ function irSections(lang, gate){
         '<span class="pill '+sevClass(x.severity)+'">'+e(A(lang,x.severity))+'</span>'] }; })));
 
   /* 22 catalysts, failure modes, monitoring */
+  /* These three tables read field names that the contract never had — timing,
+     trigger, frequency, threshold — so their columns came out blank in every
+     institutional report. They now read the contract's own names, with the old
+     ones kept as fallbacks. */
   push(L(lang,'ir_catalysts'),
-    T2([L(lang,'catalyst'), L(lang,'timing'), L(lang,'note')], arr(d.catalysts).map(function(x){
-      return { cells:['<b>'+e(tr(p,lang,x.catalyst))+'</b>', '<span class="en">'+e(S(x.timing))+'</span>',
-               '<span class="mut">'+e(tr(p,lang,x.note))+'</span>'] }; })));
+    T2([L(lang,'catalyst'), L(lang,'mechanism'), L(lang,'priority')], arr(d.catalysts).map(function(x){
+      return { cells:['<b>'+e(tr(p,lang,x.catalyst))+'</b>',
+               '<span class="mut">'+e(tr(p,lang,x.mechanism||x.note))+'</span>',
+               '<span class="pill '+prioClass(x.priority)+'">'+e(A(lang,x.priority||x.timing))+'</span>'] }; })),
+    '', arr(d.catalysts).length);
   push(L(lang,'ir_fail'),
-    T2([L(lang,'mode'), L(lang,'trigger'), L(lang,'note')], arr(d.failure_modes).map(function(x){
-      return { cells:['<b>'+e(tr(p,lang,x.mode||x.path))+'</b>', e(tr(p,lang,x.trigger)),
-               '<span class="mut">'+e(tr(p,lang,x.note))+'</span>'] }; })));
+    T2([L(lang,'scenario'), L(lang,'probability'), L(lang,'impact'), L(lang,'warning_sign')],
+      arr(d.failure_modes).map(function(x){
+        return { cells:['<b>'+e(tr(p,lang,x.scenario||x.mode||x.path))+'</b>',
+                 '<span class="pill '+prioClass(x.probability)+'">'+e(A(lang,x.probability))+'</span>',
+                 '<span class="pill '+prioClass(x.impact)+'">'+e(A(lang,x.impact))+'</span>',
+                 '<span class="mut">'+e(tr(p,lang,x.warning_sign||x.trigger||x.note))+'</span>'] }; })),
+    '', arr(d.failure_modes).length);
   push(L(lang,'ir_monitor'),
-    T2([L(lang,'metric'), L(lang,'frequency'), L(lang,'threshold')], arr(d.monitoring).map(function(x){
-      return { cells:[e(tr(p,lang,x.metric)), e(A(lang,x.frequency)),
-               '<span class="mut">'+e(tr(p,lang,x.threshold))+'</span>'] }; })));
+    T2([L(lang,'metric'), L(lang,'current'), L(lang,'desired'), L(lang,'warning')],
+      arr(d.monitoring).map(function(x){
+        return { cells:[e(tr(p,lang,x.metric)),
+                 '<b class="en">'+e(tr(p,lang,x.current))+'</b>',
+                 '<span class="mut">'+e(tr(p,lang,x.desired||x.threshold))+'</span>',
+                 '<span class="mut">'+e(tr(p,lang,x.warning))+'</span>'] }; })),
+    '', arr(d.monitoring).length);
 
   /* 23 allocation and levels */
   push(L(lang,'ir_alloc'),
@@ -2197,7 +2255,9 @@ function irSections(lang, gate){
   function deepTable(key, title, cols, rowsFn, opts){
     var blk = dp[key]||{};
     var rows = rowsFn(blk);
-    push(title, note(tr(p,lang,blk.note)) + T2(cols, rows, opts));
+    /* No rows means no section. A heading over a sentence saying the figure was
+       not found is dead space; the limitation belongs in the source audit. */
+    push(title, note(tr(p,lang,blk.note)) + T2(cols, rows, opts), '', rows.length);
   }
 
   /* Products and services — the breakdown, not the reporting segments. */
@@ -2215,7 +2275,7 @@ function irSections(lang, gate){
                    '<span class="mut">'+e(tr(p,lang,x.what_it_is))+'</span>',
                    '<span class="mut">'+e(tr(p,lang,x.customers))+'</span>',
                    x.revenue_pct!=null? pct(x.revenue_pct,1) : '—',
-                   '<span class="mut">'+e(A(lang,x.margin_profile))+'</span>'] }; }), { num:[3] }));
+                   '<span class="mut">'+e(A(lang,x.margin_profile))+'</span>'] }; }), { num:[3] }), '', prods.length);
 
   /* Operating metrics — CAC, cash conversion cycle, customer concentration. */
   var om = dp.operating_metrics||{}, omr = arr(om.rows);
@@ -2230,7 +2290,7 @@ function irSections(lang, gate){
                    n(x.fy24,2), n(x.fy25,2), n(x.fy26,2),
                    '<span class="mut">'+e(A(lang,x.tag||''))
                      + (S(x.note)? ' — '+e(tr(p,lang,x.note)) : '')+'</span>'] }; }),
-        { num:[2,3,4] }));
+        { num:[2,3,4] }), '', omr.length);
 
   /* Balance sheet — assets, borrowings, and what the debt actually costs. */
   var bs = dp.balance_sheet||{}, bsa = arr(bs.assets), bsb = arr(bs.borrowings), dpf = bs.debt_profile||{};
@@ -2258,7 +2318,8 @@ function irSections(lang, gate){
               [L(lang,'repaid_from_ipo'), dpf.repayment_from_ipo_cr!=null? cr(dpf.repayment_from_ipo_cr):null]])
         + note(tr(p,lang,dpf.note))
       : '')
-    + note(tr(p,lang,bs.working_capital_note)));
+    + note(tr(p,lang,bs.working_capital_note)),
+    '', bsa.length + bsb.length);
 
   var ue = dp.unit_economics||{};
   push(L(lang,'dp_unit'),
@@ -2266,7 +2327,7 @@ function irSections(lang, gate){
     + T2([L(lang,'metric')].concat(arr(f.years).length?arr(f.years):['FY24','FY25','FY26']).concat([L(lang,'unit')]),
         arr(ue.rows).map(function(x){
           return { cells:[e(tr(p,lang,x.metric)), n(x.fy24,2), n(x.fy25,2), n(x.fy26,2),
-                   '<span class="mut en">'+e(S(x.unit))+'</span>'] }; }), { num:[1,2,3] }));
+                   '<span class="mut en">'+e(S(x.unit))+'</span>'] }; }), { num:[1,2,3] }), '', arr(ue.rows).length);
 
   var wc = dp.working_capital||{}, wd = arr(wc.days);
   push(L(lang,'dp_wc'),
@@ -2275,7 +2336,8 @@ function irSections(lang, gate){
         wd.map(function(x){ return x.fy26; }), { h:140, colour:CH.navy2, fmt:function(x){ return n(x,0); } }) : '')
     + T2([L(lang,'metric')].concat(arr(f.years).length?arr(f.years):['FY24','FY25','FY26']),
         wd.map(function(x){
-          return { cells:[e(tr(p,lang,x.label)), n(x.fy24,0), n(x.fy25,0), n(x.fy26,0)] }; }), { num:[1,2,3] }));
+          return { cells:[e(tr(p,lang,x.label)), n(x.fy24,0), n(x.fy25,0), n(x.fy26,0)] }; }), { num:[1,2,3] }),
+    '', wd.filter(function(x){ return x.fy24!=null || x.fy25!=null || x.fy26!=null; }).length);
 
   var qt = dp.quarterly||{};
   push(L(lang,'dp_quarterly'),
@@ -2284,7 +2346,7 @@ function irSections(lang, gate){
       ? chartColumnsLine(arr(qt.periods), arr(qt.revenue), arr(qt.pat),
           { barColour:CH.navy2, lineColour:CH.gold, h:165 })
         + chartLegend([{ label:L(lang,'revenue_lbl'), colour:CH.navy2 },
-                       { label:L(lang,'pat_lbl'), colour:CH.gold }]) : ''));
+                       { label:L(lang,'pat_lbl'), colour:CH.gold }]) : ''), '', arr(qt.periods).length);
 
   deepTable('capital_allocation', L(lang,'dp_capalloc'),
     [L(lang,'year'), L(lang,'action'), L(lang,'amount'), L(lang,'outcome')],
@@ -2322,7 +2384,8 @@ function irSections(lang, gate){
       note(tr(p,lang,(dp.competition||{}).note))
     + T2(arr(cmx.columns).map(function(x){ return tr(p,lang,x); }), arr(cmx.rows).map(function(r){
         return { __cls:r.is_subject?'hi':'', cells:['<b class="en">'+e(S(r.name))+'</b>']
-          .concat(arr(r.cells).map(function(x){ return '<span class="mut">'+e(tr(p,lang,x))+'</span>'; })) }; })));
+          .concat(arr(r.cells).map(function(x){ return '<span class="mut">'+e(tr(p,lang,x))+'</span>'; })) }; })),
+    '', arr(cmx.rows).length);
 
   var rd = dp.reverse_dcf||{};
   push(L(lang,'dp_rdcf'),
@@ -2335,7 +2398,8 @@ function irSections(lang, gate){
     + T2([L(lang,'driver'), L(lang,'value'), L(lang,'note')], arr(rd.assumptions).map(function(x){
         return { cells:[e(tr(p,lang,x.driver)), '<b class="en">'+e(S(x.value))+'</b>',
                  '<span class="mut">'+e(tr(p,lang,x.comment))+'</span>'] }; }))
-    + note(tr(p,lang,rd.verdict)));
+    + note(tr(p,lang,rd.verdict)),
+    '', (rd.implied_growth_pct!=null || rd.implied_margin_pct!=null) ? 1 : arr(rd.assumptions).length);
 
   var sen = dp.sensitivity||{};
   push(L(lang,'dp_sensitivity'),
@@ -2343,7 +2407,7 @@ function irSections(lang, gate){
     + (arr(sen.rows).length ? chartHeat(arr(sen.columns), arr(sen.rows).map(function(r){
         return { label:S(tr(p,lang,r.label)), cells:arr(r.cells) }; }), lang)
       + '<div class="mut" style="font-size:8.4pt">'+e(S(tr(p,lang,sen.row_label)))+' × '
-        + e(S(tr(p,lang,sen.col_label)))+'</div>' : ''));
+        + e(S(tr(p,lang,sen.col_label)))+'</div>' : ''), '', arr(sen.rows).length);
 
   deepTable('management_quality', L(lang,'dp_mgmt'),
     [L(lang,'parameter'), L(lang,'assessment'), L(lang,'evidence')],

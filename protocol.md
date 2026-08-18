@@ -361,7 +361,9 @@ still carries the scoring.
     "exchanges": "NSE, BSE",
     "open_date": "2026-08-12", "close_date": "2026-08-14",
     "listing_date": "2026-08-19",
-    "languages": ["en", "gu"]
+    "languages": ["en", "gu"],
+    "tool": "Claude | ChatGPT | Gemini | Perplexity | Other — the assistant writing this reply",
+    "tool_model": "the model name you are running as, if you know it, else omit"
   },
 
   "verdict": {
@@ -742,6 +744,41 @@ is not printed as a single line in the RHP, not because it is unavailable. **Der
 - **Balance sheet.** Assets, borrowings and their movement are in the restated statement of assets
   and liabilities. Cost of debt = finance cost ÷ average borrowings. Debt/equity and interest cover
   are two divisions away.
+
+- **Working capital days.** Inventory days = 365 × inventory ÷ cost of goods sold (or revenue if COGS
+  is not broken out). Receivable days = 365 × trade receivables ÷ revenue. Payable days = 365 × trade
+  payables ÷ purchases or COGS. All three balances are on the restated statement of assets and
+  liabilities, for all three years. Compute them; do not report that they were "not disclosed".
+  If the RHP truly does not break out the three balances, the cycle is still
+  derivable: credit-rating agencies (ICRA, CRISIL, CARE) publish net working capital as a percentage
+  of operating income for exactly these companies, and NWC days = that percentage × 365. Cross-check
+  it against (current assets − current liabilities) ÷ revenue × 365 from the balance sheet. Two
+  independent routes agreeing to within a day or two is a usable number; report it as `Derived` and
+  say which two routes you used.
+- **Rating rationales are a primary source.** ICRA, CRISIL and CARE publish free rationales on rated
+  issuers that carry working-capital intensity, facility limits, group structure, merger history and
+  segment commentary. Search for them by company name before concluding a figure is unavailable.
+- **Quarterly trend.** If the RHP carries no quarterly split — most Indian RHPs do not — say so in one
+  clause inside `deep.quarterly.note` and leave `periods` empty. This is the one section where an
+  empty array is legitimate. Do not invent quarters.
+- **Capital allocation history.** The RHP's history chapter, the objects of earlier issues, and the
+  three-year movement in fixed assets, borrowings and reserves show what management did with the
+  money. Two or three entries with year, action, amount and outcome are always derivable.
+- **Contingent liabilities.** They are a numbered note to the restated financials — usually tax
+  demands, disputed statutory dues, guarantees and letters of credit. If the note says "Nil", write a
+  single row saying Nil, with the amount 0. An empty array means you did not look.
+- **Regulatory landscape.** Name the specific rules that bind this company: the licences it holds, the
+  standards it certifies to, the duties on its inputs, and any pending change. Generic "Make in India"
+  commentary is not a regulatory analysis.
+- **Competitive positioning.** Name real competitors, listed or not, from the RHP's own competition
+  section. If none is listed, use the peer set you already built for the valuation section.
+- **Reverse DCF.** Work backwards from the market capitalisation at the upper band: what growth rate,
+  held for the horizon at the current margin, justifies the price? If cash flows are not disclosed,
+  run it on PAT, say so in `note`, and still give `implied_growth_pct` a number.
+
+**Banned phrasing.** "Not disclosed in the secondary sources reviewed", "should be sourced directly
+from the RHP", and anything of that shape means the work was not done. The RHP *is* your source. If
+you genuinely cannot open it, say which document you could not reach and why, in one clause.
 
 **Only after you have tried to derive it** may a field be null, and then `tag` must say
 `Not disclosed` and `note` must say in one short phrase where you looked. A null with no
