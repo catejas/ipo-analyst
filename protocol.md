@@ -467,6 +467,7 @@ still carries the scoring.
     "ipo_type": "Mainboard",
     "sector": "max 30 chars",
     "analysis_datetime": "2026-08-14 19:00 IST",
+    "_dates_note": "Every date field is ISO, YYYY-MM-DD. Send them that way and nothing else — the app converts to DD-MM-YYYY for the reader. An ISO date sorts and compares correctly, which a display format does not, so do not pre-format them.",
     "exchanges": "NSE, BSE",
     "open_date": "2026-08-12", "close_date": "2026-08-14",
     "listing_date": "2026-08-19",
@@ -900,6 +901,20 @@ The app lays out a **10-page report**, so quantity matters. Aim for these counts
 | `gu.decision.levels` | same order and count as `decision.levels` — the action and the rationale in Gujarati; the price stays as written |
 | `gu.text` | every remaining reader-facing English sentence or phrase from the English keys that no other `gu` key covers — usually 30–60 entries |
 | `gu.labels` | **the `gu` key only.** The short label strings you actually used — financial row labels, ratio labels, segment names, operating metric labels, object uses, promoter roles, and the trend words. Aim for 25–40 entries, not hundreds. |
+
+## 49A. DATES
+
+Send every date as **ISO, `YYYY-MM-DD`** — `open_date`, `close_date`, `listing_date`, and the date
+part of `analysis_datetime`. That is the only format the app accepts, because an ISO date sorts,
+compares and de-duplicates correctly and a display format does not.
+
+**The reader never sees ISO.** The app prints every date as **DD-MM-YYYY**, the Indian convention,
+in both the English and the Gujarati editions. So `2026-08-21` reaches the reader as `21-08-2026`.
+Do not try to help by pre-formatting: a date that arrives as `21-08-2026` or `Aug 21, 2026` cannot be
+parsed reliably and will be printed as you sent it, which is how a document ends up with two date
+formats on one page.
+
+Write `analysis_datetime` as `YYYY-MM-DD HH:MM IST` — the time and the timezone are kept as written.
 
 ## 49B. THE SECTIONS THAT COME BACK EMPTY — AND WHAT TO DO INSTEAD
 

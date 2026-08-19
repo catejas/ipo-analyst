@@ -895,6 +895,19 @@ function gmpTile(ipo, lang){
     + (has && g.pct != null ? '<small> ('+pct(g.pct,1)+')</small>' : '')+'</div>'
     + '<div class="s">'+e(L(lang,'unoff_unver'))+'</div></div>';
 }
+/* Dates in the Indian format the reader expects.
+   The payload carries ISO dates (2026-08-21) because that is unambiguous for a
+   machine, and analysis_datetime arrives as "2026-08-19 21:30 IST". Everything
+   printed is converted to DD-MM-YYYY here, in one place, so no renderer has to
+   remember to do it and no document can disagree with another. */
+function dmy(v){
+  var t = S(v);
+  if(!t) return '';
+  /* An ISO date anywhere in the string, with whatever follows it left alone —
+     that keeps the time and the IST suffix on the analysis stamp. */
+  return t.replace(/\b(\d{4})-(\d{2})-(\d{2})\b/g, function(_, y, mo, d){
+    return d + '-' + mo + '-' + y; });
+}
 function shell(title, bodyCls, pages, extraCss){
   return '<!DOCTYPE html><html lang="'+(bodyCls==='gu'?'gu':'en')+'"><head><meta charset="utf-8">'
     + '<title>'+e(title)+'</title><style>'+CSS+(extraCss||'')+'</style></head><body class="'+bodyCls+'">'
@@ -994,7 +1007,7 @@ function foot(p, i, total, lang, docName){
   return '<div class="rfw">'
        + '<div class="rfn">'+e(L(lang,'footnote'))+'</div>'
        + '<div class="rf"><div><span>'+e(docName||L(lang,'doc_report'))+'</span><span class="en"> &nbsp;·&nbsp; '
-       + e(p.meta.analysis_datetime||'') + '</span> &nbsp;·&nbsp; ' + e(L(lang,'research_only'))
+       + e(dmy(p.meta.analysis_datetime)) + '</span> &nbsp;·&nbsp; ' + e(L(lang,'research_only'))
        + '</div><div class="en"><b class="pgnum">'+i+'</b> / <span class="pgtot">'+total+'</span></div></div>'
        + '</div>';
 }
@@ -1065,7 +1078,7 @@ function cover(p, lang, docTitle, pages){
   var v = p.verdict||{}, m = p.meta||{}, ipo = p.ipo||{};
   var sc = v.scores||{}, bands = v.score_bands||{};
   var snap = [
-    [L(lang,'issue_period'), e(m.open_date||'—')+' — '+e(m.close_date||'—')],
+    [L(lang,'issue_period'), e(dmy(m.open_date)||'—')+' — '+e(dmy(m.close_date)||'—')],
     [L(lang,'price_band'), '₹'+e(ipo.price_band||'—')+' · '+L(lang,'issue_at')+' ₹'+n(ipo.issue_price)],
     [L(lang,'issue_size'), cr(ipo.issue_size_cr)+' · '+L(lang,'fresh')+' '+cr(ipo.fresh_cr)+' · OFS '+cr(ipo.ofs_cr)],
     [L(lang,'subscription'), (ipo.subscription&&ipo.subscription.overall!=null? n(ipo.subscription.overall,1)+'×':'—')
@@ -1075,14 +1088,14 @@ function cover(p, lang, docTitle, pages){
     [L(lang,'market_cap'), cr(ipo.market_cap_cr)],
     [L(lang,'promoter_hold'), p.people&&p.people.promoter_holding_pre!=null
         ? pct(p.people.promoter_holding_pre)+' → '+pct(p.people.promoter_holding_post)+' '+L(lang,'post_issue') : '—'],
-    [L(lang,'listing'), e(m.listing_date||'—')+' · '+e(m.exchanges||'NSE, BSE')]
+    [L(lang,'listing'), e(dmy(m.listing_date)||'—')+' · '+e(m.exchanges||'NSE, BSE')]
   ];
   var inner =
     '<div style="height:7mm"></div>'
     + '<div class="eyebrow en">'+e(docTitle)+' &nbsp;·&nbsp; '+e(A(lang,m.ipo_type||'Mainboard'))+' &nbsp;·&nbsp; '+e(L(lang,'india'))+'</div>'
     + '<h1 class="en" style="margin-top:2mm">'+e(m.company||'')+'</h1>'
     + '<div class="mut" style="margin-top:1mm;font-size:8pt">'+sectorHtml(p,lang)
-      + (m.sector?' &nbsp;·&nbsp; ':'')+e(m.analysis_datetime||'')+'</div>'
+      + (m.sector?' &nbsp;·&nbsp; ':'')+e(dmy(m.analysis_datetime))+'</div>'
     + '<div style="height:2.5mm;background:var(--teal);width:26mm;border-radius:1mm;margin:4mm 0 5mm"></div>'
     + '<div class="vb"><div class="h">'+e(L(lang,'verdict_h'))+'</div><div class="c">'
       + '<div class="v">'+e(pick(p,lang,'verdict.headline', v.headline))+'</div>'
@@ -1742,7 +1755,7 @@ function buildVisual(p, lang){
 
   var p1 = '<div class="vpage">'
     + vmast(sectorText(p,lang)+' · '+A(lang,S(m.ipo_type||'Mainboard'))+' IPO',
-        'IPO Company Research<br><b style="color:#12161C">'+e(m.analysis_datetime||'')+'</b><br>Page 1 of 2')
+        'IPO Company Research<br><b style="color:#12161C">'+e(dmy(m.analysis_datetime))+'</b><br>Page 1 of 2')
     + '<div class="vhero"><div class="h">'+e(L(lang,'verdict_h'))+'</div><div class="c">'
       + '<div class="v">'+e(pick(p,lang,'verdict.headline', v.headline))+'</div>'
       + '<p>'+e(pick(p,lang,'verdict.one_liner', v.one_liner))+'</p></div></div>'
@@ -1799,7 +1812,7 @@ function buildVisual(p, lang){
   }
   var p2 = '<div class="vpage">'
     + vmast(L(lang,'swot')+' · '+L(lang,'scenarios')+' · '+L(lang,'red_flags'),
-        'IPO Company Research<br><b style="color:#12161C">'+e(m.analysis_datetime||'')+'</b><br>Page 2 of 2')
+        'IPO Company Research<br><b style="color:#12161C">'+e(dmy(m.analysis_datetime))+'</b><br>Page 2 of 2')
     /* --- NEW: SWOT --- */
     + '<div class="vsec">'+e(L(lang,'swot'))+'</div>'
     + '<div class="vswot">'
@@ -1908,7 +1921,7 @@ function buildScorecard(p, lang){
   var head = '<div class="sc-top"><div style="height:4mm"></div>'
     + '<div class="eyebrow">'+e(L(lang,'score_card'))+' &nbsp;·&nbsp; '+e(A(lang,m.ipo_type||'Mainboard'))+' &nbsp;·&nbsp; '+e(L(lang,'india'))+'</div>'
     + '<h1 class="en" style="margin-top:1.5mm;font-size:18pt">'+e(m.company||'')+'</h1>'
-    + '<div class="mut en" style="margin-top:1mm">'+e(m.analysis_datetime||'')+'</div>'
+    + '<div class="mut en" style="margin-top:1mm">'+e(dmy(m.analysis_datetime))+'</div>'
     + '<div style="height:2.5mm;background:var(--teal);width:26mm;border-radius:1mm;margin:2.5mm 0 3.5mm"></div>'
     + '<div class="tiles">'
       + '<div class="tile"><div class="k">'+e(L(lang,'ipo_quality'))+'</div><div class="v">'+n(total,1)
@@ -2446,7 +2459,7 @@ function irSections(lang, gate){
          The fresh-versus-OFS split is a section of its own further down, where
          it sits beside the outflow that mirrors it. */
       kv([
-        [L(lang,'issue_period'), '<span class="en">'+e(S(m.open_date)||'—')+' — '+e(S(m.close_date)||'—')+'</span>'],
+        [L(lang,'issue_period'), '<span class="en">'+e(dmy(m.open_date)||'—')+' — '+e(dmy(m.close_date)||'—')+'</span>'],
         [L(lang,'price_band'), '<span class="en">₹'+e(S(ipo.price_band)||'—')+' · '+L(lang,'issue_at')+' ₹'+n(ipo.issue_price)+'</span>'],
         [L(lang,'issue_size'), '<span class="en">'+cr(ipo.issue_size_cr)+'</span>'],
         [L(lang,'lot'), '<span class="en">'+n(ipo.lot_size)+' · ₹'+n(ipo.min_investment)+'</span>'],
@@ -2457,7 +2470,7 @@ function irSections(lang, gate){
         [L(lang,'gmp'), (ipo.gmp&&ipo.gmp.value!=null)
           ? '<span class="en">₹'+n(ipo.gmp.value)+' ('+pct(ipo.gmp.pct)+')</span>' : null],
         [L(lang,'exchanges'), S(m.exchanges)||S(m.exchange) ? '<span class="en">'+e(S(m.exchanges)||S(m.exchange))+'</span>' : null],
-        [L(lang,'listing'), S(m.listing_date) ? '<span class="en">'+e(S(m.listing_date))+'</span>' : null]
+        [L(lang,'listing'), S(m.listing_date) ? '<span class="en">'+e(dmy(m.listing_date))+'</span>' : null]
       ])
     + (S(ipo.structure_verdict) || S(ipo.structure_note)
       ? '<div class="note'+(/exit/i.test(S(ipo.structure_verdict))?' bad':'')+'"><b>'
@@ -3158,7 +3171,7 @@ function irSections(lang, gate){
       + e(A(lang,m.ipo_type||'Mainboard'))+' &nbsp;·&nbsp; '+e(L(lang,'india'))+'</div>'
     + '<h1 class="en" style="margin-top:1.5mm;font-size:19pt">'+e(m.company||'')+'</h1>'
     + '<div class="mut" style="margin-top:1mm;font-size:8pt">'+sectorHtml(p,lang)
-      + (m.sector?' &nbsp;·&nbsp; ':'')+e(m.analysis_datetime||'')+'</div>'
+      + (m.sector?' &nbsp;·&nbsp; ':'')+e(dmy(m.analysis_datetime))+'</div>'
     + '<div style="height:2.5mm;background:var(--gold);width:26mm;border-radius:1mm;margin:3mm 0 4mm"></div>'
     + '<div class="tiles">'
       + [['ipo_quality','/100'],['long_term','/100'],['listing_gain','/100']].map(function(t){
