@@ -94,7 +94,99 @@ function printPreview(){
 }
 window.IPOPreview = { show:showPreview, close:closePreview, print:printPreview };
 
-/* ---------- PDF as a real file, for sharing ---------- */
+/* ---------- PDF as a real file, for sharing ----------
+
+   The page image is what you see; a transparent text layer underneath is what
+   the reader searches, selects and copies. This is the same construction as an
+   OCR'd scan, and it is the only way to keep the exact layout of the design and
+   still hand over a document that behaves like a document.
+
+   Latin script only. jsPDF's built-in fonts cannot encode Gujarati, so those
+   runs are skipped rather than written as nonsense bytes — the Gujarati edition
+   still looks identical, it simply is not text-searchable. Embedding a Gujarati
+   font would fix that at the cost of a few hundred kilobytes in the package. */
+
+var LATIN_OK = /^[\u0000-\u024F\u2000-\u206F\u20A0-\u20BF\s]*$/;
+
+/* Every visible line of text on a page, with its box, in page coordinates. */
+function textLines(pageEl){
+  var out = [], base = pageEl.getBoundingClientRect();
+  var walker = pageEl.ownerDocument.createTreeWalker(pageEl, NodeFilter.SHOW_TEXT, {
+    acceptNode: function(node){
+      if(!node.nodeValue || !node.nodeValue.trim()) return NodeFilter.FILTER_REJECT;
+      var pe = node.parentElement;
+      if(!pe) return NodeFilter.FILTER_REJECT;
+      if(/^(SCRIPT|STYLE|svg|SVG)$/.test(pe.nodeName)) return NodeFilter.FILTER_REJECT;
+      if(pe.closest && pe.closest('svg')) return NodeFilter.FILTER_REJECT;
+      var st = pageEl.ownerDocument.defaultView.getComputedStyle(pe);
+      if(st.visibility === 'hidden' || st.display === 'none' || Number(st.opacity) === 0)
+        return NodeFilter.FILTER_REJECT;
+      return NodeFilter.FILTER_ACCEPT;
+    }
+  });
+  var node;
+  while((node = walker.nextNode())){
+    var txt = node.nodeValue;
+    if(!LATIN_OK.test(txt)) continue;
+    var pe = node.parentElement;
+    var st = pageEl.ownerDocument.defaultView.getComputedStyle(pe);
+    var size = parseFloat(st.fontSize) || 10;
+    var bold = (parseInt(st.fontWeight, 10) || 400) >= 600;
+    /* Range rects split a wrapped node into one box per visual line, which is
+       what the text layer needs — one draw call per line, correctly placed. */
+    var rng = pageEl.ownerDocument.createRange();
+    rng.selectNodeContents(node);
+    var rects = rng.getClientRects();
+    if(rects.length === 1){
+      var r0 = rects[0];
+      if(r0.width < 0.5 || r0.height < 0.5) continue;
+      out.push({ text:txt.replace(/\s+/g,' ').trim(),
+                 x:r0.left-base.left, y:r0.top-base.top, w:r0.width, h:r0.height,
+                 size:size, bold:bold });
+      continue;
+    }
+    /* Multi-line: split the string across the boxes by proportion of width. */
+    var words = txt.replace(/\s+/g,' ').trim().split(' ');
+    var totalW = 0, i;
+    for(i=0;i<rects.length;i++) totalW += rects[i].width;
+    var cursor = 0;
+    for(i=0;i<rects.length;i++){
+      var r = rects[i];
+      if(r.width < 0.5 || r.height < 0.5) continue;
+      var take = (i === rects.length-1)
+        ? words.length - cursor
+        : Math.max(1, Math.round(words.length * (r.width/(totalW||1))));
+      var chunk = words.slice(cursor, cursor+take).join(' ');
+      cursor += take;
+      if(!chunk) continue;
+      out.push({ text:chunk, x:r.left-base.left, y:r.top-base.top,
+                 w:r.width, h:r.height, size:size, bold:bold });
+      if(cursor >= words.length) break;
+    }
+  }
+  return out;
+}
+
+/* Section headings and their page, for the PDF bookmark tree. */
+function outlineOf(pages){
+  var items = [];
+  pages.forEach(function(pg, idx){
+    Array.prototype.slice.call(pg.querySelectorAll('.ir-grph, .ir-blk[id] .sec .ti, .sec .ti'))
+      .forEach(function(el){
+        var isGroup = el.classList.contains('ir-grph');
+        var t = (el.textContent||'').replace(/\s+/g,' ').trim();
+        if(!t) return;
+        if(!isGroup){
+          var blk = el.closest('.ir-blk');
+          var no = blk && blk.id ? blk.id.replace(/^s/,'') : '';
+          if(no) t = no + '  ' + t;
+        }
+        items.push({ title:t, page:idx+1, group:isGroup });
+      });
+  });
+  return items;
+}
+
 function htmlToPdfBlob(html, sel){
   return stage(html).then(function(f){
     var doc = f.contentDocument;
@@ -103,6 +195,11 @@ function htmlToPdfBlob(html, sel){
     var pdf = new jsPDF({ orientation:'p', unit:'pt', format:'a4', compress:true });
     var W = pdf.internal.pageSize.getWidth(), H = pdf.internal.pageSize.getHeight();
     var chain = Promise.resolve();
+
+    /* page element -> PDF page number, for links and bookmarks */
+    var pageNo = new Map();
+    pages.forEach(function(el, i){ pageNo.set(el, i+1); });
+
     pages.forEach(function(el, i){
       chain = chain.then(function(){
         return html2canvas(el, { scale:2, backgroundColor:'#ffffff', useCORS:true,
@@ -110,12 +207,74 @@ function htmlToPdfBlob(html, sel){
           .then(function(cv){
             if(i) pdf.addPage();
             pdf.addImage(cv.toDataURL('image/jpeg', 0.94), 'JPEG', 0, 0, W, H, undefined, 'FAST');
+
+            var box = el.getBoundingClientRect();
+            var kx = W / (box.width || 1), ky = H / (box.height || 1);
+
+            /* the invisible, searchable text layer */
+            try{
+              pdf.setTextColor(0, 0, 0);
+              textLines(el).forEach(function(ln){
+                if(!ln.text) return;
+                var fs = Math.max(1, ln.size * ky);
+                pdf.setFont('helvetica', ln.bold ? 'bold' : 'normal');
+                pdf.setFontSize(fs);
+                /* jsPDF places text on its baseline; the box top plus roughly
+                   four fifths of the line box lands on it closely enough for
+                   selection to track the visible glyphs. */
+                var bx = ln.x * kx, by = (ln.y + ln.h * 0.78) * ky;
+                var want = ln.w * kx;
+                var have = pdf.getTextWidth(ln.text) || want;
+                var opts = { renderingMode:'invisible', baseline:'alphabetic' };
+                /* Nudge the invisible glyphs to sit under the visible ones, but
+                   only a little. Headings are set with wide CSS tracking, and
+                   matching that exactly spaces the letters so far apart that a
+                   reader extracts "T e m p s e n s" and search stops working.
+                   A close-enough selection box beats an unsearchable word. */
+                /* Only ever tighten, never spread. Spreading is what produced
+                   "T e m p s e n s" — a reader that sees wide glyph gaps splits
+                   the word, and the document stops being searchable. */
+                if(have > want && want > 0){
+                  var per = (want - have) / Math.max(1, ln.text.length);
+                  var cap = -fs * 0.10;
+                  opts.charSpace = per < cap ? cap : per;
+                }
+                pdf.text(ln.text, bx, by, opts);
+              });
+            }catch(e){}
+
+            /* contents rows become real jumps inside the document */
+            try{
+              Array.prototype.slice.call(el.querySelectorAll('a[href^="#"]')).forEach(function(a){
+                var target = doc.getElementById(a.getAttribute('href').slice(1));
+                if(!target) return;
+                var tp = pageNo.get(target.closest(sel.replace(/^\./,'.')) || target.closest('.page'));
+                if(!tp) return;
+                var r = a.getBoundingClientRect();
+                pdf.link((r.left-box.left)*kx, (r.top-box.top)*ky,
+                         r.width*kx, r.height*ky, { pageNumber:tp });
+              });
+            }catch(e){}
+
             msg('Rendering page '+(i+1)+' of '+pages.length+'…');
           });
       });
     });
-    return chain.then(function(){ unstage(f); return pdf.output('blob'); })
-                .catch(function(err){ unstage(f); throw err; });
+
+    return chain.then(function(){
+      /* bookmarks, grouped the same way the contents page is grouped */
+      try{
+        if(pdf.outline && pdf.outline.add){
+          var parent = null;
+          outlineOf(pages).forEach(function(it){
+            if(it.group) parent = pdf.outline.add(null, it.title, { pageNumber:it.page });
+            else pdf.outline.add(parent, it.title, { pageNumber:it.page });
+          });
+        }
+      }catch(e){}
+      unstage(f);
+      return pdf.output('blob');
+    }).catch(function(err){ unstage(f); throw err; });
   });
 }
 

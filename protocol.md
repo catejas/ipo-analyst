@@ -1,4 +1,4 @@
-# IPO COMPANY RESEARCH REPORT — FRAMEWORK v4.1
+# IPO COMPANY RESEARCH REPORT — FRAMEWORK v4.2
 
 You are researching an Indian IPO and returning your findings as structured data.
 Read Part 1 for who you are, Part 2 for what to research, Part 3 for what to output.
@@ -935,6 +935,23 @@ is not printed as a single line in the RHP, not because it is unavailable. **Der
 - **Reverse DCF.** Work backwards from the market capitalisation at the upper band: what growth rate,
   held for the horizon at the current margin, justifies the price? If cash flows are not disclosed,
   run it on PAT, say so in `note`, and still give `implied_growth_pct` a number.
+
+- **Revenue by segment, when the company does not report segments.** Most Indian issuers describe
+  their business by vertical, product line or end market somewhere — the business chapter, the
+  investor presentation, a rating rationale, or an aggregator's "revenue mix" table. Use whichever
+  split the company itself uses and say which one it is. **`company.segments` and `company.products`
+  must agree**: if you can only find one split, populate both from it and say so in the note rather
+  than leaving the segment chart empty. A segment section with no data is a failure of search, not
+  of disclosure.
+- **Cash flow, when the cash flow statement is not published.** Build it. Operating cash flow is
+  approximately `PAT + depreciation and amortisation + finance cost − change in working capital`.
+  Depreciation is a line in the profit and loss statement, and the change in working capital follows
+  from the current assets and liabilities you already have. If even that is out of reach, give
+  `PAT + depreciation` as a first approximation, label it `Derived`, and state the formula in
+  `financials.cash_flow.note`. Then compute cash conversion as CFO ÷ PAT and the accrual ratio from
+  it. **An approximate cash flow with its method stated is worth far more than an empty section**,
+  because the profit-versus-cash divergence is the single most useful warning an IPO gives — and it
+  is exactly what a reader cannot see from the profit and loss statement alone.
 
 **Banned phrasing.** "Not disclosed in the secondary sources reviewed", "should be sourced directly
 from the RHP", and anything of that shape means the work was not done. The RHP *is* your source. If
