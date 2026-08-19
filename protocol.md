@@ -1,4 +1,4 @@
-# IPO COMPANY RESEARCH REPORT — FRAMEWORK v4.3
+# IPO COMPANY RESEARCH REPORT — FRAMEWORK v4.4
 
 You are researching an Indian IPO and returning your findings as structured data.
 Read Part 1 for who you are, Part 2 for what to research, Part 3 for what to output.
@@ -606,7 +606,7 @@ still carries the scoring.
     "promoters": [ { "name": "max 30 chars", "role": "max 26 chars",
                      "background": "max 130 chars" } ],
     "due_diligence": [ { "check": "max 44 chars", "finding": "max 150 chars",
-                         "standard": "Verified | Reported | Allegation | Unverified" } ],
+                         "standard": "Verified — no reportable findings | Verified | Reported | Allegation | Partially verified | Unverified" } ],
     "dd_note": "max 320 chars — include the 'no material adverse information was identified in the sources searched; this is not proof that no undisclosed issue exists' sentence when that is the case",
     "governance": { "score_10": 7.0,
                     "items": [ { "parameter": "max 30 chars", "finding": "max 120 chars",
@@ -970,6 +970,20 @@ is not printed as a single line in the RHP, not because it is unavailable. **Der
   because the profit-versus-cash divergence is the single most useful warning an IPO gives — and it
   is exactly what a reader cannot see from the profit and loss statement alone.
 
+- **Accrual ratio, capex intensity and working-capital absorption.** All three are divisions on
+  figures you already hold, and all three keep coming back null. There is no excuse for any of them:
+  - Accrual ratio = `(PAT − CFO) ÷ average total assets`. Average total assets is the mean of the
+    opening and closing balance. A high positive ratio means the profit is accounting, not cash.
+  - Capex intensity = `purchase of property, plant and equipment ÷ revenue`. If capex is not
+    disclosed separately, use cash used in investing, label it a proxy, and say so.
+  - Working-capital absorption = `change in net working capital ÷ change in revenue`, both between
+    the last two years. It answers how much cash each additional rupee of sales consumes — which
+    for a distribution or bullion business is the whole argument.
+- **Three years, not one.** If a metric exists for the latest year it almost always exists for the
+  two before it, because the inputs are three-year series in the restated statements. A row whose
+  FY24 and FY25 columns are dashes while FY26 has a number means you computed one year and stopped.
+  Fill the series or say in `note` which year the input is missing for and why.
+
 **Banned phrasing.** "Not disclosed in the secondary sources reviewed", "should be sourced directly
 from the RHP", and anything of that shape means the work was not done. The RHP *is* your source. If
 you genuinely cannot open it, say which document you could not reach and why, in one clause.
@@ -995,6 +1009,26 @@ headline.
 
 Anything above 10% of net worth must also appear in `decision.red_flags`. The app will add it if
 you do not, so it is better that you frame it properly.
+
+## 49D. THE DUE-DILIGENCE STATUS MEANS WHAT IT SAYS
+
+`Unverified` means **you could not complete the check** — the source was unreachable, the register
+was not searchable, the document could not be opened. It is a statement about your work, not about
+the company.
+
+If you ran the search and it came back clean, that is a completed check. Use
+**`Verified — no reportable findings`**. "Indian Kanoon searched, no judgment naming the company or
+its promoters" is a finished piece of work and reporting it as `Unverified` both understates the
+research and misleads the reader into thinking nothing was looked at.
+
+| Status | Use it when |
+|---|---|
+| `Verified — no reportable findings` | You ran the check against a named source and it was clean. Say which source in `finding`. |
+| `Verified` | You ran the check and confirmed a positive fact. |
+| `Reported` | Something exists and is disclosed — a demand, a settlement, a proceeding. Quantify it in `finding`. |
+| `Allegation` | An unproven claim in the press or a filing. |
+| `Partially verified` | Part of the check completed, part did not. Say which part. |
+| `Unverified` | You genuinely could not check. Name the document or register you could not reach. |
 
 ## 50. CHECK THESE BEFORE YOU SEND
 
@@ -1088,6 +1122,35 @@ string, character for character, including punctuation. A near-match will not be
 **The app reports what you missed.** On import it names the uncovered fields on screen. If Tejas
 tells you a field is missing, do not regenerate the whole analysis — send only the missing
 `gu.text` entries as a small JSON object and he will merge them.
+
+### 51.2d The `deep` block and the product list — the current blind spot
+
+`gu.text` is a flat dictionary, so it can carry anything. But models translate what the checklist
+names, and the checklist grew from the English keys only. The `deep` block and `company.products`
+were added later, and in live testing **every one of these came back in English inside a Gujarati
+document**. Walk this list before you close the reply:
+
+| Path | What it is |
+|---|---|
+| `company.products[].what_it_is` and `.customers` | two sentences per product line — the longest untranslated run in the whole report |
+| `company.products[].growth_note` | one line per product |
+| `deep.capital_allocation.history[].action` and `.outcome` | what management did and what came of it |
+| `deep.group_structure.entities[].activity` and `.related_party_note` | what each subsidiary does |
+| `deep.credit.note`, `.facilities[].note`, `.sensitivities[].trigger` | the rating agency's reasoning |
+| `deep.issue_structure.note`, `.drhp_delta.note`, `.promoter_cost_of_acquisition.note`, `.recent_bonus_or_placement` | the structure commentary |
+| `deep.litigation.note`, `.matters[].matter`, `.verdict` | every matter and the conclusion |
+| `deep.concentration.note` and every `input` / `market` / `region` label | the concentration tables |
+| `deep.operating_metrics.note` and `.rows[].note` | how each metric was derived |
+| `deep.balance_sheet.*` notes, `deep.working_capital.note`, `deep.quarterly.note` | the remaining deep notes |
+| `deep.reverse_dcf.note`, `.assumptions[].comment`, `.verdict` | the valuation working |
+| `deep.sensitivity.note`, `.row_label`, `.col_label` | the grid axes, which are prose |
+| `decision.monitoring[].desired` and `.warning` | "Above 20% for two quarters", "Falling below 1.0x" |
+| `financials.valuation.multiples[].basis` | "Market cap at the upper band divided by FY26 PAT" |
+| `financials.cash_flow.note`, `.divergence.note`, `.funding_note` | the cash-flow verdict |
+
+**The rule that makes this durable:** after you write `deep`, read it back and put every sentence it
+contains into `gu.text`. If a key holds prose in English, it needs a line in `gu.text`. There is no
+key in `deep` that the reader does not see.
 
 ### 51.3 What you must translate — every key in the `gu` block (the `gu` key)
 
@@ -1200,4 +1263,4 @@ Every file carries this, translated where required, never shortened:
 
 ---
 
-*Framework v3.2 · IPO Company Research Report · Research tool only · Not investment advice.*
+*Framework v4.4 · IPO Company Research Report · Research tool only · Not investment advice.*

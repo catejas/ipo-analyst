@@ -139,7 +139,16 @@ var VOCAB_GU = {
   /* margin profile */
   'Above average':'સરેરાશથી ઉપર', 'Average':'સરેરાશ', 'Below average':'સરેરાશથી નીચે',
   /* reported tag */
-  'Reported':'નોંધાયેલ', 'Partly':'આંશિક રીતે'
+  'Reported':'નોંધાયેલ', 'Partly':'આંશિક રીતે',
+  /* listing-gain component factors — short labels the app can own */
+  'Market mood':'બજારનો મિજાજ', 'Sector mood':'ક્ષેત્રનો મિજાજ', 'Scarcity':'દુર્લભતા',
+  'Valuation support':'મૂલ્યાંકન ટેકો', 'Anchors':'એન્કર', 'Anchor':'એન્કર',
+  'Subscription':'સબસ્ક્રિપ્શન', 'Subscription / Demand':'સબસ્ક્રિપ્શન / માંગ',
+  'Grey market premium':'ગ્રે માર્કેટ પ્રીમિયમ', 'Retail':'રિટેલ',
+  /* due-diligence status, including the new completed-check value */
+  'Verified — no reportable findings':'ચકાસાયેલ — નોંધપાત્ર કંઈ મળ્યું નથી',
+  'Verified - no reportable findings':'ચકાસાયેલ — નોંધપાત્ર કંઈ મળ્યું નથી',
+  'No reportable findings':'નોંધપાત્ર કંઈ મળ્યું નથી'
 };
 
 /* Financial shorthand that stays English by design, per section 51.1. */
@@ -266,7 +275,9 @@ var W5 = {
     /^(allegation|disputed|under appeal|pending|unquantified|estimated)$/i,
     /^(partially verified|reported|partial|partly|derived|could not test|settled|watch)$/i,
     /^(disclosed|clear|clean|no adverse)$/i,
-    /^(verified|official|ties|resolved in favour)$/i
+    /* A completed search that turned up nothing is a finished check, not an
+       unfinished one, and is coloured as such. */
+    /^(verified|official|ties|resolved in favour|verified\s*[—-]\s*no reportable findings|no reportable findings)$/i
   ]
 };
 /* Words that carry a plain direction whichever column they sit in. */
@@ -391,6 +402,27 @@ var T = {
   balance_of_fresh:['Balance of the fresh issue not assigned to a stated object','નવા ઇશ્યૂની બાકી રકમ'],
   ofs_note:       ['Leaves the transaction; does not reach the company','વ્યવહારમાંથી બહાર જાય છે; કંપની સુધી પહોંચતું નથી'],
   ties_to_issue:  ['Ties to the issue size','ઇશ્યૂ કદ સાથે મેળ ખાય છે'],
+  /* Running-header page labels. These were hard-coded English strings passed to
+     page(), so they appeared untranslated on every page of the Gujarati
+     editions — the single most frequent English in those documents. */
+  pg_verdict:     ['Verdict','ચુકાદો'],
+  pg_scorecard:   ['Scorecard','સ્કોર કાર્ડ'],
+  pg_the_ipo:     ['The IPO','આ IPO'],
+  pg_company:     ['The Company','કંપની'],
+  pg_industry:    ['Industry & Moat','ઉદ્યોગ અને સ્પર્ધાત્મક લાભ'],
+  pg_numbers:     ['The Numbers','આંકડા'],
+  pg_cash:        ['Cash & Balance Sheet','રોકડ અને સરવૈયું'],
+  pg_promoters:   ['Promoters & Governance','પ્રમોટર્સ અને ગવર્નન્સ'],
+  pg_valuation:   ['Valuation','મૂલ્યાંકન'],
+  pg_risk:        ['The Risk','જોખમ'],
+  pg_decision:    ['The Decision','નિર્ણય'],
+  pg_signals:     ['Key Signals','મુખ્ય સંકેતો'],
+  pg_financials:  ['Financials','નાણાકીય'],
+  /* Document names, which appear in the footer of every page. */
+  doc_report:     ['IPO Company Research Report','IPO કંપની સંશોધન રિપોર્ટ'],
+  doc_inst:       ['Institutional Research Report','સંસ્થાકીય સંશોધન રિપોર્ટ'],
+  doc_exec:       ['Executive Summary','કાર્યકારી સારાંશ'],
+  doc_score:      ['Score Card','સ્કોર કાર્ડ'],
   net_worth:      ['Net worth','નેટવર્થ'],
   total_borrowings:['Total borrowings','કુલ ઉધાર'],
   as_at:          ['as at','ના રોજ'],
@@ -477,6 +509,27 @@ var T = {
   balance_of_fresh:['Balance of the fresh issue not assigned to a stated object','નવા ઇશ્યૂની બાકી રકમ'],
   ofs_note:       ['Leaves the transaction; does not reach the company','વ્યવહારમાંથી બહાર જાય છે; કંપની સુધી પહોંચતું નથી'],
   ties_to_issue:  ['Ties to the issue size','ઇશ્યૂ કદ સાથે મેળ ખાય છે'],
+  /* Running-header page labels. These were hard-coded English strings passed to
+     page(), so they appeared untranslated on every page of the Gujarati
+     editions — the single most frequent English in those documents. */
+  pg_verdict:     ['Verdict','ચુકાદો'],
+  pg_scorecard:   ['Scorecard','સ્કોર કાર્ડ'],
+  pg_the_ipo:     ['The IPO','આ IPO'],
+  pg_company:     ['The Company','કંપની'],
+  pg_industry:    ['Industry & Moat','ઉદ્યોગ અને સ્પર્ધાત્મક લાભ'],
+  pg_numbers:     ['The Numbers','આંકડા'],
+  pg_cash:        ['Cash & Balance Sheet','રોકડ અને સરવૈયું'],
+  pg_promoters:   ['Promoters & Governance','પ્રમોટર્સ અને ગવર્નન્સ'],
+  pg_valuation:   ['Valuation','મૂલ્યાંકન'],
+  pg_risk:        ['The Risk','જોખમ'],
+  pg_decision:    ['The Decision','નિર્ણય'],
+  pg_signals:     ['Key Signals','મુખ્ય સંકેતો'],
+  pg_financials:  ['Financials','નાણાકીય'],
+  /* Document names, which appear in the footer of every page. */
+  doc_report:     ['IPO Company Research Report','IPO કંપની સંશોધન રિપોર્ટ'],
+  doc_inst:       ['Institutional Research Report','સંસ્થાકીય સંશોધન રિપોર્ટ'],
+  doc_exec:       ['Executive Summary','કાર્યકારી સારાંશ'],
+  doc_score:      ['Score Card','સ્કોર કાર્ડ'],
   net_worth:      ['Net worth','નેટવર્થ'],
   total_borrowings:['Total borrowings','કુલ ઉધાર'],
   as_at:          ['as at','ના રોજ'],
@@ -800,6 +853,9 @@ body.gu .kv .k{ letter-spacing:.02em; font-size:6.6pt; }
 .pie-lg div{ display:flex; align-items:baseline; gap:1.6mm; }
 .pie-lg i{ width:2.4mm; height:2.4mm; border-radius:.6mm; flex:0 0 auto; display:inline-block; }
 .pie-lg b{ flex:1; font-weight:600; color:var(--ink2); }
+/* The concentration tables were set a step down from everything else. */
+.ir-conc table{ font-size:9pt; }
+.ir-conc td, .ir-conc th{ padding-top:2.1mm; padding-bottom:2.1mm; }
 .note{ border-left:1.6pt solid var(--teal); background:var(--teal2); padding:2.4mm 3mm;
        border-radius:0 1mm 1mm 0; font-size:7.3pt; line-height:1.5; }
 body.gu .note{ line-height:1.7; }
@@ -898,37 +954,46 @@ var AUTOFIT = '<script>(function(){'
       + ' && lim>5.5 && guard++<24){ lim-=0.5; bx.style.fontSize=lim+"px";'
       + 'bx.style.lineHeight="1.25"; }'
   + '}'
-  + 'var bs=document.querySelectorAll(".page > .body");'
-  + 'for(var i=0;i<bs.length;i++){ var bd=bs[i];'
-    + 'if(bd.getAttribute("data-fit")==="1") continue;'
-    + 'var target=bd.clientHeight; if(!target) continue;'
-    + 'if(bd.scrollHeight<=target+1) continue;'
-    + 'var w=document.createElement("div");'
-    + 'w.style.cssText="display:flex;flex-direction:column;flex:1 1 auto;min-height:0;width:100%";'
-    + 'while(bd.firstChild) w.appendChild(bd.firstChild);'
-    + 'bd.appendChild(w);'
-    + 'var nat=w.scrollHeight;'
-    + 'if(nat>target){'
-      + 'var z=Math.max(MIN, Math.floor((target/nat)*1000)/1000);'
+  /* ONE scale for the whole document, not one per page.
+     Scaling each page to its own needs made the type size differ from page to
+     page — Strengths at full size, Weaknesses a step smaller, and nothing to
+     explain why. The tightest page now sets the factor and every page adopts
+     it, so the document reads at a single size throughout. */
+  + 'var bs=[].slice.call(document.querySelectorAll(".page > .body"));'
+  + 'var need=1;'
+  + 'bs.forEach(function(bd){'
+    + 'var t=bd.clientHeight; if(!t) return;'
+    + 'if(bd.scrollHeight>t+1) need=Math.min(need, t/bd.scrollHeight);'
+  + '});'
+  + 'if(need<0.999){'
+    + 'var Z=Math.max(MIN, Math.floor(need*1000)/1000);'
+    + 'bs.forEach(function(bd){'
+      + 'if(bd.getAttribute("data-fit")==="1") return;'
+      + 'var t=bd.clientHeight; if(!t) return;'
+      + 'var w=document.createElement("div");'
+      + 'w.style.cssText="display:flex;flex-direction:column;flex:1 1 auto;min-height:0;width:100%";'
+      + 'while(bd.firstChild) w.appendChild(bd.firstChild);'
       + 'var outer=document.createElement("div");'
-      + 'outer.style.cssText="height:"+target+"px;overflow:hidden;flex:0 0 auto;width:100%";'
-      + 'bd.replaceChild(outer, w); outer.appendChild(w);'
-      + 'w.style.width=(100/z)+"%";'
+      + 'outer.style.cssText="height:"+t+"px;overflow:hidden;flex:0 0 auto;width:100%";'
+      + 'outer.appendChild(w); bd.appendChild(outer);'
+      + 'w.style.width=(100/Z)+"%";'
       + 'w.style.transformOrigin="top left";'
-      + 'w.style.transform="scale("+z+")";'
-    + '}'
-    + 'bd.setAttribute("data-fit","1");'
+      + 'w.style.transform="scale("+Z+")";'
+      + 'bd.setAttribute("data-fit","1");'
+    + '});'
   + '}'
 + '})();<\/script>';
 /* The document title header stays English in every edition, by design. */
 function head(p, label){
+  /* The company name stays in Latin script — it is a proper noun. The page
+     label does not: it is ours, and in the Gujarati edition it is Gujarati. */
   return '<div class="rh"><div class="l en">'+e(S(p.meta.short_name)||S(p.meta.company))+'</div>'
-       + '<div class="r en">'+e(label)+'</div></div>';
+       + '<div class="r">'+e(label)+'</div></div>';
 }
 function foot(p, i, total, lang, docName){
   return '<div class="rfw">'
        + '<div class="rfn">'+e(L(lang,'footnote'))+'</div>'
-       + '<div class="rf"><div><span class="en">'+e(docName||'IPO Company Research Report')+' &nbsp;·&nbsp; '
+       + '<div class="rf"><div><span>'+e(docName||L(lang,'doc_report'))+'</span><span class="en"> &nbsp;·&nbsp; '
        + e(p.meta.analysis_datetime||'') + '</span> &nbsp;·&nbsp; ' + e(L(lang,'research_only'))
        + '</div><div class="en"><b class="pgnum">'+i+'</b> / <span class="pgtot">'+total+'</span></div></div>'
        + '</div>';
@@ -951,7 +1016,8 @@ function tbl(cols, rows, opts){
       return '<td'+(num.indexOf(i)>=0?' class="n en"':'')+'>'+(c==null?'—':c)+'</td>'; }).join('');
     return '<tr'+cls+'>'+cells+'</tr>';
   }).join('');
-  return '<table><thead><tr>'+h+'</tr></thead><tbody>'+b+'</tbody></table>';
+  return '<table'+(opts.cls?' class="'+opts.cls+'"':'')+'><thead><tr>'+h+'</tr></thead><tbody>'
+       + b+'</tbody></table>';
 }
 function barRow(label, pctW, value, colour, tick){
   return '<div class="bar"><div class="bl">'+e(label)+'</div><div class="bt">'
@@ -1041,7 +1107,7 @@ function cover(p, lang, docTitle, pages){
     + tbl([L(lang,'parameter'), L(lang,'detail')], snap.map(function(r){
         return [ '<span style="color:var(--ink3)">'+e(r[0])+'</span>', '<span class="en">'+r[1]+'</span>' ]; }))
     + '<div class="grow"></div>';
-  return page(p, 1, pages, 'Verdict', inner, lang, docTitle);
+  return page(p, 1, pages, L(lang,'pg_verdict'), inner, lang, docTitle);
 }
 
 /* ============================ REPORT ============================ */
@@ -1111,34 +1177,27 @@ function escalateLitigation(p){
   });
 }
 
-function buildReport(p, lang){
-  p = safePayload(p);
-  lang = lang || 'en';
-  var TOT = 10, out = '';
-  var m = p.meta||{}, f = p.financials||{}, c = p.company||{}, pe = p.people||{}, d = p.decision||{}, ipo = p.ipo||{};
-  out += cover(p, lang, 'IPO Company Research Report', TOT);
-
+/* The 100-point score, rendered once and used by both the company report and
+   the institutional report. They had two implementations that drifted apart;
+   sharing one means a change lands in both and they cannot disagree again.
+   Gauge and block bars on the left, spider on the right, then the line items in
+   a two-column grid with the basis carried inline. */
+function scoreSection(p, lang){
   var sl = p.score_lines||{};
-  var scTotal = 0; BLOCKS.forEach(function(bk){ scTotal += blockScore(p,bk); });
-  /* All 28 line items must be visible on this page. The previous layout —
-     a bar per item stacked under a bar per block — ran past the bottom of the
-     page and six items were silently cut off. This is a two-column compact
-     grid that fits with room to spare. */
-  out += page(p, 2, TOT, 'Scorecard', sec('03', L(lang,'score_100'))
-    /* same arrangement as the institutional report, so the two read alike */
-    + '<div style="display:flex;gap:5mm;align-items:center;margin:1mm 0 2.5mm">'
+  var total = 0; BLOCKS.forEach(function(bk){ total += blockScore(p,bk); });
+  return '<div style="display:flex;gap:5mm;align-items:center;margin:1mm 0 2.5mm">'
       + '<div style="flex:1;min-width:0">'
-        + chartGauge(scTotal, lang)
+        + chartGauge(total, lang)
         + '<div style="margin-top:2mm">'+BLOCKS.map(function(bk){
-            var g2 = blockScore(p,bk);
-            return barRow(bName(bk,lang), bk[2]?g2/bk[2]*100:0, g2.toFixed(1)+' / '+bk[2],
-                          ragBar(bk[2]?g2/bk[2]*100:0)); }).join('')+'</div>'
+            var g = blockScore(p,bk);
+            return barRow(bName(bk,lang), bk[2]?g/bk[2]*100:0, g.toFixed(1)+' / '+bk[2],
+                          ragBar(bk[2]?g/bk[2]*100:0)); }).join('')+'</div>'
       + '</div>'
       + '<div style="flex:0 0 62mm;display:flex;align-items:center">'+chartRadar(p, lang)+'</div></div>'
     + '<div class="sc2col">'+BLOCKS.map(function(bk){
-        var items = bItems(bk,lang), g2 = blockScore(p,bk);
+        var items = bItems(bk,lang), g = blockScore(p,bk);
         return '<div class="sc2blk"><div class="sc2hd">'+e(bName(bk,lang))
-          + '<span class="en">'+g2.toFixed(1)+'/'+bk[2]+'</span></div>'
+          + '<span class="en">'+g.toFixed(1)+'/'+bk[2]+'</span></div>'
           + bk[3].map(function(k,i){
               var vv = Number(sl[k])||0, mx = bk[6][i];
               return '<div class="sc2row"><span class="l">'+e(items[i])+'</span>'
@@ -1147,7 +1206,24 @@ function buildReport(p, lang){
                 + '<span class="v en">'+vv.toFixed(1)+'<em>/'+mx+'</em></span></div>';
             }).join('') + '</div>';
       }).join('')+'</div>'
-    + '<div class="note"><b>'+e(L(lang,'how_to_read'))+'</b>'+e(L(lang,'how_to_read_b'))+'</div>'
+    + '<div class="note" style="margin-top:3mm"><b>'+e(L(lang,'how_to_read'))+'</b>'
+      + e(L(lang,'how_to_read_b'))+'</div>';
+}
+function buildReport(p, lang){
+  p = safePayload(p);
+  lang = lang || 'en';
+  var TOT = 10, out = '';
+  var m = p.meta||{}, f = p.financials||{}, c = p.company||{}, pe = p.people||{}, d = p.decision||{}, ipo = p.ipo||{};
+  out += cover(p, lang, L(lang,'doc_report'), TOT);
+
+  var sl = p.score_lines||{};
+  var scTotal = 0; BLOCKS.forEach(function(bk){ scTotal += blockScore(p,bk); });
+  /* All 28 line items must be visible on this page. The previous layout —
+     a bar per item stacked under a bar per block — ran past the bottom of the
+     page and six items were silently cut off. This is a two-column compact
+     grid that fits with room to spare. */
+  out += page(p, 2, TOT, L(lang,'pg_scorecard'), sec('03', L(lang,'score_100'))
+    + scoreSection(p, lang)
     + sec('04', L(lang,'listing_assess'))
     + tbl([L(lang,'component'),L(lang,'max'),L(lang,'score'),L(lang,'basis')],
         arr((ipo.listing_gain||{}).components).map(function(x){
@@ -1159,7 +1235,7 @@ function buildReport(p, lang){
 
   var fresh = Number(ipo.fresh_cr)||0, ofs = Number(ipo.ofs_cr)||0, tot = fresh+ofs;
   var fpct = tot? (fresh/tot*100) : 0;
-  out += page(p, 3, TOT, 'The IPO', sec('05', L(lang,'issue_struct'))
+  out += page(p, 3, TOT, L(lang,'pg_the_ipo'), sec('05', L(lang,'issue_struct'))
     + '<div style="display:flex;gap:6mm;align-items:center;margin-bottom:3mm">'
       /* was a CSS conic-gradient, which html2canvas draws as nothing — every
          exported PDF and PNG had a blank circle here. SVG rasterises. */
@@ -1187,7 +1263,7 @@ function buildReport(p, lang){
     + '<div class="grow"></div>', lang);
 
   var segs = arr(c.segments);
-  out += page(p, 4, TOT, 'The Company', sec('09', L(lang,'what_does'))
+  out += page(p, 4, TOT, L(lang,'pg_company'), sec('09', L(lang,'what_does'))
     + '<div class="lead">'+e(pick(p,lang,'company.what_it_does', c.what_it_does))+'</div>'
     + '<div class="grid2" style="margin-top:3mm">'
       + '<div><div class="eyebrow">'+e(L(lang,'how_earns'))+'</div><div class="mut" style="font-size:7.4pt;margin-top:1mm">'
@@ -1214,7 +1290,7 @@ function buildReport(p, lang){
     + '<div class="grow"></div>', lang);
 
   var ind = c.industry||{}, moat = c.moat||{};
-  out += page(p, 5, TOT, 'Industry & Moat', sec('12', L(lang,'industry'))
+  out += page(p, 5, TOT, L(lang,'pg_industry'), sec('12', L(lang,'industry'))
     + '<div class="grid3" style="margin-bottom:3mm">'
       + '<div class="kv"><div class="k">'+e(L(lang,'classification'))+'</div><div class="v" style="font-size:9.5pt">'+e(ind.classification||'—')+'</div></div>'
       + '<div class="kv"><div class="k">'+e(L(lang,'pricing_power'))+'</div><div class="v" style="font-size:9.5pt">'+e(ind.pricing_power||'—')+'</div></div>'
@@ -1231,7 +1307,7 @@ function buildReport(p, lang){
     + (moat.note?'<div class="note" style="margin-top:2mm">'+e(pick(p,lang,'company.moat_note', moat.note))+'</div>':'')
     + '<div class="grow"></div>', lang);
 
-  out += page(p, 6, TOT, 'Financials', sec('14', L(lang,'three_yr'))
+  out += page(p, 6, TOT, L(lang,'pg_financials'), sec('14', L(lang,'three_yr'))
     + chartFinancials(p, lang)
     + tbl([L(lang,'rs_crore')].concat(arr(f.years)).concat([L(lang,'trend')]), arr(f.rows).map(function(r){
         return { __cls: r.highlight?'hi':'', cells:[e(tr(p,lang,r.label))]
@@ -1251,7 +1327,7 @@ function buildReport(p, lang){
     cfoBar = barRow('CFO / PAT', Math.min(100, cv/1.5*100), cv.toFixed(2)+'×',
                     ragBar(Math.min(100, cv/1.5*100)), 66.7);
   }
-  out += page(p, 7, TOT, 'Cash & Balance Sheet', sec('16', L(lang,'profit_cash'))
+  out += page(p, 7, TOT, L(lang,'pg_cash'), sec('16', L(lang,'profit_cash'))
     + '<div class="grid3" style="margin-bottom:3mm">'
       + '<div class="kv"><div class="k">'+e(L(lang,'earn_quality'))+'</div><div class="v" style="font-size:9.5pt">'+e(eq.rating||'—')+'</div></div>'
       + '<div class="kv"><div class="k en">CFO / PAT</div><div class="v en '+(eq.cfo_pat!=null&&eq.cfo_pat<0.7?'tn-bad':'tn-good')+'">'
@@ -1297,7 +1373,7 @@ function buildReport(p, lang){
   var val = f.valuation||{}, peers = f.peers||{}, scn = f.scenarios||{};
   var cases = arr(scn.cases), maxV = Math.max.apply(null, cases.map(function(x){ return Number(x.value_per_share)||0; }).concat([1]));
   var peerCh = chartPeers(p, lang);
-  out += page(p, 8, TOT, 'Valuation', sec('18', L(lang,'valuation_at'))
+  out += page(p, 8, TOT, L(lang,'pg_valuation'), sec('18', L(lang,'valuation_at'))
     + (peerCh ? '<div class="mut" style="margin-bottom:1mm">'+e(L(lang,'pe_compare'))+'</div>'+peerCh : '')
     + '<div class="eyebrow" style="margin-bottom:1.5mm">'+e(L(lang,'verdict'))+': '+e(val.verdict||'—')+'</div>'
     + tbl([L(lang,'multiple'),L(lang,'value'),L(lang,'denom')], arr(val.multiples).map(function(x){
@@ -1327,7 +1403,7 @@ function buildReport(p, lang){
     + '<div class="grow"></div>', lang);
 
   var gov = pe.governance||{};
-  out += page(p, 9, TOT, 'Promoters & Governance', sec('21', L(lang,'promoters'))
+  out += page(p, 9, TOT, L(lang,'pg_promoters'), sec('21', L(lang,'promoters'))
     + (pe.has_promoter===false
         ? '<div class="note bad"><b>'+e(L(lang,'no_promoter'))+'</b>'+e(L(lang,'no_promoter_b'))+'</div>'
         : '<div class="mut" style="margin-bottom:2mm">'+e(L(lang,'holding_pre'))+' <span class="en">'
@@ -1348,7 +1424,7 @@ function buildReport(p, lang){
           +e(A(lang,x.flag))+'</span>'] }; }))
     + '<div class="grow"></div>', lang);
 
-  out += page(p, 10, TOT, 'The Decision', sec('24', L(lang,'str_weak'))
+  out += page(p, 10, TOT, L(lang,'pg_decision'), sec('24', L(lang,'str_weak'))
     + '<div class="grid2">'
       + '<div><div class="eyebrow" style="color:var(--good)">'+e(L(lang,'strengths'))+'</div><ul class="blist" style="margin-top:1mm">'
         + arr(pick(p,lang,'decision.strengths', arr(d.strengths))).map(function(x,i){
@@ -1423,7 +1499,7 @@ function buildReport(p, lang){
     /* The page-total in every footer is corrected by the packer at render time,
        so appending a page here does not leave page 1 saying "of 10". */
     TOT = 11;
-    out += page(p, 11, TOT, 'Key Signals', sec('28', L(lang,'ir_issue_kpi'))
+    out += page(p, 11, TOT, L(lang,'pg_signals'), sec('28', L(lang,'ir_issue_kpi'))
       + tbl([L(lang,'parameter'), L(lang,'value_lbl'), L(lang,'note')], kpiRows, { num:[1] })
       + (arr(klit.matters).length ? sec('29', L(lang,'ir_litigation'))
           + tbl([L(lang,'forum'), L(lang,'matter'), L(lang,'amount'), L(lang,'status')],
@@ -1447,9 +1523,9 @@ function buildExec(p, lang){
   p = safePayload(p);
   lang = lang || 'en';
   var TOT = 4, out = '', f = p.financials||{}, d = p.decision||{}, m = p.meta||{};
-  out += cover(p, lang, 'Executive Summary', TOT);
+  out += cover(p, lang, L(lang,'doc_exec'), TOT);
 
-  out += page(p, 2, TOT, 'The Numbers', sec('03', L(lang,'three_yr'))
+  out += page(p, 2, TOT, L(lang,'pg_numbers'), sec('03', L(lang,'three_yr'))
     + chartFinancials(p, lang)
     + tbl([L(lang,'rs_crore')].concat(arr(f.years)).concat([L(lang,'trend')]), arr(f.rows).slice(0,9).map(function(r){
         return { __cls:r.highlight?'hi':'', cells:[e(tr(p,lang,r.label))]
@@ -1472,7 +1548,7 @@ function buildExec(p, lang){
 
   var cases = arr((f.scenarios||{}).cases);
   var maxV = Math.max.apply(null, cases.map(function(x){ return Number(x.value_per_share)||0; }).concat([1]));
-  out += page(p, 3, TOT, 'The Risk', sec('07', L(lang,'str_weak'))
+  out += page(p, 3, TOT, L(lang,'pg_risk'), sec('07', L(lang,'str_weak'))
     + '<div class="grid2">'
       + '<div><div class="eyebrow" style="color:var(--good)">'+e(L(lang,'strengths'))+'</div><ul class="blist" style="margin-top:1mm">'
         + arr(pick(p,lang,'decision.strengths', arr(d.strengths))).slice(0,5).map(function(x,i){
@@ -1494,7 +1570,7 @@ function buildExec(p, lang){
     + '<div class="mut" style="margin-top:1.5mm">'+e(L(lang,'scen_caveat'))+'</div>'
     + '<div class="grow"></div>', lang);
 
-  out += page(p, 4, TOT, 'The Decision', sec('10', L(lang,'recommendation'))
+  out += page(p, 4, TOT, L(lang,'pg_decision'), sec('10', L(lang,'recommendation'))
     + '<div class="vb"><div class="h">'+e(A(lang,(p.verdict||{}).recommendation||''))+'</div><div class="c">'
       + '<div class="lead">'+e(pick(p,lang,'verdict.one_liner',(p.verdict||{}).one_liner))+'</div></div></div>'
     + sec('11', L(lang,'allocation'))
@@ -1789,12 +1865,20 @@ function scBlock(p, b, lang){
   var sl = p.score_lines||{}, sb = p.score_basis||{};
   var gsb = (lang==='gu' && p.gu && p.gu.score_basis) ? p.gu.score_basis : {};
   var got = blockScore(p,b), items = bItems(b,lang);
+  /* A bar before the mark, on the five-step scale, so the shape of the score is
+     readable before the number is. Column widths are fixed in CSS rather than
+     sized to content, because every block was otherwise auto-sizing its own and
+     the SCORE column landed in a different place in each one. */
   return sec('', bName(b,lang)+' — '+got.toFixed(1)+' / '+b[2])
-    + tbl([L(lang,'line_item'),L(lang,'score'),L(lang,'max'),L(lang,'basis')], b[3].map(function(k,i){
-        var val = Number(sl[k])||0;
-        return { cells:[e(items[i]), '<b class="en">'+val.toFixed(1)+'</b>',
-                        '<span class="en">'+b[6][i]+'</span>',
-                        '<span class="mut">'+e(gsb[k] ? safeTr(S(sb[k]), S(gsb[k])) : (tr(p,lang,sb[k]) || ''))+'</span>'] }; }), { num:[1,2] });
+    + tbl([L(lang,'line_item'),'',L(lang,'score'),L(lang,'max'),L(lang,'basis')], b[3].map(function(k,i){
+        var val = Number(sl[k])||0, mx = b[6][i], pcv = mx ? val/mx*100 : 0;
+        return { cells:[e(items[i]),
+                        '<span class="scbar"><i style="width:'+pcv.toFixed(0)+'%;background:'
+                          + ragBarHex(pcv)+'"></i></span>',
+                        '<b class="en">'+val.toFixed(1)+'</b>',
+                        '<span class="en">'+mx+'</span>',
+                        '<span class="mut">'+e(gsb[k] ? safeTr(S(sb[k]), S(gsb[k])) : (tr(p,lang,sb[k]) || ''))+'</span>'] }; }),
+        { num:[2,3], cls:'sctab' });
 }
 
 /* The card is deliberately paginated. Every one of the 31 line items that make
@@ -1826,15 +1910,22 @@ function buildScorecard(p, lang){
 
   var body = BLOCKS.map(function(b){ return '<div class="sc-blk">'+scBlock(p,b,lang)+'</div>'; }).join('')
     + '<div class="sc-blk">' + sec('', L(lang,'total_score'))
-    + tbl([L(lang,'section'),L(lang,'score'),L(lang,'max'),L(lang,'band')],
+    /* Same shape as the line-item tables above it: bar, then mark, then max. */
+    + tbl([L(lang,'section'),'',L(lang,'score'),L(lang,'max'),L(lang,'band')],
         BLOCKS.map(function(b){
           var g = blockScore(p,b), pc = b[2] ? (g/b[2])*100 : 0;
-          return { cells:[ bName(b,lang), '<b class="en">'+g.toFixed(1)+'</b>',
+          return { cells:[ bName(b,lang),
+                           '<span class="scbar"><i style="width:'+pc.toFixed(0)+'%;background:'
+                             + ragBarHex(pc)+'"></i></span>',
+                           '<b class="en">'+g.toFixed(1)+'</b>',
                            '<span class="en">'+b[2]+'</span>',
-                           barRow('', pc, Math.round(pc)+'%', ragBar(pc)) ] }; })
+                           '<span class="en">'+Math.round(pc)+'%</span>' ] }; })
         .concat([{ __cls:'tot', cells:[ '<b>'+L(lang,'ipo_quality')+'</b>',
+                   '<span class="scbar"><i style="width:'+total.toFixed(0)+'%;background:'
+                     + ragBarHex(total)+'"></i></span>',
                    '<b class="en">'+total.toFixed(1)+'</b>', '<span class="en">100</span>',
-                   '<b>'+e(A(lang,bandOf(total)))+'</b>' ] }]), { num:[1,2] }) + '</div>';
+                   '<b>'+e(A(lang,bandOf(total)))+'</b>' ] }]),
+        { num:[2,3], cls:'sctab' }) + '</div>';
 
   /* The long disclaimer used to sit here and nowhere else, which is why the
      PDF and the PNG carried different wording. Every document now says exactly
@@ -1845,10 +1936,21 @@ function buildScorecard(p, lang){
      actually need and removes the rest. Packing beats scaling: html2canvas
      renders a CSS-zoomed box with the wrong advance widths, which made Gujavati
      words on a scaled page overlap into each other. */
-  var pages = page(p,1,2,'Score Card','<div class="sc-main">'+head+body+'</div>'+tail,lang)
-            + page(p,2,2,'Score Card','<div class="sc-spill"></div>'+tail,lang);
+  var pages = page(p,1,2,L(lang,'doc_score'),'<div class="sc-main">'+head+body+'</div>'+tail,lang,L(lang,'doc_score'))
+            + page(p,2,2,L(lang,'doc_score'),'<div class="sc-spill"></div>'+tail,lang,L(lang,'doc_score'));
 
-  var CSS2 = '\n.sc-blk{break-inside:avoid}\n.sc-blk table{margin-bottom:0}\n'
+  /* Fixed geometry for every scoring table, so LINE ITEM, the bar, SCORE, MAX
+     and BASIS sit at identical positions in every block and on both pages. */
+  var CSS2 = '\n.sctab{ table-layout:fixed; width:100%; }\n'
+           + '.sctab th:nth-child(1),.sctab td:nth-child(1){ width:42mm; }\n'
+           + '.sctab th:nth-child(2),.sctab td:nth-child(2){ width:20mm; }\n'
+           + '.sctab th:nth-child(3),.sctab td:nth-child(3){ width:13mm; text-align:right; }\n'
+           + '.sctab th:nth-child(4),.sctab td:nth-child(4){ width:11mm; text-align:right; }\n'
+           + '.sctab td:nth-child(5){ width:auto; }\n'
+           + '.scbar{ display:block; height:2.6mm; background:#EEF1F5; border-radius:1.3mm;'
+           + ' overflow:hidden; margin-top:.6mm; }\n'
+           + '.scbar i{ display:block; height:100%; border-radius:0 1.3mm 1.3mm 0; }\n'
+           + '\n.sc-blk{break-inside:avoid}\n.sc-blk table{margin-bottom:0}\n'
            + '.sc-blk .sec{margin:6mm 0 2.5mm}\n.sc-blk .bar{margin:0}\n'
            + '.sc-blk td,.sc-blk th{padding-top:2.3mm;padding-bottom:2.3mm}\n'
            + '.sc-blk .ti{font-size:10.5pt}\n'
@@ -2286,7 +2388,7 @@ var IR_GROUPS = [
 
 function irSections(lang, gate){
   var gsb = (lang==='gu' && p.gu && p.gu.score_basis) ? p.gu.score_basis : {};
-  var B = [], BLK = [], SCORE = [], NO = 0, IX = 0, present = [];
+  var B = [], BLK = [], NO = 0, IX = 0, present = [];
 
   /* A section is emitted only when it has something to say. Printing a heading
      over "Not disclosed" was the single biggest source of dead space in the
@@ -2327,13 +2429,10 @@ function irSections(lang, gate){
   /* 02 IPO snapshot with the fresh/OFS split */
   var fresh = Number(ipo.fresh_cr)||0, ofs = Number(ipo.ofs_cr)||0, tot = fresh+ofs;
   push('ipo_snapshot', L(lang,'ipo_snapshot'),
-      (tot ? '<div style="display:flex;gap:6mm;align-items:center;margin-bottom:2.5mm">'
-        + chartDonut([{ value:fresh, colour:CH.teal }, { value:ofs, colour:CH.navy }],
-                     { size:104, centre:pct(fresh/tot*100,0), centreSub:L(lang,'fresh_issue') })
-        + '<div style="flex:1">'+chartLegend([
-            { label:L(lang,'fresh_issue')+' — '+cr(fresh), colour:CH.teal },
-            { label:L(lang,'ofs')+' — '+cr(ofs), colour:CH.navy }])+'</div></div>' : '')
-    + kv([
+      /* Figures and commentary only, as in the company report's own snapshot.
+         The fresh-versus-OFS split is a section of its own further down, where
+         it sits beside the outflow that mirrors it. */
+      kv([
         [L(lang,'issue_period'), '<span class="en">'+e(S(m.open_date)||'—')+' — '+e(S(m.close_date)||'—')+'</span>'],
         [L(lang,'price_band'), '<span class="en">₹'+e(S(ipo.price_band)||'—')+' · '+L(lang,'issue_at')+' ₹'+n(ipo.issue_price)+'</span>'],
         [L(lang,'issue_size'), '<span class="en">'+cr(ipo.issue_size_cr)+'</span>'],
@@ -2361,10 +2460,7 @@ function irSections(lang, gate){
      separate section further down. */
   var segs = arr(c.segments);
   push('ir_segments', L(lang,'ir_segments'),
-      (segs.length ? chartColumns(segs.map(function(x){ return S(tr(p,lang,x.name)).slice(0,14); }),
-          segs.map(function(x){ return x.revenue_pct; }),
-          { h:140, colour:CH.navy2, fmt:function(x){ return n(x,1)+'%'; } }) : '')
-    + T2([L(lang,'segment'), L(lang,'rev_share'), L(lang,'growth'), L(lang,'note')],
+      T2([L(lang,'segment'), L(lang,'rev_share'), L(lang,'growth'), L(lang,'note')],
         segs.map(function(x){
           return { cells:[e(tr(p,lang,x.name)), pct(x.revenue_pct), pct(x.growth_pct),
                    '<span class="mut">'+e(tr(p,lang,x.note))+'</span>'] }; }), { num:[1,2] }), '', segs.length);
@@ -2810,15 +2906,15 @@ function irSections(lang, gate){
       return { cells:[e(tr(p,lang,x[k1])), pct(x[k2],1)] }; }), { num:[1] }) : '';
   }
   push('ir_concentration', L(lang,'ir_concentration'),
-      note(tr(p,lang,cn.note))
+      '<div class="ir-conc">' + note(tr(p,lang,cn.note))
     + (arr(cn.customers).length
-      ? chartColumns(arr(cn.customers).map(function(x){ return S(x.year); }),
-          arr(cn.customers).map(function(x){ return x.top10_pct; }),
-          { h:130, colour:CH.navy2, fmt:function(x){ return n(x,1)+'%'; } })
-        + '<div class="mut" style="font-size:8pt">'+e(L(lang,'top10_customers'))+'</div>' : '')
+      ? T2([L(lang,'year'), L(lang,'top10_customers')], arr(cn.customers).map(function(x){
+          return { cells:['<span class="en">'+e(S(x.year))+'</span>', pct(x.top10_pct,1)] }; }), { num:[1] })
+      : '')
     + cnTable(cn.raw_materials, [L(lang,'input_lbl'), L(lang,'of_purchases')], 'input', 'pct_of_purchases')
     + cnTable(cn.end_markets, [L(lang,'end_market'), L(lang,'of_revenue')], 'market', 'pct_of_revenue')
-    + cnTable(cn.geography, [L(lang,'region_lbl'), L(lang,'of_revenue')], 'region', 'pct_of_revenue'),
+    + cnTable(cn.geography, [L(lang,'region_lbl'), L(lang,'of_revenue')], 'region', 'pct_of_revenue')
+    + '</div>',
     '', arr(cn.customers).length + arr(cn.raw_materials).length
         + arr(cn.end_markets).length + arr(cn.geography).length);
 
@@ -2987,40 +3083,12 @@ function irSections(lang, gate){
      flows across pages instead of being a single slab that cannot be split.
      Two pages, not three. Basis is the last column, as asked. */
   var total = 0; BLOCKS.forEach(function(bk){ total += blockScore(p,bk); });
-  push('ir_score', L(lang,'ir_score'),
-    /* The total bar sits at the top of the LEFT column with the marks under it,
-       leaving the right column clear for the spider, which is centred against
-       the full height of the left column rather than floating above it. */
-      '<div style="display:flex;gap:5mm;align-items:center;margin:1mm 0 1mm">'
-      + '<div style="flex:1;min-width:0">'
-        + chartGauge(total, lang)
-        + '<div style="margin-top:2mm">'+BLOCKS.map(function(bk){
-            var g = blockScore(p,bk), pcb = bk[2]?g/bk[2]*100:0;
-            return barRow(bName(bk,lang), pcb, g.toFixed(1)+' / '+bk[2], ragBar(pcb)); }).join('')+'</div>'
-      + '</div>'
-      + '<div style="flex:0 0 64mm;display:flex;align-items:center">'+chartRadar(p, lang)+'</div></div>');
+  /* The institutional report uses the same 100-point section as the company
+     report — one implementation, so the two cannot drift apart again. The
+     per-block basis tables it used to print are replaced by the compact
+     grid, which carries the marks inline. */
+  push('ir_score', L(lang,'ir_score'), scoreSection(p, lang), '', 1);
 
-  BLOCKS.forEach(function(bk){
-    var items = bItems(bk,lang), g = blockScore(p,bk);
-    SCORE.push('<div class="ir-blk ir-scoreblk">'
-      + '<div class="ir-scorehd">'+e(bName(bk,lang))+'<span class="en">'+g.toFixed(1)+' / '+bk[2]+'</span></div>'
-      + '<table class="ir-score"><tbody>'
-      + bk[3].map(function(k,i){
-          var vv = Number(sl[k])||0, mx = bk[6][i];
-          return '<tr><td class="nm">'+e(items[i])+'</td>'
-            + '<td class="bar-c"><span class="mini"><i style="width:'+(mx?vv/mx*100:0).toFixed(0)
-            + '%;background:'+ragBarHex(mx?vv/mx*100:0)+'"></i></span></td>'
-            + '<td class="n en">'+vv.toFixed(1)+'<span class="mx">/'+mx+'</span></td>'
-            + '<td class="mut">'+e(gsb[k] ? safeTr(S(sb[k]), S(gsb[k])) : (tr(p,lang,sb[k])||''))+'</td></tr>';
-        }).join('')
-      + '</tbody></table></div>');
-  });
-  SCORE.push('<div class="ir-blk"><table class="ir-score"><tbody><tr class="tot">'
-    + '<td><b>'+e(L(lang,'ipo_quality'))+'</b></td><td></td>'
-    + '<td class="n en"><b>'+total.toFixed(1)+'</b><span class="mx">/100</span></td>'
-    + '<td><b>'+e(A(lang,bandOf(total)))+'</b></td></tr></tbody></table></div>');
-
-  /* sources */
   push('ir_sources', L(lang,'ir_sources'),
       (arr(src.primary).length ? '<div class="note"><b>'+e(L(lang,'primary'))+'</b> '
         + arr(src.primary).map(function(x){ return '<span class="en">'+e(S(x))+'</span>'; }).join(' · ')+'</div>' : '')
@@ -3056,7 +3124,6 @@ function irSections(lang, gate){
       B.push('<div class="ir-blk" id="s'+no+'">' + pending + sec(no, m.title) + m.body + '</div>');
       pending = '';
       TITLES.push({ no:no, title:m.title });
-      if(m.key === 'ir_score') SCORE.forEach(function(h){ B.push(h); });
       delete byKey[m.key];
     });
   });
@@ -3099,11 +3166,11 @@ function irSections(lang, gate){
 
   var shells = page(p, 1, 25, L(lang,'ir_title'),
       '<div class="ir-toc-page">'+tocPage+'</div><div class="grow"></div>',
-      lang, 'Institutional Research Report');
+      lang, L(lang,'doc_inst'));
   for(var i = 2; i <= 34; i++){
     shells += page(p, i, 25, L(lang,'ir_title'),
       '<div class="ir-box">' + (i === 2 ? B.join('') : '') + '</div><div class="grow"></div>',
-      lang, 'Institutional Research Report');
+      lang, L(lang,'doc_inst'));
   }
 
   var CSS2 = '\n.ir-blk{ break-inside:avoid; margin-bottom:4.5mm; }\n'
