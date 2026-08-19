@@ -1209,6 +1209,13 @@ function scoreSection(p, lang){
     + '<div class="note" style="margin-top:3mm"><b>'+e(L(lang,'how_to_read'))+'</b>'
       + e(L(lang,'how_to_read_b'))+'</div>';
 }
+/* A group heading, the same one the institutional report uses, so the two
+   documents announce their sections identically. */
+function grpHead(lang, key){
+  return '<div class="ir-grp" style="margin:0 0 3mm"><div class="ir-grph">'
+       + e(L(lang, key)) + '</div></div>';
+}
+
 function buildReport(p, lang){
   p = safePayload(p);
   lang = lang || 'en';
@@ -1216,44 +1223,45 @@ function buildReport(p, lang){
   var m = p.meta||{}, f = p.financials||{}, c = p.company||{}, pe = p.people||{}, d = p.decision||{}, ipo = p.ipo||{};
   out += cover(p, lang, L(lang,'doc_report'), TOT);
 
+  /* Every derived value used by the sections is declared here, once. The
+     sections are emitted in reading order rather than the order they were
+     written in, so a declaration sitting just above its own page would be
+     read before it was assigned. */
   var sl = p.score_lines||{};
+  var segs = arr(c.segments);
+  var ind = c.industry||{}, moat = c.moat||{};
+  var eq = f.earnings_quality||{}, bs = f.balance_sheet||{};
+  var val = f.valuation||{}, peers = f.peers||{}, scn = f.scenarios||{};
+  var cases = arr(scn.cases), maxV = Math.max.apply(null, cases.map(function(x){ return Number(x.value_per_share)||0; }).concat([1]));
+  var peerCh = chartPeers(p, lang);
+  var gov = pe.governance||{};
+  var fresh = Number(ipo.fresh_cr)||0, ofs = Number(ipo.ofs_cr)||0, tot = fresh+ofs;
+  var fpct = tot? (fresh/tot*100) : 0;
+  var cfoBar = '';
   var scTotal = 0; BLOCKS.forEach(function(bk){ scTotal += blockScore(p,bk); });
   /* All 28 line items must be visible on this page. The previous layout —
      a bar per item stacked under a bar per block — ran past the bottom of the
      page and six items were silently cut off. This is a two-column compact
      grid that fits with room to spare. */
-  out += page(p, 2, TOT, L(lang,'pg_scorecard'), sec('03', L(lang,'score_100'))
-    + scoreSection(p, lang)
-    + sec('04', L(lang,'listing_assess'))
-    + tbl([L(lang,'component'),L(lang,'max'),L(lang,'score'),L(lang,'basis')],
-        arr((ipo.listing_gain||{}).components).map(function(x){
-          return { cells:[e(tr(p,lang,x.factor)), n(x.max), '<b>'+n(x.score,0)+'</b>', '<span class="mut">'+e(tr(p,lang,x.note))+'</span>'] }; })
-        .concat([{ __cls:'tot', cells:[L(lang,'lg_score'),'100','<b>'+n((ipo.listing_gain||{}).score,0)+'</b>','' ] }]),
-        { num:[1,2] })
-    + ((ipo.listing_gain||{}).verdict?'<div class="note" style="margin-top:2mm">'+e(tr(p,lang,ipo.listing_gain.verdict))+'</div>':'')
-    + '<div class="grow"></div>', lang);
-
-  var fresh = Number(ipo.fresh_cr)||0, ofs = Number(ipo.ofs_cr)||0, tot = fresh+ofs;
-  var fpct = tot? (fresh/tot*100) : 0;
-  out += page(p, 3, TOT, L(lang,'pg_the_ipo'), sec('05', L(lang,'issue_struct'))
+  out += page(p, 2, TOT, L(lang,'pg_the_ipo'), grpHead(lang,'irg_ipo') + sec('03', L(lang,'issue_struct'))
     + '<div style="display:flex;gap:6mm;align-items:center;margin-bottom:3mm">'
       /* was a CSS conic-gradient, which html2canvas draws as nothing — every
          exported PDF and PNG had a blank circle here. SVG rasterises. */
-      + chartDonut([{ value:fresh, colour:'#0E7C66' }, { value:ofs, colour:'#1E4E8C' }],
+      + chartDonut([{ value:fresh, colour:PAL5_HEX[3] }, { value:ofs, colour:PAL5_HEX[4] }],
                    { size:112, centre:pct(fpct,0), centreSub:L(lang,'fresh_issue') })
-      + '<div class="dlegend"><div><i style="background:var(--teal)"></i><b>'+e(L(lang,'fresh_issue'))+'</b> <span class="en">'+cr(fresh)+' · '+pct(fpct,1)+'</span></div>'
-      + '<div><i style="background:var(--navy)"></i><b>'+e(L(lang,'ofs'))+'</b> <span class="en">'+cr(ofs)+' · '+pct(100-fpct,1)+'</span></div>'
+      + '<div class="dlegend"><div><i style="background:var(--s5-4)"></i><b>'+e(L(lang,'fresh_issue'))+'</b> <span class="en">'+cr(fresh)+' · '+pct(fpct,1)+'</span></div>'
+      + '<div><i style="background:var(--s5-5)"></i><b>'+e(L(lang,'ofs'))+'</b> <span class="en">'+cr(ofs)+' · '+pct(100-fpct,1)+'</span></div>'
       + '<div style="margin-top:1.5mm;color:var(--ink3)">'+e(L(lang,'total'))+' <span class="en">'+cr(tot)+' · '+L(lang,'lot')+' '+n(ipo.lot_size)
       + ' '+L(lang,'shares_min')+' ₹'+n(ipo.min_investment)+'</span></div></div><div style="flex:1"></div></div>'
     + '<div class="note'+(/exit/i.test(S(ipo.structure_verdict))?' bad':'')+'">'
       + '<b>'+e(ipo.structure_verdict? A(lang, tr(p,lang,ipo.structure_verdict)) : '—')+'</b>'+e(pick(p,lang,'ipo.structure_note', ipo.structure_note))+'</div>'
-    + sec('06', L(lang,'money_goes'))
+    + sec('04', L(lang,'money_goes'))
     + tbl([L(lang,'use_proceeds'),L(lang,'rs_crore'),L(lang,'assessment')], arr(ipo.objects).map(function(o){
         return { cells:[e(tr(p,lang,o.use)), n(o.amount_cr,2), '<span class="mut">'+e(tr(p,lang,o.verdict))+'</span>'] }; }), { num:[1] })
-    + sec('07', L(lang,'who_selling'))
+    + sec('05', L(lang,'who_selling'))
     + tbl([L(lang,'seller'),L(lang,'type'),L(lang,'rs_crore')], arr(ipo.selling_shareholders).map(function(x){
         return { cells:['<span class="en">'+e(x.name)+'</span>', e(tr(p,lang,x.type)), n(x.amount_cr,2)] }; }), { num:[2] })
-    + sec('08', L(lang,'anchors'))
+    + sec('06', L(lang,'anchors'))
     + tbl([L(lang,'anchor'),L(lang,'type'),L(lang,'rs_crore')], arr((ipo.anchors||{}).top).map(function(x){
         return { cells:['<span class="en">'+e(x.name)+'</span>', e(tr(p,lang,x.type)),
                  x.amount_cr==null?L(lang,'not_disclosed'):n(x.amount_cr,2)] }; }), { num:[2] })
@@ -1262,20 +1270,59 @@ function buildReport(p, lang){
       + e(tr(p,lang,(ipo.anchors||{}).note||''))+' '+e(L(lang,'anchor_caveat'))+'</div>'
     + '<div class="grow"></div>', lang);
 
-  var segs = arr(c.segments);
-  out += page(p, 4, TOT, L(lang,'pg_company'), sec('09', L(lang,'what_does'))
+  /* The signals that do not need the prospectus — credit, litigation exposure,
+     cash conversion, and what the issue structure says about intent. */
+  var kdp = p.deep||{}, klit = kdp.litigation||{}, kcr = kdp.credit||{},
+      kis = kdp.issue_structure||{}, kcf = (p.financials||{}).cash_flow||{},
+      kcfk = kcf.kpis||{}, kdvg = kcf.divergence||{}, kcn = kdp.concentration||{};
+  var kpiRows = [];
+  function kpiRow(label, value, tone, note){
+    if(value == null || value === '') return;
+    kpiRows.push({ cells:[e(label), '<b class="en" style="color:'
+      + (tone==='bad'?'var(--s5-1)':tone==='warn'?'var(--s5-3)':tone==='good'?'var(--s5-4)':'var(--ink)')
+      + '">'+value+'</b>', '<span class="mut">'+e(note||'')+'</span>'] });
+  }
+  kpiRow(L(lang,'rating_lbl'), S(kcr.rating)||null, 'plain', A(lang,kcr.outlook));
+  kpiRow(L(lang,'disputed_total'), klit.disputed_total_cr!=null? cr(klit.disputed_total_cr):null,
+         Number(klit.pct_of_net_worth)>=10?'bad':'plain',
+         klit.pct_of_net_worth!=null? pct(klit.pct_of_net_worth,1)+' '+L(lang,'pct_net_worth'):'');
+  (arr(kcfk.cfo_pat).slice(-1)).forEach(function(x){
+    kpiRow(L(lang,'cfo_pat'), pct(x.value,0), Number(x.value)<60?'bad':Number(x.value)<85?'warn':'good', S(x.year)); });
+  kpiRow(L(lang,'divergence'), S(kdvg.flag)? A(lang,kdvg.flag):null,
+         /serious/i.test(S(kdvg.flag))?'bad':/watch/i.test(S(kdvg.flag))?'warn':'good', '');
+  kpiRow(L(lang,'cashout'), kis.promoter_cashout_pct!=null? pct(kis.promoter_cashout_pct,1):null,
+         Number(kis.promoter_cashout_pct)>=70?'bad':'plain', '');
+  kpiRow(L(lang,'cost_of_acq'), (kis.promoter_cost_of_acquisition||{}).multiple!=null
+         ? n(kis.promoter_cost_of_acquisition.multiple,1)+'x' : null, 'plain',
+         tr(p,lang,(kis.promoter_cost_of_acquisition||{}).note));
+  kpiRow(L(lang,'wc_intensity'), arr(kcr.wc_intensity).length
+         ? pct(arr(kcr.wc_intensity).slice(-1)[0].nwc_pct_of_income,1) : null, 'plain', '');
+  kpiRow(L(lang,'top10_customers'), arr(kcn.customers).length
+         ? pct(arr(kcn.customers).slice(-1)[0].top10_pct,1) : null, 'plain', '');
+  if(kpiRows.length){
+    /* The page-total in every footer is corrected by the packer at render time,
+       so appending a page here does not leave page 1 saying "of 10". */
+    TOT = 11;
+    out += page(p, 3, TOT, L(lang,'pg_signals'), sec('07', L(lang,'ir_issue_kpi'))
+      + tbl([L(lang,'parameter'), L(lang,'value_lbl'), L(lang,'note')], kpiRows, { num:[1] })
+      + '<div class="grow"></div>', lang);
+  }
+
+
+  out += page(p, 4, TOT, L(lang,'pg_company'), grpHead(lang,'irg_company') + sec('08', L(lang,'what_does'))
     + '<div class="lead">'+e(pick(p,lang,'company.what_it_does', c.what_it_does))+'</div>'
     + '<div class="grid2" style="margin-top:3mm">'
       + '<div><div class="eyebrow">'+e(L(lang,'how_earns'))+'</div><div class="mut" style="font-size:7.4pt;margin-top:1mm">'
         + e(pick(p,lang,'company.how_it_earns', c.how_it_earns))+'</div></div>'
       + '<div><div class="eyebrow">'+e(L(lang,'why_stay'))+'</div><div class="mut" style="font-size:7.4pt;margin-top:1mm">'
         + e(pick(p,lang,'company.why_customers_stay', c.why_customers_stay))+'</div></div></div>'
-    + sec('10', L(lang,'rev_mix'))
-    + segs.map(function(s){ return barRow(tr(p,lang,s.name), Number(s.revenue_pct)||0, pct(s.revenue_pct,1), 'var(--teal)'); }).join('')
+    + sec('09', L(lang,'rev_mix'))
+    + segs.map(function(s,si){ return barRow(tr(p,lang,s.name), Number(s.revenue_pct)||0,
+        pct(s.revenue_pct,1), PAL5[si % 5]); }).join('')
     + tbl([L(lang,'segment'),L(lang,'share_pc'),L(lang,'growth'),L(lang,'note')], segs.map(function(s){
         return { cells:[e(tr(p,lang,s.name)), pct(s.revenue_pct,1), s.growth_pct==null?'—':pct(s.growth_pct,1),
                  '<span class="mut">'+e(tr(p,lang,s.note))+'</span>'] }; }), { num:[1,2] })
-    + (arr(c.products).length ? sec('10B', L(lang,'ir_products'))
+    + (arr(c.products).length ? sec('10', L(lang,'ir_products'))
         + tbl([L(lang,'product'),L(lang,'what_it_is'),L(lang,'customers'),L(lang,'rev_share'),L(lang,'margin_profile')],
             arr(c.products).map(function(x){
               return { cells:['<b>'+e(tr(p,lang,x.name))+'</b>',
@@ -1289,12 +1336,13 @@ function buildReport(p, lang){
       }).join('')+'</div>'
     + '<div class="grow"></div>', lang);
 
-  var ind = c.industry||{}, moat = c.moat||{};
   out += page(p, 5, TOT, L(lang,'pg_industry'), sec('12', L(lang,'industry'))
     + '<div class="grid3" style="margin-bottom:3mm">'
-      + '<div class="kv"><div class="k">'+e(L(lang,'classification'))+'</div><div class="v" style="font-size:9.5pt">'+e(ind.classification||'—')+'</div></div>'
-      + '<div class="kv"><div class="k">'+e(L(lang,'pricing_power'))+'</div><div class="v" style="font-size:9.5pt">'+e(ind.pricing_power||'—')+'</div></div>'
-      + '<div class="kv"><div class="k">'+e(L(lang,'moat_rating'))+'</div><div class="v" style="font-size:9.5pt">'+e(moat.rating||'—')+'</div></div></div>'
+      + '<div class="kv"><div class="k">'+e(L(lang,'classification'))+'</div><div class="v" style="font-size:9.5pt">'+e(A(lang,ind.classification)||'—')+'</div></div>'
+      + '<div class="kv"><div class="k">'+e(L(lang,'pricing_power'))+'</div><div class="v" style="font-size:9.5pt;color:'
+        + ragHex(ind.pricing_power,'quality')+'">'+e(A(lang,ind.pricing_power)||'—')+'</div></div>'
+      + '<div class="kv"><div class="k">'+e(L(lang,'moat_rating'))+'</div><div class="v" style="font-size:9.5pt;color:'
+        + ragHex(moat.rating,'quality')+'">'+e(A(lang,moat.rating)||'—')+'</div></div></div>'
     + '<div class="lead">'+e(pick(p,lang,'company.industry_growth_note', ind.growth_note))+'</div>'
     + '<div class="eyebrow" style="margin-top:3mm">'+e(L(lang,'drivers'))+'</div>'
     + '<ul class="blist" style="margin-top:1mm">'+arr(pick(p,lang,'company.drivers', arr(ind.drivers))).map(function(x){
@@ -1307,29 +1355,47 @@ function buildReport(p, lang){
     + (moat.note?'<div class="note" style="margin-top:2mm">'+e(pick(p,lang,'company.moat_note', moat.note))+'</div>':'')
     + '<div class="grow"></div>', lang);
 
-  out += page(p, 6, TOT, L(lang,'pg_financials'), sec('14', L(lang,'three_yr'))
+  out += page(p, 6, TOT, L(lang,'pg_promoters'), grpHead(lang,'irg_promoters') + sec('14', L(lang,'promoters'))
+    + (pe.has_promoter===false
+        ? '<div class="note bad"><b>'+e(L(lang,'no_promoter'))+'</b>'+e(L(lang,'no_promoter_b'))+'</div>'
+        : '<div class="mut" style="margin-bottom:2mm">'+e(L(lang,'holding_pre'))+' <span class="en">'
+          + pct(pe.promoter_holding_pre)+'</span> '+e(L(lang,'before_issue'))+', <span class="en">'
+          + pct(pe.promoter_holding_post)+'</span> '+e(L(lang,'after_'))+'.</div>')
+    + tbl([L(lang,'name_'),L(lang,'role_'),L(lang,'background')], arr(pe.promoters).map(function(x){
+        return { cells:['<b class="en">'+e(x.name)+'</b>', e(tr(p,lang,x.role)), '<span class="mut">'+e(tr(p,lang,x.background))+'</span>'] }; }))
+    + sec('15', L(lang,'bg_checks'))
+    + tbl([L(lang,'check_'),L(lang,'finding'),L(lang,'standard')], arr(pe.due_diligence).map(function(x){
+        return { cells:[e(tr(p,lang,x.check)), '<span class="mut">'+e(tr(p,lang,x.finding))+'</span>',
+          ragPill(x.standard, lang, 'status')] }; }))
+    + '<div class="mut" style="margin-top:1.5mm">'+e(pick(p,lang,'people.dd_note', pe.dd_note))+'</div>'
+    + sec('16', L(lang,'governance')+' — '+n(gov.score_10,1)+' / 10')
+    + tbl([L(lang,'parameter'),L(lang,'finding'),L(lang,'flag_')], arr(gov.items).map(function(x){
+        return { cells:[e(tr(p,lang,x.parameter)), '<span class="mut">'+e(tr(p,lang,x.finding))+'</span>',
+          ragPill(x.flag, lang, 'risk')] }; }))
+    + '<div class="grow"></div>', lang);
+
+  out += page(p, 7, TOT, L(lang,'pg_financials'), grpHead(lang,'irg_financials') + sec('17', L(lang,'three_yr'))
     + chartFinancials(p, lang)
     + tbl([L(lang,'rs_crore')].concat(arr(f.years)).concat([L(lang,'trend')]), arr(f.rows).map(function(r){
         return { __cls: r.highlight?'hi':'', cells:[e(tr(p,lang,r.label))]
           .concat(arr(r.values).map(function(x){ return typeof x==='number'? n(x, Math.abs(x)<100?2:0) : e(x); }))
           .concat(['<span class="mut">'+e(tr(p,lang,r.trend))+'</span>']) }; }), { num:[1,2,3] })
     + (f.note?'<div class="mut" style="margin-top:1.5mm">'+e(tr(p,lang,f.note))+'</div>':'')
-    + sec('15', L(lang,'key_ratios'))
+    + sec('18', L(lang,'key_ratios'))
     + '<div class="grid4">'+arr(f.ratios).slice(0,8).map(function(r){
         return '<div class="kv"><div class="k">'+e(tr(p,lang,r.label))+'</div><div class="v en '+toneClass(r.tone)+'">'
           + e(r.value)+'</div><div class="s">'+e(tr(p,lang,r.direction))+'</div></div>'; }).join('')+'</div>'
     + '<div class="grow"></div>', lang);
 
-  var eq = f.earnings_quality||{}, bs = f.balance_sheet||{};
-  var cfoBar = '';
   if(eq.cfo_pat != null){
     var cv = Number(eq.cfo_pat);
     cfoBar = barRow('CFO / PAT', Math.min(100, cv/1.5*100), cv.toFixed(2)+'×',
                     ragBar(Math.min(100, cv/1.5*100)), 66.7);
   }
-  out += page(p, 7, TOT, L(lang,'pg_cash'), sec('16', L(lang,'profit_cash'))
+  out += page(p, 8, TOT, L(lang,'pg_cash'), sec('19', L(lang,'profit_cash'))
     + '<div class="grid3" style="margin-bottom:3mm">'
-      + '<div class="kv"><div class="k">'+e(L(lang,'earn_quality'))+'</div><div class="v" style="font-size:9.5pt">'+e(eq.rating||'—')+'</div></div>'
+      + '<div class="kv"><div class="k">'+e(L(lang,'earn_quality'))+'</div><div class="v" style="font-size:9.5pt;color:'
+        + ragHex(eq.rating,'quality')+'">'+e(A(lang,eq.rating)||'—')+'</div></div>'
       + '<div class="kv"><div class="k en">CFO / PAT</div><div class="v en '+(eq.cfo_pat!=null&&eq.cfo_pat<0.7?'tn-bad':'tn-good')+'">'
         + (eq.cfo_pat==null?'—':Number(eq.cfo_pat).toFixed(2)+'×')+'</div></div>'
       + '<div class="kv"><div class="k en">FCF / PAT</div><div class="v en '+(eq.fcf_pat!=null&&eq.fcf_pat<0?'tn-bad':'')+'">'
@@ -1364,89 +1430,73 @@ function buildReport(p, lang){
             return '<li>'+e(x)+'</li>'; }).join('')+'</ul>' : '')
     + '<div class="note'+(eq.rating==='Low'||eq.rating==='Red flag'?' bad':'')+'" style="margin-top:2mm">'
       + e(pick(p,lang,'financials.earnings_quality_note', eq.note))+'</div>'
-    + sec('17', L(lang,'bal_sheet'))
-    + '<div class="eyebrow" style="margin-bottom:1.5mm">'+e(L(lang,'rating'))+': '+e(bs.rating||'—')+'</div>'
+    + sec('20', L(lang,'bal_sheet'))
+    + '<div class="eyebrow" style="margin-bottom:1.5mm">'+e(L(lang,'rating'))+': <span style="color:'
+      + ragHex(bs.rating,'quality')+'">'+e(A(lang,bs.rating)||'—')+'</span></div>'
     + tbl([L(lang,'item'),L(lang,'position')], arr(bs.items).map(function(x){
         return { cells:[e(tr(p,lang,x.label)), '<span class="en '+toneClass(x.tone)+'">'+e(tr(p,lang,x.value))+'</span>'] }; }))
     + '<div class="grow"></div>', lang);
 
-  var val = f.valuation||{}, peers = f.peers||{}, scn = f.scenarios||{};
-  var cases = arr(scn.cases), maxV = Math.max.apply(null, cases.map(function(x){ return Number(x.value_per_share)||0; }).concat([1]));
-  var peerCh = chartPeers(p, lang);
-  out += page(p, 8, TOT, L(lang,'pg_valuation'), sec('18', L(lang,'valuation_at'))
+  out += page(p, 9, TOT, L(lang,'pg_valuation'), grpHead(lang,'irg_valuation') + sec('21', L(lang,'valuation_at'))
     + (peerCh ? '<div class="mut" style="margin-bottom:1mm">'+e(L(lang,'pe_compare'))+'</div>'+peerCh : '')
-    + '<div class="eyebrow" style="margin-bottom:1.5mm">'+e(L(lang,'verdict'))+': '+e(val.verdict||'—')+'</div>'
+    + '<div class="eyebrow" style="margin-bottom:1.5mm">'+e(L(lang,'verdict'))+': <span style="color:'
+      + ragHex(val.verdict)+'">'+e(A(lang,val.verdict)||'—')+'</span></div>'
     + tbl([L(lang,'multiple'),L(lang,'value'),L(lang,'denom')], arr(val.multiples).map(function(x){
         return { cells:['<span class="en">'+e(tr(p,lang,x.label))+'</span>', '<b class="en">'+e(x.value)+'</b>',
           '<span class="mut">'+e(tr(p,lang,x.basis))+(x.label_tag?' <i style="font-style:normal;color:var(--teal)">['+e(tr(p,lang,x.label_tag))+']</i>':'')+'</span>'] };
       }), { num:[1] })
     + (val.note?'<div class="note" style="margin-top:2mm">'+e(pick(p,lang,'financials.valuation_note', val.note))+'</div>':'')
-    + sec('19', L(lang,'peers'))
+    + sec('22', L(lang,'peers'))
     + tbl(arr(peers.columns), arr(peers.rows).map(function(r){
         return { __cls: r.is_subject?'hi':'', cells: arr(r.cells).map(function(x){ return '<span class="en">'+e(x)+'</span>'; }) };
       }), { num:[1,2,3,4,5,6,7,8] })
     + (peers.note?'<div class="mut" style="margin-top:1.5mm">'+e(pick(p,lang,'financials.peers_note', peers.note))+'</div>':'')
-    + sec('20', L(lang,'scenarios')+(scn.horizon?' '+L(lang,'to_')+' '+scn.horizon:''))
+    + sec('23', L(lang,'scenarios')+(scn.horizon?' '+L(lang,'to_')+' '+scn.horizon:''))
     + cases.map(function(x){
-        var col = x.case==='Bear'?'var(--bad)':x.case==='Bull'?'var(--good)':'var(--navy2)';
+        var col = x.case==='Bear'?'var(--s5-1)':x.case==='Bull'?'var(--s5-5)':'var(--s5-3)';
         return barRow(A(lang,S(x.case)), (Number(x.value_per_share)||0)/maxV*100, '₹'+n(x.value_per_share), col); }).join('')
     + tbl([L(lang,'case_'),L(lang,'val_share'),L(lang,'vs_issue'),L(lang,'vs_listing'),L(lang,'key_assum')],
         cases.map(function(x){
-          var c1 = (Number(x.vs_issue_pct)||0) < 0 ? 'var(--bad)' : 'var(--good)';
-          var c2 = (Number(x.vs_listing_pct)||0) < 0 ? 'var(--bad)' : 'var(--good)';
+          var c1 = (Number(x.vs_issue_pct)||0) < 0 ? 'var(--s5-1)' : 'var(--s5-5)';
+          var c2 = (Number(x.vs_listing_pct)||0) < 0 ? 'var(--s5-1)' : 'var(--s5-5)';
           return { cells:['<b>'+e(A(lang,x.case))+'</b>', '₹'+n(x.value_per_share),
             '<span style="color:'+c1+'">'+pct(x.vs_issue_pct,0)+'</span>',
             '<span style="color:'+c2+'">'+pct(x.vs_listing_pct,0)+'</span>',
             '<span class="mut">'+e(tr(p,lang,x.assumption))+'</span>'] }; }), { num:[1,2,3] })
     + '<div class="mut" style="margin-top:1.5mm">'+e(pick(p,lang,'financials.scenarios_note', scn.note))
       + ' '+e(L(lang,'scen_caveat'))+'</div>'
+    + sec('24', L(lang,'listing_assess'))
+    + tbl([L(lang,'component'),L(lang,'max'),L(lang,'score'),L(lang,'basis')],
+        arr((ipo.listing_gain||{}).components).map(function(x){
+          return { cells:[e(tr(p,lang,x.factor)), n(x.max), '<b>'+n(x.score,0)+'</b>', '<span class="mut">'+e(tr(p,lang,x.note))+'</span>'] }; })
+        .concat([{ __cls:'tot', cells:[L(lang,'lg_score'),'100','<b>'+n((ipo.listing_gain||{}).score,0)+'</b>','' ] }]),
+        { num:[1,2] })
+    + ((ipo.listing_gain||{}).verdict?'<div class="note" style="margin-top:2mm">'+e(tr(p,lang,ipo.listing_gain.verdict))+'</div>':'')
     + '<div class="grow"></div>', lang);
 
-  var gov = pe.governance||{};
-  out += page(p, 9, TOT, L(lang,'pg_promoters'), sec('21', L(lang,'promoters'))
-    + (pe.has_promoter===false
-        ? '<div class="note bad"><b>'+e(L(lang,'no_promoter'))+'</b>'+e(L(lang,'no_promoter_b'))+'</div>'
-        : '<div class="mut" style="margin-bottom:2mm">'+e(L(lang,'holding_pre'))+' <span class="en">'
-          + pct(pe.promoter_holding_pre)+'</span> '+e(L(lang,'before_issue'))+', <span class="en">'
-          + pct(pe.promoter_holding_post)+'</span> '+e(L(lang,'after_'))+'.</div>')
-    + tbl([L(lang,'name_'),L(lang,'role_'),L(lang,'background')], arr(pe.promoters).map(function(x){
-        return { cells:['<b class="en">'+e(x.name)+'</b>', e(tr(p,lang,x.role)), '<span class="mut">'+e(tr(p,lang,x.background))+'</span>'] }; }))
-    + sec('22', L(lang,'bg_checks'))
-    + tbl([L(lang,'check_'),L(lang,'finding'),L(lang,'standard')], arr(pe.due_diligence).map(function(x){
-        return { cells:[e(tr(p,lang,x.check)), '<span class="mut">'+e(tr(p,lang,x.finding))+'</span>',
-          '<span class="pill" style="background:'+(x.standard==='Verified'?'var(--good)':x.standard==='Allegation'?'var(--amber)':'#7C838C')+'">'
-          +e(A(lang,x.standard))+'</span>'] }; }))
-    + '<div class="mut" style="margin-top:1.5mm">'+e(pick(p,lang,'people.dd_note', pe.dd_note))+'</div>'
-    + sec('23', L(lang,'governance')+' — '+n(gov.score_10,1)+' / 10')
-    + tbl([L(lang,'parameter'),L(lang,'finding'),L(lang,'flag_')], arr(gov.items).map(function(x){
-        return { cells:[e(tr(p,lang,x.parameter)), '<span class="mut">'+e(tr(p,lang,x.finding))+'</span>',
-          '<span class="pill" style="background:'+(x.flag==='Clean'?'var(--good)':x.flag==='High'?'var(--bad)':x.flag==='Medium'?'var(--amber)':'#7C838C')+'">'
-          +e(A(lang,x.flag))+'</span>'] }; }))
-    + '<div class="grow"></div>', lang);
-
-  out += page(p, 10, TOT, L(lang,'pg_decision'), sec('24', L(lang,'str_weak'))
+  out += page(p, 10, TOT, L(lang,'pg_decision'), grpHead(lang,'irg_risks') + sec('25', L(lang,'str_weak'))
     + '<div class="grid2">'
-      + '<div><div class="eyebrow" style="color:var(--good)">'+e(L(lang,'strengths'))+'</div><ul class="blist" style="margin-top:1mm">'
+      + '<div><div class="eyebrow" style="color:var(--s5-5)">'+e(L(lang,'strengths'))+'</div><ul class="blist" style="margin-top:1mm">'
         + arr(pick(p,lang,'decision.strengths', arr(d.strengths))).map(function(x,i){
             var en = arr(d.strengths)[i]||{};
             return '<li><b>'+e(safeTr(S(en.title), S(x.title)||S(tr(p,lang,en.title))))+'</b> — '+e(safeTr(S(en.evidence), S(x.evidence)||S(tr(p,lang,en.evidence))))+'</li>'; }).join('')
         + '</ul></div>'
-      + '<div><div class="eyebrow" style="color:var(--bad)">'+e(L(lang,'weaknesses'))+'</div><ul class="blist" style="margin-top:1mm">'
+      + '<div><div class="eyebrow" style="color:var(--s5-1)">'+e(L(lang,'weaknesses'))+'</div><ul class="blist" style="margin-top:1mm">'
         + arr(pick(p,lang,'decision.weaknesses', arr(d.weaknesses))).map(function(x,i){
             var en = arr(d.weaknesses)[i]||{};
             return '<li><b>'+e(safeTr(S(en.title), S(x.title)||S(tr(p,lang,en.title))))+'</b> — '+e(safeTr(S(en.evidence), S(x.evidence)||S(tr(p,lang,en.evidence))))+'</li>'; }).join('')
         + '</ul></div></div>'
-    + sec('25', L(lang,'red_flags'))
+    + sec('26', L(lang,'red_flags'))
     + tbl([L(lang,'red_flag'),L(lang,'evidence'),L(lang,'severity')], arr(d.red_flags).map(function(x,i){
         var g = arr(pick(p,lang,'decision.red_flags', []))[i]||{};
         return { cells:['<b>'+e(safeTr(S(x.flag), S(g.flag)||S(x.flag)))+'</b>', '<span class="mut">'+e(safeTr(S(x.evidence), S(g.evidence)||S(x.evidence)))+'</span>',
           '<span class="pill '+sevClass(x.severity)+'">'+e(A(lang,x.severity))+'</span>'] }; }))
-    + sec('26', L(lang,'monitoring'))
+    + sec('27', L(lang,'monitoring'))
     + tbl([L(lang,'metric'),L(lang,'current'),L(lang,'desired'),L(lang,'warning')], arr(d.monitoring).map(function(x){
         return { cells:[e(tr(p,lang,x.metric)), '<b class="en">'+e(tr(p,lang,x.current))+'</b>',
                  '<span class="mut">'+e(tr(p,lang,x.desired))+'</span>',
                  '<span class="mut">'+e(tr(p,lang,x.warning))+'</span>'] }; }), { num:[1] })
-    + sec('27', L(lang,'alloc_levels'))
+    + sec('28', L(lang,'alloc_levels'))
     + '<div class="grid2"><div>'
       + tbl([L(lang,'action'),L(lang,'price'),L(lang,'rationale')], levelsOf(p,lang,d).map(function(x){
           return { cells:[e(tr(p,lang,x.action)), '<b class="en">'+e(x.price)+'</b>', '<span class="mut">'+e(tr(p,lang,x.rationale))+'</span>'] }; }), { num:[1] })
@@ -1455,6 +1505,15 @@ function buildReport(p, lang){
     + (d.watch_number ? '<div class="note good" style="margin-top:3mm"><b>'+e(L(lang,'watch_one'))+' — '
         + e(pick(p,lang,'decision.watch_number.title', d.watch_number.title))+'</b>'
         + e(pick(p,lang,'decision.watch_number.body', d.watch_number.body))+'</div>' : '')
+    + (arr(klit.matters).length ? sec('29', L(lang,'ir_litigation'))
+        + tbl([L(lang,'forum'), L(lang,'matter'), L(lang,'amount'), L(lang,'status')],
+              arr(klit.matters).map(function(x){
+                return { cells:['<span class="en">'+e(S(x.forum))+'</span>',
+                         '<span class="mut">'+e(tr(p,lang,x.matter))+'</span>',
+                         '<b class="en">'+cr(x.amount_cr)+'</b>',
+                         '<span class="mut">'+e(A(lang,x.status))+'</span>'] }; }), { num:[2] })
+          + (S(klit.verdict)? '<div class="note" style="margin-top:2mm">'+e(tr(p,lang,klit.verdict))+'</div>' : '')
+      : '')
     + '<div class="grow"></div>'
     + '<div class="mut" style="border-top:.6pt solid var(--rule);padding-top:2mm">'
       + '<b>'+e(L(lang,'sources'))+'.</b> '+e(L(lang,'primary'))+': <span class="en">'
@@ -1463,56 +1522,10 @@ function buildReport(p, lang){
       + (arr((p.sources||{}).missing).length ? '. <b>'+e(L(lang,'missing'))+':</b> '
           + arr(p.sources.missing).map(function(x){ return e(tr(p,lang,x)); }).join(' · ') : '') + '.</div>', lang);
 
-  /* data-spill: the company report is allowed to run to an eleventh page when
-     a payload is unusually rich, rather than being shrunk or — as it was
-     before — silently clipped. */
-  /* KPI page: the signals that do not need the prospectus — credit, litigation
-     exposure, cash conversion and what the issue structure says about intent. */
-  var kdp = p.deep||{}, klit = kdp.litigation||{}, kcr = kdp.credit||{},
-      kis = kdp.issue_structure||{}, kcf = (p.financials||{}).cash_flow||{},
-      kcfk = kcf.kpis||{}, kdvg = kcf.divergence||{}, kcn = kdp.concentration||{};
-  var kpiRows = [];
-  function kpiRow(label, value, tone, note){
-    if(value == null || value === '') return;
-    kpiRows.push({ cells:[e(label), '<b class="en" style="color:'
-      + (tone==='bad'?'var(--bad)':tone==='warn'?'var(--amber)':tone==='good'?'var(--good)':'var(--ink)')
-      + '">'+value+'</b>', '<span class="mut">'+e(note||'')+'</span>'] });
-  }
-  kpiRow(L(lang,'rating_lbl'), S(kcr.rating)||null, 'plain', A(lang,kcr.outlook));
-  kpiRow(L(lang,'disputed_total'), klit.disputed_total_cr!=null? cr(klit.disputed_total_cr):null,
-         Number(klit.pct_of_net_worth)>=10?'bad':'plain',
-         klit.pct_of_net_worth!=null? pct(klit.pct_of_net_worth,1)+' '+L(lang,'pct_net_worth'):'');
-  (arr(kcfk.cfo_pat).slice(-1)).forEach(function(x){
-    kpiRow(L(lang,'cfo_pat'), pct(x.value,0), Number(x.value)<60?'bad':Number(x.value)<85?'warn':'good', S(x.year)); });
-  kpiRow(L(lang,'divergence'), S(kdvg.flag)? A(lang,kdvg.flag):null,
-         /serious/i.test(S(kdvg.flag))?'bad':/watch/i.test(S(kdvg.flag))?'warn':'good', '');
-  kpiRow(L(lang,'cashout'), kis.promoter_cashout_pct!=null? pct(kis.promoter_cashout_pct,1):null,
-         Number(kis.promoter_cashout_pct)>=70?'bad':'plain', '');
-  kpiRow(L(lang,'cost_of_acq'), (kis.promoter_cost_of_acquisition||{}).multiple!=null
-         ? n(kis.promoter_cost_of_acquisition.multiple,1)+'x' : null, 'plain',
-         tr(p,lang,(kis.promoter_cost_of_acquisition||{}).note));
-  kpiRow(L(lang,'wc_intensity'), arr(kcr.wc_intensity).length
-         ? pct(arr(kcr.wc_intensity).slice(-1)[0].nwc_pct_of_income,1) : null, 'plain', '');
-  kpiRow(L(lang,'top10_customers'), arr(kcn.customers).length
-         ? pct(arr(kcn.customers).slice(-1)[0].top10_pct,1) : null, 'plain', '');
-  if(kpiRows.length){
-    /* The page-total in every footer is corrected by the packer at render time,
-       so appending a page here does not leave page 1 saying "of 10". */
-    TOT = 11;
-    out += page(p, 11, TOT, L(lang,'pg_signals'), sec('28', L(lang,'ir_issue_kpi'))
-      + tbl([L(lang,'parameter'), L(lang,'value_lbl'), L(lang,'note')], kpiRows, { num:[1] })
-      + (arr(klit.matters).length ? sec('29', L(lang,'ir_litigation'))
-          + tbl([L(lang,'forum'), L(lang,'matter'), L(lang,'amount'), L(lang,'status')],
-              arr(klit.matters).map(function(x){
-                return { cells:['<span class="en">'+e(S(x.forum))+'</span>',
-                         '<span class="mut">'+e(tr(p,lang,x.matter))+'</span>',
-                         '<b class="en">'+cr(x.amount_cr)+'</b>',
-                         '<span class="mut">'+e(A(lang,x.status))+'</span>'] }; }), { num:[2] })
-          + (S(klit.verdict)? '<div class="note" style="margin-top:2mm">'+e(tr(p,lang,klit.verdict))+'</div>' : '')
-        : '')
-      + '<div class="grow"></div>', lang);
-  }
 
+  out += page(p, 11, TOT, L(lang,'pg_scorecard'), sec('30', L(lang,'score_100'))
+    + scoreSection(p, lang)
+    + '<div class="grow"></div>', lang);
 
   return shell(S(m.company)+' — IPO Company Research Report', lang==='gu'?'gu':'', out)
          .replace('<body class=', '<body data-spill="1" class=');

@@ -1,4 +1,4 @@
-# IPO COMPANY RESEARCH REPORT — FRAMEWORK v4.4
+# IPO COMPANY RESEARCH REPORT — FRAMEWORK v4.5
 
 You are researching an Indian IPO and returning your findings as structured data.
 Read Part 1 for who you are, Part 2 for what to research, Part 3 for what to output.
@@ -1263,4 +1263,4 @@ Every file carries this, translated where required, never shortened:
 
 ---
 
-*Framework v4.4 · IPO Company Research Report · Research tool only · Not investment advice.*
+*Framework v4.5 · IPO Company Research Report · Research tool only · Not investment advice.*
