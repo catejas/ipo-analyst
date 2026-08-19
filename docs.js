@@ -7,6 +7,7 @@
 'use strict';
 function $(s){ return document.querySelector(s); }
 
+var ALL_LANG = 'en';                        /* the Report page language switch */
 var A4_W = 1240, A4_H = 1754;               /* CSS px at 150 DPI */
 var PNG_SCALE = 4;   /* 4960 x 7016 = 600 DPI at A4. Messaging apps downscale
                         hard, so we oversample and use large type in the layout. */
@@ -20,10 +21,12 @@ function currentPayload(){
   if(!r || !r.data) return null;
   return (r.data.schema === 'ipo-analyst/3' || r.data.meta) ? r.data : null;
 }
-function langsWanted(){
-  var l = (typeof langCode === 'function') ? langCode() : 'both';
-  return l === 'both' ? ['en','gu'] : [l];
-}
+/* One language switch governs every document on the Report page. It used to be
+   read from the Analyse form, which meant the research settings decided what a
+   button on a different tab produced — a switch you could not see from where
+   you were pressing. */
+function langsWanted(){ return [ALL_LANG]; }
+function docLang(){ return ALL_LANG; }
 function fileBase(p, kind, lang){
   var raw = (window.IPODocs && IPODocs.S) ? IPODocs.S(p.meta && (p.meta.short_name || p.meta.company)) : '';
   var nm = (raw || 'IPO').replace(/[^A-Za-z0-9]+/g,'_').replace(/^_+|_+$/g,'');
@@ -355,7 +358,6 @@ function needPayload(){
 
 
 /* ---------- All Reports: every document, one language, one tap ---------- */
-var ALL_LANG = 'en';
 var ALL_KINDS = [
   { kind:'inst',     ext:'pdf' },
   { kind:'report',   ext:'pdf' },
@@ -435,8 +437,7 @@ function doAction(kind, act, msgTarget){
 
   if(act === 'make' && !isPng(kind)){
     var lg0 = langs[0];
-    msg('Preview open. Tap <b>Save as PDF</b>, then <b>Back</b> to return to the app.'
-      + (langs.length > 1 ? ' Switch the language and tap PDF again for the other edition.' : ''));
+    msg('Preview open. Tap <b>Save as PDF</b>, then <b>Back</b> to return to the app.');
     showPreview(buildHTML(p, kind, lg0), fileBase(p, kind, lg0) + '.pdf');
     return;
   }

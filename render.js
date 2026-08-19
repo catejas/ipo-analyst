@@ -203,8 +203,9 @@ function A(lang, t){
   return vocab(S(t)) || S(t);
 }
 function toneClass(t){ return t==='good'?'tn-good':t==='bad'?'tn-bad':t==='warn'?'tn-warn':''; }
-function sevClass(s){ s=S(s).toUpperCase();
-  return s==='CRITICAL'?'sv-crit':s==='HIGH'?'sv-high':s==='MEDIUM'?'sv-med':'sv-low'; }
+/* Severity is a risk word, so it reads on the risk scale of the five-step
+   ladder like every other judgement in the documents. */
+function sevClass(v){ return ragClass(v, 'risk'); }
 function bandOf(v){ v=Number(v)||0;
   return v>=85?'Exceptional':v>=75?'Strong':v>=65?'Attractive':v>=55?'Selective':v>=45?'Weak':'Avoid'; }
 /* A pie beside its description rather than stacked above it. Used for the
@@ -230,43 +231,68 @@ function pieAside(slices, right, opts){
 function bandColour(v){ v=Number(v)||0;
   return v>=75?'var(--good)':v>=65?'var(--teal)':v>=55?'var(--warn)':v>=45?'var(--amber)':'var(--bad)'; }
 
-/* One traffic-light reading for every judgement word the payload can carry, so
-   severity, priority, probability, impact, verdicts, statuses and assessments
-   are all coloured on the same scale instead of each table inventing its own. */
-var RAG_BAD  = /^(critical|high|weak|none|poor|bad|negative|red flag|does not tie|unverified|stretched|very expensive|expensive|deteriorating|serious|resolved against|adverse|dependent on external capital|below average|low)$/i;
-var RAG_WARN = /^(medium|moderate|partial|partly|watch|could not test|reported|caution|cautious|fair|neutral|stable|average|limited|pending|under appeal|unquantified|partially verified|partially self-funding|estimated|derived)$/i;
-var RAG_GOOD = /^(strong|real|verified|clean|clear|good|healthy|positive|low|improving|ties|exceptional|attractive|above average|high|self-funding|resolved in favour|official|settled|undervalued|deeply undervalued)$/i;
-/* A word can mean opposite things depending on the column it sits in: HIGH is
-   bad for a risk and good for a margin. The caller says which scale applies. */
+function ragClass(v, scale){ var r = rag5(v, scale); return 'rag'+(r+1); }
+
+/* ---- the five-step scale ----
+   Everything judged in these documents lands on the same ladder: 1 is the weak
+   end, 5 the strong end. Percentages band at 35 / 50 / 65 / 80; words map by
+   meaning, and the meaning depends on the column — HIGH is bad for a risk and
+   good for a margin, so the caller names the scale. */
+var PAL5     = ['var(--s5-1)','var(--s5-2)','var(--s5-3)','var(--s5-4)','var(--s5-5)'];
+var PAL5_HEX = ['#C0392B','#E2703A','#D69A0E','#149C8B','#1F6FB2'];
+
+function step5(pcv){ pcv = Number(pcv)||0;
+  return pcv>=80 ? 4 : pcv>=65 ? 3 : pcv>=50 ? 2 : pcv>=35 ? 1 : 0; }
+function ragBar(pcv){ return PAL5[step5(pcv)]; }
+function ragBarHex(pcv){ return PAL5_HEX[step5(pcv)]; }
+
+var W5 = {
+  risk: [
+    /^(critical)$/i,
+    /^(high|serious|severe)$/i,
+    /^(medium|moderate|low-med|watch|partial|partly)$/i,
+    /^(low|minor)$/i,
+    /^(none|nil|clean|clear)$/i
+  ],
+  quality: [
+    /^(weak|poor|none|very low)$/i,
+    /^(below average|low|limited)$/i,
+    /^(average|moderate|medium|partial|partly|fair|stable|neutral)$/i,
+    /^(above average|good|real|healthy|adequate|improving)$/i,
+    /^(strong|exceptional|high|very strong|excellent)$/i
+  ],
+  status: [
+    /^(unverified|not verified|adverse|resolved against|does not tie|red flag)$/i,
+    /^(allegation|disputed|under appeal|pending|unquantified|estimated)$/i,
+    /^(partially verified|reported|partial|partly|derived|could not test|settled|watch)$/i,
+    /^(disclosed|clear|clean|no adverse)$/i,
+    /^(verified|official|ties|resolved in favour)$/i
+  ]
+};
+/* Words that carry a plain direction whichever column they sit in. */
+var W5_ANY = [
+  /^(avoid|very expensive|deteriorating|dependent on external capital|weak|critical|red flag|does not tie|unverified)$/i,
+  /^(expensive|serious|high|below average|stretched|negative)$/i,
+  /^(selective|fair|neutral|stable|moderate|average|medium|watch|partly|partial|could not test|reported|derived|estimated|partially self-funding)$/i,
+  /^(attractive|good|positive|healthy|improving|low|adequate|above average|real|disclosed)$/i,
+  /^(exceptional|strong|verified|official|ties|clean|clear|none|self-funding|undervalued|deeply undervalued|resolved in favour)$/i
+];
+function rag5(v, scale){
+  var t = S(v).trim();
+  if(!t) return 2;
+  var table = W5[scale];
+  var i;
+  if(table){ for(i=0;i<5;i++) if(table[i].test(t)) return i; }
+  for(i=0;i<5;i++) if(W5_ANY[i].test(t)) return i;
+  return 2;
+}
 function rag(v, scale){
   var t = S(v).trim();
   if(!t) return '';
-  if(scale === 'risk'){
-    if(/^(critical|high)$/i.test(t)) return 'bad';
-    if(/^(medium|moderate|low-med|watch)$/i.test(t)) return 'warn';
-    if(/^(low|none|nil|clean|clear)$/i.test(t)) return 'good';
-  }
-  if(scale === 'quality'){
-    if(/^(high|strong|exceptional|above average)$/i.test(t)) return 'good';
-    if(/^(medium|moderate|average|partial|partly)$/i.test(t)) return 'warn';
-    if(/^(low|weak|none|poor|below average)$/i.test(t)) return 'bad';
-  }
-  if(RAG_BAD.test(t))  return 'bad';
-  if(RAG_GOOD.test(t)) return 'good';
-  if(RAG_WARN.test(t)) return 'warn';
-  return '';
+  var i = rag5(t, scale);
+  return i<=1 ? 'bad' : i===2 ? 'warn' : 'good';
 }
-function ragClass(v, scale){ var r = rag(v, scale); return r ? 'rag-'+r : 'rag-none'; }
-/* Score bars: green at 65 and above, amber from 45, red below. The same three
-   colours are used on every bar in every document. */
-function ragBar(pcv){ pcv = Number(pcv)||0;
-  return pcv>=65 ? 'var(--good)' : pcv>=45 ? 'var(--amber)' : 'var(--bad)'; }
-function ragBarHex(pcv){ pcv = Number(pcv)||0;
-  return pcv>=65 ? '#18A05B' : pcv>=45 ? '#E8B84B' : '#CF3B3A'; }
-function ragHex(v, scale){
-  var r = rag(v, scale);
-  return r==='bad' ? 'var(--bad)' : r==='warn' ? 'var(--amber)' : r==='good' ? 'var(--good)' : '#7C838C';
-}
+function ragHex(v, scale){ return PAL5[rag5(v, scale)]; }
 /* A coloured pill, used wherever a judgement word appears in a table cell. */
 function ragPill(v, lang, scale){
   var t = S(v); if(!t) return '';
@@ -356,6 +382,15 @@ var T = {
   capex_intensity:['Capex intensity','કેપેક્સ તીવ્રતા'],
   wc_absorption:  ['Working capital absorption','કાર્યકારી મૂડી શોષણ'],
   trend:          ['Trend','વલણ'],
+  ir_inflow:      ['Where the money comes from','પૈસા ક્યાંથી આવે છે'],
+  ir_outflow:     ['Where the money goes','પૈસા ક્યાં જાય છે'],
+  does_not_tie:   ['These do not tie.','આ મેળ ખાતું નથી.'],
+  inflow_gap:     ['The parts differ from the stated issue size by','ભાગો જણાવેલ ઇશ્યૂ કદથી અલગ છે'],
+  to_sellers:     ['Paid to selling shareholders','વેચનાર શેરહોલ્ડરોને ચૂકવેલ'],
+  issue_expenses: ['Issue expenses and unallocated','ઇશ્યૂ ખર્ચ અને ફાળવેલ નથી'],
+  balance_of_fresh:['Balance of the fresh issue not assigned to a stated object','નવા ઇશ્યૂની બાકી રકમ'],
+  ofs_note:       ['Leaves the transaction; does not reach the company','વ્યવહારમાંથી બહાર જાય છે; કંપની સુધી પહોંચતું નથી'],
+  ties_to_issue:  ['Ties to the issue size','ઇશ્યૂ કદ સાથે મેળ ખાય છે'],
   net_worth:      ['Net worth','નેટવર્થ'],
   total_borrowings:['Total borrowings','કુલ ઉધાર'],
   as_at:          ['as at','ના રોજ'],
@@ -433,6 +468,15 @@ var T = {
   evidence:       ['Evidence','પુરાવો'],
   three_yr:       ['Three-year financials','ત્રણ વર્ષના નાણાકીય આંકડા'],
   trend:          ['Trend','વલણ'],
+  ir_inflow:      ['Where the money comes from','પૈસા ક્યાંથી આવે છે'],
+  ir_outflow:     ['Where the money goes','પૈસા ક્યાં જાય છે'],
+  does_not_tie:   ['These do not tie.','આ મેળ ખાતું નથી.'],
+  inflow_gap:     ['The parts differ from the stated issue size by','ભાગો જણાવેલ ઇશ્યૂ કદથી અલગ છે'],
+  to_sellers:     ['Paid to selling shareholders','વેચનાર શેરહોલ્ડરોને ચૂકવેલ'],
+  issue_expenses: ['Issue expenses and unallocated','ઇશ્યૂ ખર્ચ અને ફાળવેલ નથી'],
+  balance_of_fresh:['Balance of the fresh issue not assigned to a stated object','નવા ઇશ્યૂની બાકી રકમ'],
+  ofs_note:       ['Leaves the transaction; does not reach the company','વ્યવહારમાંથી બહાર જાય છે; કંપની સુધી પહોંચતું નથી'],
+  ties_to_issue:  ['Ties to the issue size','ઇશ્યૂ કદ સાથે મેળ ખાય છે'],
   net_worth:      ['Net worth','નેટવર્થ'],
   total_borrowings:['Total borrowings','કુલ ઉધાર'],
   as_at:          ['as at','ના રોજ'],
@@ -629,7 +673,13 @@ var CSS = `
   --navy:#0F2C52; --navy2:#1B4370; --teal:#00736C; --teal2:#E6F1F0;
   --ink:#12161C; --ink2:#3D4653; --ink3:#6B7480; --ink4:#9AA2AD;
   --rule:#DEDAD2; --rule2:#EDEAE4; --paper:#FFFFFF; --panel:#F7F5F1; --panel2:#FBFAF7;
-  --good:#146C43; --warn:#8A6100; --amber:#B7791F; --bad:#A32017; --crit:#6E1210;
+  /* One five-step scale, worst to best, used for every judgement in every
+     document: score bars, severity, priority, probability, impact, verdicts,
+     statuses, assessments and the sensitivity grid. Warm for the weak end,
+     cool for the strong end — chosen because red-versus-green alone is not
+     legible to a colour-blind reader, and every band here also carries a word. */
+  --s5-1:#C0392B; --s5-2:#E2703A; --s5-3:#D69A0E; --s5-4:#149C8B; --s5-5:#1F6FB2;
+  --good:#149C8B; --warn:#D69A0E; --amber:#D69A0E; --bad:#C0392B; --crit:#8E2A20;
 }
 html,body{ background:#E9E7E1; }
 body{ font-family:"Helvetica Neue",Helvetica,Arial,sans-serif; color:var(--ink);
@@ -735,10 +785,12 @@ body.gu .kv .k{ letter-spacing:.02em; font-size:6.6pt; }
 .pill{ display:inline-block; font-size:5.9pt; font-weight:800; letter-spacing:.07em;
        text-transform:uppercase; color:#fff; padding:.5mm 1.8mm; border-radius:2.5mm; white-space:nowrap;
        font-family:"Helvetica Neue",Helvetica,Arial,sans-serif; }
-.sv-crit{ background:var(--crit); } .sv-high{ background:var(--bad); }
-.sv-med{ background:var(--amber); } .sv-low{ background:#7C838C; }
-.rag-bad{ background:var(--bad); } .rag-warn{ background:var(--amber); }
-.rag-good{ background:var(--good); } .rag-none{ background:#7C838C; }
+/* kept as aliases so any stray reference still lands on the five-step scale */
+.sv-crit{ background:var(--s5-1); } .sv-high{ background:var(--s5-2); }
+.sv-med{ background:var(--s5-3); } .sv-low{ background:var(--s5-4); }
+.rag1{ background:var(--s5-1); } .rag2{ background:var(--s5-2); }
+.rag3{ background:var(--s5-3); } .rag4{ background:var(--s5-4); }
+.rag5{ background:var(--s5-5); }
 .gov-a{ display:inline-block; min-width:17mm; }
 .pie-row{ display:flex; gap:6mm; align-items:flex-start; margin:1mm 0 2mm; }
 .pie-l{ flex:0 0 52mm; }
@@ -778,22 +830,6 @@ function sectorHtml(p, lang){
   if(!raw) return '';
   var t = sectorText(p, lang);
   return (lang==='gu' && S(t)===raw) ? '<span class="en">'+e(raw)+'</span>' : e(t);
-}
-/* Colour for a due-diligence result. "Unverified" is a genuine amber state — it
-   means the check could not be completed, not that the company is clean. */
-/* Severity-style pill class for High / Medium / Low style values. */
-function prioClass(v){
-  var t = S(v).toLowerCase();
-  if(/high/.test(t)) return 'sv-high';
-  if(/med/.test(t))  return 'sv-med';
-  return 'sv-low';
-}
-function ddColour(r){
-  var t = S(r).toLowerCase();
-  if(/verified|clear|clean/.test(t)) return 'var(--good)';
-  if(/reported|disclosed/.test(t))   return 'var(--navy2)';
-  if(/allegation|adverse|pending/.test(t)) return 'var(--bad)';
-  return 'var(--amber)';
 }
 function gmpTile(ipo, lang){
   var g = (ipo||{}).gmp || {};
@@ -1089,15 +1125,16 @@ function buildReport(p, lang){
      page and six items were silently cut off. This is a two-column compact
      grid that fits with room to spare. */
   out += page(p, 2, TOT, 'Scorecard', sec('03', L(lang,'score_100'))
-    + chartGauge(scTotal, lang)
-    /* marks on the left, spider on the right — same arrangement as the
-       institutional report, so the two documents read alike */
-    + '<div style="display:flex;gap:5mm;align-items:flex-start;margin:1mm 0 2.5mm">'
-      + '<div style="flex:1;min-width:0">'+BLOCKS.map(function(bk){
-          var g2 = blockScore(p,bk);
-          return barRow(bName(bk,lang), bk[2]?g2/bk[2]*100:0, g2.toFixed(1)+' / '+bk[2],
-                        ragBar(bk[2]?g2/bk[2]*100:0)); }).join('')+'</div>'
-      + '<div style="flex:0 0 64mm">'+chartRadar(p, lang)+'</div></div>'
+    /* same arrangement as the institutional report, so the two read alike */
+    + '<div style="display:flex;gap:5mm;align-items:center;margin:1mm 0 2.5mm">'
+      + '<div style="flex:1;min-width:0">'
+        + chartGauge(scTotal, lang)
+        + '<div style="margin-top:2mm">'+BLOCKS.map(function(bk){
+            var g2 = blockScore(p,bk);
+            return barRow(bName(bk,lang), bk[2]?g2/bk[2]*100:0, g2.toFixed(1)+' / '+bk[2],
+                          ragBar(bk[2]?g2/bk[2]*100:0)); }).join('')+'</div>'
+      + '</div>'
+      + '<div style="flex:0 0 62mm;display:flex;align-items:center">'+chartRadar(p, lang)+'</div></div>'
     + '<div class="sc2col">'+BLOCKS.map(function(bk){
         var items = bItems(bk,lang), g2 = blockScore(p,bk);
         return '<div class="sc2blk"><div class="sc2hd">'+e(bName(bk,lang))
@@ -1212,7 +1249,7 @@ function buildReport(p, lang){
   if(eq.cfo_pat != null){
     var cv = Number(eq.cfo_pat);
     cfoBar = barRow('CFO / PAT', Math.min(100, cv/1.5*100), cv.toFixed(2)+'×',
-                    cv>=1?'var(--good)':cv>=0.7?'var(--amber)':'var(--bad)', 66.7);
+                    ragBar(Math.min(100, cv/1.5*100)), 66.7);
   }
   out += page(p, 7, TOT, 'Cash & Balance Sheet', sec('16', L(lang,'profit_cash'))
     + '<div class="grid3" style="margin-bottom:3mm">'
@@ -1222,6 +1259,30 @@ function buildReport(p, lang){
       + '<div class="kv"><div class="k en">FCF / PAT</div><div class="v en '+(eq.fcf_pat!=null&&eq.fcf_pat<0?'tn-bad':'')+'">'
         + (eq.fcf_pat==null?'—':Number(eq.fcf_pat).toFixed(2)+'×')+'</div></div></div>'
     + cfoBar + (cfoBar?'<div class="mut" style="margin-bottom:2mm">'+e(L(lang,'cfo_marker'))+'</div>':'')
+    /* The derived cash flow the institutional report carries belongs here too:
+       this is the page about profit versus cash, and it was showing ratios with
+       none of the cash flow they come from. */
+    + (function(){
+        var cf = f.cash_flow||{}, rows = arr(cf.rows), k = cf.kpis||{}, dv = cf.divergence||{};
+        if(!rows.length && !S(dv.flag)) return '';
+        return (rows.length
+            ? tbl([L(lang,'line_item')].concat(arr(f.years).length?arr(f.years):['FY24','FY25','FY26']),
+                rows.map(function(x){
+                  var v = arr(x.values);
+                  return { __cls:x.highlight?'hi':'',
+                           cells:[e(tr(p,lang,x.label)), n(v[0],2), n(v[1],2), n(v[2],2)] }; }),
+                { num:[1,2,3] })
+            : '')
+          + (arr(k.cfo_pat).length
+            ? '<div class="grid3" style="margin:2mm 0">'+arr(k.cfo_pat).slice(-3).map(function(x){
+                return '<div class="kv"><div class="k en">'+e(S(x.year))+' '+e(L(lang,'cfo_pat'))
+                  + '</div><div class="v" style="color:'+ragBar(x.value)+'">'+pct(x.value,0)+'</div></div>';
+              }).join('')+'</div>' : '')
+          + (S(dv.flag) ? '<div class="note'+(/serious/i.test(S(dv.flag))?' bad':'')+'"><b>'
+              + e(L(lang,'divergence'))+' — '+e(A(lang,dv.flag))+'</b> '+e(tr(p,lang,dv.note))+'</div>' : '')
+          + (S(cf.funding_verdict) ? '<div class="note"><b>'+e(L(lang,'funding_verdict'))+' — '
+              + e(A(lang,cf.funding_verdict))+'</b> '+e(tr(p,lang,cf.funding_note))+'</div>' : '');
+      })()
     + (arr(pick(p,lang,'financials.eq_flags', arr(eq.flags))).length
         ? '<ul class="blist">'+arr(pick(p,lang,'financials.eq_flags', arr(eq.flags))).map(function(x){
             return '<li>'+e(x)+'</li>'; }).join('')+'</ul>' : '')
@@ -1875,8 +1936,10 @@ function buildScorecard(p, lang){
    silently renders as nothing through html2canvas — the donut in earlier
    builds was blank in every exported file — so nothing here relies on it.
    ============================================================== */
-var CH = { teal:'#0E7C66', navy:'#1E4E8C', navy2:'#2E6BB8', amber:'#E8B84B',
-           gold:'#E08A1E', red:'#CF3B3A', green:'#18A05B', grey:'#C9CFD8', ink:'#1B2430' };
+/* Chart colours draw from the same five-step scale, so a bar in a chart and a
+   pill in a table beside it never disagree about what amber means. */
+var CH = { teal:'#149C8B', navy:'#1F6FB2', navy2:'#2E6BB8', amber:'#D69A0E',
+           gold:'#E2703A', red:'#C0392B', green:'#149C8B', grey:'#C9CFD8', ink:'#1B2430' };
 
 function chNum(v){ return (v==null || isNaN(v)) ? null : Number(v); }
 function chMax(a){ var m = 0; a.forEach(function(x){ if(chNum(x)!=null) m = Math.max(m, Math.abs(Number(x))); }); return m || 1; }
@@ -2063,7 +2126,8 @@ function chartRadar(p, lang){
 /* Simple horizontal gauge for a 0-100 score. */
 function chartGauge(value, lang){
   var W = 520, H = 54, pad = 12, v = Math.max(0, Math.min(100, Number(value)||0));
-  var bands = [[0,45,CH.red],[45,55,CH.gold],[55,65,CH.amber],[65,75,CH.teal],[75,100,CH.green]];
+  var bands = [[0,35,PAL5_HEX[0]],[35,50,PAL5_HEX[1]],[50,65,PAL5_HEX[2]],
+               [65,80,PAL5_HEX[3]],[80,100,PAL5_HEX[4]]];
   var track = bands.map(function(b){
     var x = pad + (W-pad*2)*b[0]/100, w = (W-pad*2)*(b[1]-b[0])/100;
     return '<rect x="'+x.toFixed(1)+'" y="18" width="'+w.toFixed(1)+'" height="14" fill="'+b[2]+'" fill-opacity="0.30"/>';
@@ -2111,12 +2175,9 @@ function chartHeat(cols, rows, lang){
   rows.forEach(function(r){ arr(r.cells).forEach(function(c){ var v=chNum(c); if(v!=null) all.push(v); }); });
   if(!all.length) return '';
   var lo = Math.min.apply(null, all), hi = Math.max.apply(null, all), span = (hi-lo)||1;
-  /* Three bands, not five: the grid is read at a glance, and a traffic light
-     is what the rest of the report uses for every other judgement. */
-  function col(v){
-    var f = (v-lo)/span;
-    return f>0.66?CH.green:f>0.33?CH.amber:CH.red;
-  }
+  /* Five bands, matching the score scale exactly, so a cell in this grid means
+     the same thing as a bar of the same colour anywhere else in the report. */
+  function col(v){ return PAL5_HEX[step5(((v-lo)/span)*100)]; }
   return '<table class="chheat"><thead><tr><th></th>'
     + cols.map(function(c){ return '<th>'+e(S(c))+'</th>'; }).join('')+'</tr></thead><tbody>'
     + rows.map(function(r){
@@ -2211,13 +2272,13 @@ var IR_GROUPS = [
   ['irg_recommendation', ['verdict_h']],
   ['irg_ipo',            ['ipo_snapshot','ir_issue_kpi','ir_objects','ir_shareholding',
                           'ir_anchors','capital_allocation']],
-  ['irg_valuation',      ['ir_val','dp_rdcf','ir_peers','ir_scen','dp_cases',
-                          'dp_sensitivity','ir_lg']],
   ['irg_company',        ['what_it_does','ir_group','ir_products','ir_segments','ir_metrics',
                           'ir_industry','ir_moat','dp_competition','ir_concentration',
                           'strengths','weaknesses']],
-  ['irg_financials',     ['ir_pl','ir_fq','ir_cash','ir_cashflow','ir_opmetrics','ir_credit']],
   ['irg_promoters',      ['ir_promoters','management_quality','ir_gov']],
+  ['irg_financials',     ['ir_pl','ir_fq','ir_cash','ir_cashflow','ir_opmetrics','ir_credit']],
+  ['irg_valuation',      ['ir_val','dp_rdcf','ir_peers','ir_scen','dp_cases',
+                          'dp_sensitivity','ir_lg']],
   ['irg_risks',          ['red_flags','ir_catalysts','ir_fail','ir_monitor','regulatory',
                           'ir_litigation','dp_change_mind','dp_questions','ir_alloc','ir_score',
                           'ir_sources']]
@@ -2460,15 +2521,41 @@ function irSections(lang, gate){
 
   /* 15 objects */
   arr(ipo.objects).forEach(function(o){ o.__p = p; });
-  push('ir_objects', L(lang,'ir_objects'),
-      pieAside(arr(ipo.objects).map(function(o){
-          return { label:S(tr(p,lang,o.use)), value:Number(o.amount_cr)||0 }; }),
+  /* The two sides of the transaction. Declared once, used by both sections, so
+     the inflow pie and the outflow pie can never disagree about the totals. */
+  var freshCr = Number(ipo.fresh_cr)||0, ofsCr = Number(ipo.ofs_cr)||0;
+  var issueCr = Number(ipo.issue_size_cr) || (freshCr + ofsCr);
+  var inflowGap = Math.abs(issueCr - (freshCr + ofsCr));
+
+  /* Where the money goes. The mirror of the inflow: every object of the fresh
+     issue, plus the offer for sale, which is money leaving the transaction to
+     the selling shareholders rather than entering the company. The two sides
+     tie to the same total, and any gap is stated instead of hidden. */
+  var objs = arr(ipo.objects);
+  var objTot = objs.reduce(function(a,o){ return a+(Number(o.amount_cr)||0); }, 0);
+  var unallocated = freshCr - objTot;
+  var outSlices = objs.map(function(o){
+      return { label:S(tr(p,lang,o.use)), value:Number(o.amount_cr)||0 }; });
+  if(unallocated > 0.5) outSlices.push({ label:S(L(lang,'issue_expenses')), value:unallocated });
+  if(ofsCr > 0) outSlices.push({ label:S(L(lang,'to_sellers')), value:ofsCr });
+  var outTot = outSlices.reduce(function(a,x){ return a+x.value; }, 0);
+  var outGap = Math.abs(outTot - issueCr);
+  push('ir_objects', L(lang,'ir_outflow'),
+      pieAside(outSlices,
         T2([L(lang,'use_proceeds'), L(lang,'rs_crore'), L(lang,'assessment')],
-          arr(ipo.objects).map(function(o){
+          objs.map(function(o){
             return { cells:[e(tr(p,lang,o.use)), n(o.amount_cr,2),
-                     '<span class="mut">'+e(tr(p,lang,o.verdict||o.note))+'</span>'] }; }), { num:[1] }),
-        { centre:cr(arr(ipo.objects).reduce(function(a,o){ return a+(Number(o.amount_cr)||0); },0)),
-          centreSub:L(lang,'fresh_issue') }));
+                     '<span class="mut">'+e(tr(p,lang,o.verdict||o.note))+'</span>'] }; })
+          .concat(unallocated > 0.5 ? [{ cells:[e(L(lang,'issue_expenses')), n(unallocated,2),
+                     '<span class="mut">'+e(L(lang,'balance_of_fresh'))+'</span>'] }] : [])
+          .concat(ofsCr > 0 ? [{ cells:['<b>'+e(L(lang,'to_sellers'))+'</b>', '<b>'+n(ofsCr,2)+'</b>',
+                     '<span class="mut">'+e(L(lang,'ofs_note'))+'</span>'] }] : [])
+          .concat([{ __cls:'tot', cells:['<b>'+e(L(lang,'total'))+'</b>', '<b>'+n(outTot,2)+'</b>',
+                     outGap > 0.5 ? '<b style="color:var(--s5-1)">'+e(L(lang,'does_not_tie'))+'</b>'
+                                  : '<span class="mut">'+e(L(lang,'ties_to_issue'))+'</span>'] }]),
+          { num:[1] }),
+        { centre:cr(outTot), centreSub:L(lang,'ir_outflow') }),
+    '', outSlices.length);
 
   /* 16 selling shareholders */
   push('ir_shareholding', L(lang,'ir_shareholding'),
@@ -2669,7 +2756,7 @@ function irSections(lang, gate){
         return { cells:[e(A(lang,x.type)), '<b class="en">'+cr(x.limit_cr)+'</b>',
                  '<span class="mut">'+e(tr(p,lang,x.note))+'</span>'] }; }), { num:[1] }) : '')
     + (sens.length ? T2([L(lang,'parameter'), L(lang,'trigger_lbl')], sens.map(function(x){
-        return { cells:['<span class="pill '+(/upgr/i.test(S(x.direction))?'rag-good':'rag-bad')+'">'
+        return { cells:['<span class="pill '+(/upgr/i.test(S(x.direction))?'rag5':'rag1')+'">'
                    + e(A(lang,x.direction))+'</span>',
                  '<span class="mut">'+e(tr(p,lang,x.trigger))+'</span>'] }; })) : ''),
     '', fac.length + sens.length + (S(cr_.rating)?1:0));
@@ -2688,32 +2775,33 @@ function irSections(lang, gate){
   /* Issue structure signals — arithmetic on figures already in the payload. */
   var isk = dp.issue_structure||{}, osp = isk.objects_split||{}, pca = isk.promoter_cost_of_acquisition||{},
       dlt = isk.drhp_delta||{};
-  push('ir_issue_kpi', L(lang,'ir_issue_kpi'),
-      note(tr(p,lang,isk.note))
-    + ((isk.promoter_cashout_pct!=null || isk.fresh_pct_of_market_cap!=null)
-      ? '<div class="tiles">'
-        + '<div class="tile"><div class="k">'+e(L(lang,'cashout'))+'</div><div class="v" style="color:'
-          + (Number(isk.promoter_cashout_pct)>=70?'var(--bad)':'var(--ink)')+'">'
-          + pct(isk.promoter_cashout_pct,1)+'</div></div>'
-        + '<div class="tile"><div class="k">'+e(L(lang,'fresh_of_mcap'))+'</div><div class="v">'
-          + pct(isk.fresh_pct_of_market_cap,1)+'</div></div>'
-        + (pca.multiple!=null ? '<div class="tile"><div class="k">'+e(L(lang,'cost_of_acq'))
-            + '</div><div class="v en">'+n(pca.multiple,1)+'x</div><div class="s en">₹'+n(pca.weighted_avg)
-            + ' → ₹'+n(pca.issue_price)+'</div></div>' : '')
-        + '</div>' : '')
-    + ((osp.growth_capex_pct!=null || osp.debt_repayment_pct!=null)
-      ? pieAside([
-          { label:S(L(lang,'growth')),     value:Number(osp.growth_capex_pct)||0 },
-          { label:S(L(lang,'debt_repay')), value:Number(osp.debt_repayment_pct)||0 },
-          { label:'GCP',                   value:Number(osp.general_corporate_pct)||0 }],
-          (S(pca.note)? note(tr(p,lang,pca.note)) : '')
-          + (dlt.changed ? '<div class="note"><b>'+e(L(lang,'drhp_delta'))+'</b> '+e(tr(p,lang,dlt.note))+'</div>' : '')
-          + (S(isk.recent_bonus_or_placement)? note(tr(p,lang,isk.recent_bonus_or_placement)) : ''),
-          { centreSub:L(lang,'objects_split') })
-      : (S(pca.note)? note(tr(p,lang,pca.note)) : '')
+  /* Where the money comes FROM. The issue is a cash inflow, and its two parts
+     must add to the issue size — if they do not, the report says so rather than
+     drawing a pie that quietly disagrees with the snapshot above it. */
+  push('ir_issue_kpi', L(lang,'ir_inflow'),
+      pieAside([
+        { label:S(L(lang,'fresh_issue')), value:freshCr },
+        { label:S(L(lang,'ofs')),         value:ofsCr }],
+        note(tr(p,lang,isk.note))
+        + kv([[L(lang,'issue_size'), '<span class="en">'+cr(issueCr)+'</span>'],
+              [L(lang,'fresh_issue'), '<span class="en">'+cr(freshCr)+'</span>'],
+              [L(lang,'ofs'), '<span class="en">'+cr(ofsCr)+'</span>'],
+              [L(lang,'cashout'), isk.promoter_cashout_pct!=null
+                ? '<b style="color:'+(Number(isk.promoter_cashout_pct)>=70?'var(--s5-1)':'var(--ink)')+'">'
+                  + pct(isk.promoter_cashout_pct,1)+'</b>'
+                : (issueCr ? '<b>'+pct(ofsCr/issueCr*100,1)+'</b>' : null)],
+              [L(lang,'fresh_of_mcap'), isk.fresh_pct_of_market_cap!=null
+                ? pct(isk.fresh_pct_of_market_cap,1) : null],
+              [L(lang,'cost_of_acq'), pca.multiple!=null
+                ? '<span class="en">'+n(pca.multiple,1)+'x  (₹'+n(pca.weighted_avg)+' → ₹'+n(pca.issue_price)+')</span>'
+                : null]])
+        + (inflowGap > 0.5 ? '<div class="note bad"><b>'+e(L(lang,'does_not_tie'))+'</b> '
+            + e(L(lang,'inflow_gap'))+' <span class="en">'+cr(inflowGap)+'</span></div>' : '')
+        + (S(pca.note)? note(tr(p,lang,pca.note)) : '')
         + (dlt.changed ? '<div class="note"><b>'+e(L(lang,'drhp_delta'))+'</b> '+e(tr(p,lang,dlt.note))+'</div>' : '')
-        + (S(isk.recent_bonus_or_placement)? note(tr(p,lang,isk.recent_bonus_or_placement)) : '')),
-    '', (isk.promoter_cashout_pct!=null || osp.growth_capex_pct!=null) ? 1 : 0);
+        + (S(isk.recent_bonus_or_placement)? note(tr(p,lang,isk.recent_bonus_or_placement)) : ''),
+        { centre:cr(issueCr), centreSub:L(lang,'issue_size') }),
+    '', (freshCr + ofsCr) > 0 ? 1 : 0);
 
   /* Concentration — what replaces the top-1 and top-5 customer detail. */
   var cn = dp.concentration||{};
@@ -2835,8 +2923,7 @@ function irSections(lang, gate){
       var cc = S(x.concern).toUpperCase();
       return { cells:['<b>'+e(tr(p,lang,x.party))+'</b>', e(tr(p,lang,x.nature)),
         '<span class="en">'+cr(x.amount_cr)+'</span>',
-        '<span class="pill '+(cc==='HIGH'?'sv-high':cc==='MEDIUM'?'sv-med':'sv-low')+'">'
-          + e(A(lang,x.concern))+'</span>'] }; }); }, { num:[2] });
+        ragPill(x.concern, lang, 'risk')] }; }); }, { num:[2] });
 
   deepTable('contingent', L(lang,'dp_contingent'),
     [L(lang,'line_item'), L(lang,'amount'), L(lang,'status')],
@@ -2901,15 +2988,17 @@ function irSections(lang, gate){
      Two pages, not three. Basis is the last column, as asked. */
   var total = 0; BLOCKS.forEach(function(bk){ total += blockScore(p,bk); });
   push('ir_score', L(lang,'ir_score'),
-      chartGauge(total, lang)
-    /* Marks on the left, spider on the right — the reader takes the numbers
-       first and uses the shape to confirm them. Bars are on the same red /
-       amber / green scale as every other judgement in the report. */
-    + '<div style="display:flex;gap:5mm;align-items:flex-start;margin:1.5mm 0 1mm">'
-      + '<div style="flex:1;min-width:0">'+BLOCKS.map(function(bk){
-          var g = blockScore(p,bk), pcb = bk[2]?g/bk[2]*100:0;
-          return barRow(bName(bk,lang), pcb, g.toFixed(1)+' / '+bk[2], ragBar(pcb)); }).join('')+'</div>'
-      + '<div style="flex:0 0 66mm">'+chartRadar(p, lang)+'</div></div>');
+    /* The total bar sits at the top of the LEFT column with the marks under it,
+       leaving the right column clear for the spider, which is centred against
+       the full height of the left column rather than floating above it. */
+      '<div style="display:flex;gap:5mm;align-items:center;margin:1mm 0 1mm">'
+      + '<div style="flex:1;min-width:0">'
+        + chartGauge(total, lang)
+        + '<div style="margin-top:2mm">'+BLOCKS.map(function(bk){
+            var g = blockScore(p,bk), pcb = bk[2]?g/bk[2]*100:0;
+            return barRow(bName(bk,lang), pcb, g.toFixed(1)+' / '+bk[2], ragBar(pcb)); }).join('')+'</div>'
+      + '</div>'
+      + '<div style="flex:0 0 64mm;display:flex;align-items:center">'+chartRadar(p, lang)+'</div></div>');
 
   BLOCKS.forEach(function(bk){
     var items = bItems(bk,lang), g = blockScore(p,bk);
@@ -2956,12 +3045,16 @@ function irSections(lang, gate){
   IR_GROUPS.forEach(function(grp){
     var members = grp[1].map(function(k){ return byKey[k]; }).filter(Boolean);
     if(!members.length) return;
-    B.push('<div class="ir-blk ir-grp"><div class="ir-grph">'+e(L(lang, grp[0]))+'</div></div>');
+    /* The heading travels with the first section under it. On its own it was a
+       block the packer could leave stranded at the foot of a page, which is
+       where the empty strip after "The IPO" came from. */
     TITLES.push({ heading: L(lang, grp[0]) });
+    var pending = '<div class="ir-grp"><div class="ir-grph">'+e(L(lang, grp[0]))+'</div></div>';
     members.forEach(function(m){
       NO++;
       var no = (NO<10?'0':'')+NO;
-      B.push('<div class="ir-blk" id="s'+no+'">' + sec(no, m.title) + m.body + '</div>');
+      B.push('<div class="ir-blk" id="s'+no+'">' + pending + sec(no, m.title) + m.body + '</div>');
+      pending = '';
       TITLES.push({ no:no, title:m.title });
       if(m.key === 'ir_score') SCORE.forEach(function(h){ B.push(h); });
       delete byKey[m.key];
