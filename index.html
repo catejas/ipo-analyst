@@ -216,6 +216,23 @@ details .in{padding:0 14px 14px;}
 .rvbad{margin-top:6px;border-left:3px solid var(--red);background:rgba(230,103,103,.1);
   padding:7px 10px;border-radius:0 7px 7px 0;font-size:12px;line-height:1.45;}
 .rvmiss{font-size:12.5px;margin-top:11px;line-height:1.45;color:var(--ink2);}
+/* Import status: a fill bar, then a line per section with a state dot. */
+.rvbar{height:6px;border-radius:4px;background:var(--line);overflow:hidden;margin-top:9px;}
+.rvbar i{display:block;height:100%;background:var(--green);}
+.rvsec{margin-top:11px;border-top:1px solid var(--line);padding-top:8px;}
+.rvsrow{display:flex;align-items:center;gap:8px;padding:3px 0;font-size:12.5px;}
+.rvsrow span{flex:1;color:var(--ink2);}
+.rvsrow b{font-variant-numeric:tabular-nums;font-size:12px;}
+.rvsrow b.mutb{color:var(--ink3);font-weight:600;}
+.rvsrow .dot{width:8px;height:8px;border-radius:50%;flex:0 0 8px;}
+.rvsrow .dot.ok{background:var(--green);}
+.rvsrow .dot.part{background:var(--yellow);}
+.rvsrow .dot.none{background:var(--red);}
+.rvgap{font-size:11px;color:var(--ink3);margin:0 0 4px 16px;line-height:1.4;}
+.rvdocs{margin-top:11px;border-top:1px solid var(--line);padding-top:8px;}
+.rvdh{font-size:11px;font-weight:800;letter-spacing:.06em;text-transform:uppercase;
+  color:var(--ink3);margin-bottom:5px;}
+.scbad{color:var(--red);}
 .rvrow{display:flex;align-items:center;gap:9px;padding:5px 0;}
 .rvrow span{flex:1;font-size:13px;}
 .rvrow input{width:74px;flex:0 0 74px;padding:7px 9px;font-size:15px;text-align:right;}
@@ -545,6 +562,11 @@ body.previewing{overflow:hidden;}
     <label for="scName">Company</label>
     <input type="text" id="scName" placeholder="Company name" autocomplete="off" readonly>
     <p class="note" id="scNameNote">Follows the analysis selected on the Report tab.</p>
+    <!-- How many of the 28 line items the last import actually carried. This
+         used to sit on the Import Data card, where it was the only thing the
+         import reported — and it said nothing about whether the reports would
+         come out full. It belongs here, beside the worksheet it describes. -->
+    <div id="scImport" class="note hidden"></div>
     <div id="sheet"></div>
     <!-- The running total used to sit here, repeating what the verdict card
          below already says. The elements are kept, hidden, because the scoring
@@ -1040,19 +1062,51 @@ This means:
 Write the JSON as your final answer. Before it, you may show your working — the tables and
 reasoning you built — but the JSON is the deliverable that matters.
 
-## 47. THE OUTPUT — ONE BLOCK, AT THE TOP OF THE REPLY, NOT IN A CODE FENCE
+## 47. THE OUTPUT — ONE FENCED JSON BLOCK, AT THE TOP OF THE REPLY
 
-Your reply **opens** with the data package, and the written report follows underneath it.
+Your reply **opens** with a single fenced ```json code block containing the whole data package, and
+the written report follows underneath it.
 
-The package goes first for one practical reason: on a phone, the copy control sits at the top of a
-block, and a payload buried under twenty pages of prose means scrolling the whole report to reach
-it. First in the reply means no scrolling at all.
+The fence is not decoration. It is what gives the reader a **copy button**, and — far more
+important — what stops the chat client from re-typesetting the text. Plain JSON in a chat window
+gets smart quotes: `"Deteriorating"` comes back as `“Deteriorating”`, the paste is no longer JSON,
+and the app falls back to scraping the report prose and recovers a handful of scores instead of the
+whole payload. Inside a fence the characters are preserved byte for byte.
 
-### Send it as plain text, between the two marker lines — not inside ``` fences
+The block goes first because on a phone the copy button sits at the top of a code block, and a
+payload buried under twenty pages of prose means scrolling the whole report to reach it.
 
-Write the JSON as **ordinary text**, opened and closed by the two marker lines shown below. Do not
-put it inside a ```json fence, a ``` fence of any kind, a canvas, a document, or a collapsible
-panel.
+```
+════════════════════════════════════════
+IPO ANALYST — DATA PACKAGE
+Tap the copy button on the block below,
+then paste it into the app:
+Report → Import Data
+════════════════════════════════════════
+```
+
+Then the single fenced block. Then the written report for the human reader.
+
+### Also offer it as a file, when your client can attach files
+
+If you can create a downloadable file, save the identical payload as **`ipo-payload.json`** and
+offer it alongside the block. The app reads it directly: **Report → Import Data → choose file**. If
+you cannot attach files, say so in one line and rely on the fenced block — never skip the block in
+favour of a file you cannot produce.
+
+### If the code block comes through empty — the two fallback words
+
+A few mobile chat apps render a very large code block as an **empty box with a copy button that
+copies nothing**. The Gemini Android app does this; the same reply on Gemini's website is fine. If
+that happens, the user will send you one of two words, and you obey it immediately without
+regenerating any research:
+
+| The user sends | You reply with |
+|---|---|
+| `PLAIN` | The same payload as **plain text between the two marker lines below**, no fence, nothing else — no preamble, no report. Accept that quotes may be re-typeset; the app repairs curly quotes on import. |
+| `SPLIT` | The same payload as **three or four smaller fenced ```json blocks**, each a complete JSON object carrying a subset of the top-level keys. The app merges them — the user pastes them one after another and taps **Add To This Analysis**. Put `meta` and `score_lines` in the first block. |
+
+The marker lines for `PLAIN`:
 
 ```
 <<<IPO-ANALYST-DATA
@@ -1060,30 +1114,11 @@ panel.
 IPO-ANALYST-DATA>>>
 ```
 
-This is not a style preference. Several mobile chat apps — the Gemini Android app in particular —
-render a code block of this size as an **empty box with a copy button that copies nothing**. The
-same reply on the desktop web version shows the payload correctly, so the model did its job and the
-client threw the text away. Plain text between markers survives every client tested, and the app's
-importer finds the markers, finds a bare `{ … }` object, or finds a fenced block — all three still
-work, so an old reply still imports.
+`SPLIT` is the better of the two, because each smaller block still gets a working copy button and
+keeps its characters intact. Reach for `PLAIN` only if `SPLIT` also comes through empty.
 
-### Also attach it as a file, when your client can attach files
-
-If you are able to create a downloadable file, save the identical payload as **`ipo-payload.json`**
-and offer it alongside the text. The app reads it directly: **Report → Import Data → choose file**.
-Where copying from a chat window fails, the file always works. If you cannot attach files, say so in
-one line and rely on the plain-text block; do not skip the block in favour of a file you cannot
-produce.
-
-```
-════════════════════════════════════════
-IPO ANALYST — DATA PACKAGE
-Copy the block below, then paste it into
-the app:  Report → Import Data
-════════════════════════════════════════
-```
-
-Then the single block. Then the written report for the human reader.
+The importer accepts all of it — a fenced block, several fenced blocks, marker lines, a bare `{ … }`
+object, or the `.json` file — so no reply produced by any earlier version stops working.
 
 ### What goes in the one block
 
@@ -1794,7 +1829,7 @@ COMPLETENESS: 214 of 228 fields filled · 14 unavailable, each listed in sources
 If that count is below about 90 per cent, you have stopped early rather than run out of sources. Go
 back to the fields you skipped and search for them properly before sending.
 
-Then output the banner, the data package between its marker lines, the completeness line, and the
+Then output the banner, the data package as one fenced ```json block, the completeness line, and the
 written report.
 
 
@@ -2654,6 +2689,7 @@ function buildSheet(){
   recalc();
 }
 buildSheet();
+setTimeout(function(){ try{ drawScImport(); }catch(e){} }, 0);
 function persistScore(){ set(LS.score, JSON.stringify(scoreState)); }
 function recalc(){
   var total=0, mkt=0;
@@ -3008,7 +3044,40 @@ function readOne(text){
 /* The one entry point: give it any reply — one block or several — and get back
    a single merged object. A reply that carries the English analysis and the
    Gujarati translation as two blocks therefore needs only ONE paste. */
+/* A chat client that renders JSON as prose runs it through a typesetter first:
+   "Deteriorating" comes back as \u201CDeteriorating\u201D. There is then not a single
+   straight quote in the text, so the candidate scanner finds no strings, no
+   candidate and no payload — and the import silently falls back to scraping the
+   report prose, which is how a full analysis arrived as six score lines.
+
+   Structural quotes are converted first: only the ones sitting where JSON
+   punctuation demands a quote. If that still will not parse, every curly quote
+   is straightened. Both are tried only AFTER the raw text has failed, so a
+   correctly fenced block is never touched. */
+function deSmartenStructural(t){
+  return t
+    .replace(/([{\[,:]\s*)[\u201C\u201D]/g, '$1"')
+    .replace(/[\u201C\u201D](\s*[:,}\]])/g, '"$1')
+    .replace(/^\s*[\u201C\u201D]/mg, '"');
+}
+function deSmartenAll(t){
+  return t.replace(/[\u201C\u201D]/g, '"').replace(/[\u2018\u2019]/g, "'");
+}
 function readPayload(raw){
+  var got = readPayloadFrom(raw);
+  if(got) return got;
+  var tries = [
+    [deSmartenStructural(raw), 'the chat app had curled the quotes; they were straightened'],
+    [deSmartenAll(raw),        'the chat app had curled every quote; they were straightened']
+  ];
+  for(var i = 0; i < tries.length; i++){
+    if(tries[i][0] === raw) continue;
+    got = readPayloadFrom(tries[i][0]);
+    if(got){ LAST_REPAIRS.push(tries[i][1]); return got; }
+  }
+  return null;
+}
+function readPayloadFrom(raw){
   LAST_REPAIRS = [];
   var cands = extractJsonCandidates(raw);
   var parsed = [];
@@ -3477,53 +3546,267 @@ function applyToWorksheet(d, company){
   });
   scoreState.__name = company || '';
   $('#scName').value = scoreState.__name;
-  persistScore(); buildSheet();
+  scoreState.__read = n;
+  scoreState.__stated = (d.verdict && d.verdict.scores
+                          && d.verdict.scores.ipo_quality != null)
+                        ? Number(d.verdict.scores.ipo_quality) : null;
+  persistScore(); buildSheet(); drawScImport();
   return n;
+}
+
+/* The 28-line coverage note, on the tab that owns the 28 lines. */
+function drawScImport(){
+  var el = $('#scImport');
+  if(!el) return;
+  var n = scoreState.__read;
+  if(n === undefined || n === null){ el.classList.add('hidden'); el.innerHTML = ''; return; }
+  var sum = 0;
+  SHEET.forEach(function(grp, gi){
+    grp[1].forEach(function(it, ii){ sum += scoreState['s'+gi+'_'+ii] || 0; });
+  });
+  var stated = scoreState.__stated;
+  var html = '<b>' + n + ' of 28 line items</b> came from the imported payload'
+           + (n < 28 ? ' — the remaining ' + (28 - n) + ' scored zero.' : '.')
+           + ' They total <b>' + sum.toFixed(1) + '</b>';
+  if(stated != null && !isNaN(stated)){
+    var diff = Math.abs(sum - stated);
+    html += ' against a stated <b>' + stated + '</b>';
+    html += diff > 1.5
+      ? '.<br><b class="scbad">These disagree by ' + diff.toFixed(1) + ' points.</b> '
+        + 'The line items are what drive this worksheet and every document built from it.'
+      : ' — they agree.';
+  } else { html += '.'; }
+  el.innerHTML = html;
+  el.classList.remove('hidden');
 }
 
 /* ---------------- review before saving ---------------- */
 var pendingImport = null;
+/* ================= PAYLOAD AUDIT =========================================
+   What actually arrived, section by section, and what each document will be
+   able to draw from it. The old review line counted one thing only — the 28
+   score lines — which said nothing about whether the reports would come out
+   full. A payload can carry all 28 scores and still produce an empty Executive
+   Summary because `financials` never arrived.
+
+   Every entry is [key, label, path, kind]. kind: 'v' a single value, 'n' rows
+   in an array, 'k' keys in an object.
+   ======================================================================== */
+var AUDIT_SPEC = [
+  ['head','Company and issue dates','meta.company','v'],
+  ['head','Recommendation and scores','verdict.recommendation','v'],
+  ['head','The three headline scores','verdict.scores','k'],
+  ['head','Verdict thesis','verdict.thesis','n'],
+  ['score','All 28 score lines','score_lines','k'],
+  ['score','The basis for each score','score_basis','k'],
+  ['ipo','Price band and issue size','ipo.price_band','v'],
+  ['ipo','Objects of the issue','ipo.objects','n'],
+  ['ipo','Shareholding, pre and post','ipo.shareholding','n'],
+  ['ipo','Anchor investors','ipo.anchors','n'],
+  ['ipo','Listing-gain components','ipo.listing_gain.components','n'],
+  ['ipo','Grey market premium','ipo.gmp','k'],
+  ['co','What the business does','company.what_it_does','v'],
+  ['co','Products','company.products','n'],
+  ['co','Segments','company.segments','n'],
+  ['co','Operating metrics','company.operating_metrics','n'],
+  ['co','Industry and moat','company.moat','n'],
+  ['fin','Three-year financials','financials.years','n'],
+  ['fin','Cash flow','financials.cash_flow','n'],
+  ['fin','Valuation ratios','financials.valuation.ratios','n'],
+  ['fin','Peer table','financials.peers','k'],
+  ['fin','Three-year scenarios','financials.scenarios.cases','n'],
+  ['ppl','Promoters','people.promoters','n'],
+  ['ppl','Key people','people.key_people','n'],
+  ['ppl','Due-diligence checks','people.due_diligence','n'],
+  ['ppl','Governance parameters','people.governance','k'],
+  ['dec','Strengths','decision.strengths','n'],
+  ['dec','Weaknesses','decision.weaknesses','n'],
+  ['dec','SWOT — opportunities and threats','decision.swot','k'],
+  ['dec','Red flags','decision.red_flags','n'],
+  ['dec','Catalysts','decision.catalysts','n'],
+  ['dec','Failure modes','decision.failure_modes','n'],
+  ['dec','Quarterly monitoring','decision.monitoring','n'],
+  ['dec','Price levels and allocation','decision.levels','n'],
+  ['src','Sources','sources.primary','n'],
+  ['src','What could not be found','sources.missing','n'],
+  ['deep','Unit economics','deep.unit_economics','n'],
+  ['deep','Working-capital cycle','deep.working_capital','n'],
+  ['deep','Quarterly trend','deep.quarterly','n'],
+  ['deep','Capital-allocation history','deep.capital_allocation.history','n'],
+  ['deep','Litigation','deep.litigation','n'],
+  ['deep','Credit profile','deep.credit_profile','k'],
+  ['deep','Group structure','deep.group_structure','n'],
+  ['deep','Competitive matrix','deep.competition','n'],
+  ['deep','Reverse DCF','deep.reverse_dcf','k'],
+  ['deep','Sensitivity grid','deep.sensitivity','k'],
+  ['deep','Management quality','deep.management_quality','k']
+];
+var AUDIT_GROUPS = { head:'Verdict', score:'Scoring', ipo:'The IPO', co:'Company',
+  fin:'Financials', ppl:'People and governance', dec:'Decision', src:'Sources',
+  deep:'Deep research' };
+
+function atPath(o, path){
+  var cur = o;
+  var parts = String(path).split('.');
+  for(var i = 0; i < parts.length; i++){
+    if(cur == null || typeof cur !== 'object') return undefined;
+    cur = cur[parts[i]];
+  }
+  return cur;
+}
+function auditCount(v, kind){
+  if(v === undefined || v === null || v === '') return 0;
+  if(kind === 'n'){
+    if(Array.isArray(v)) return v.length;
+    if(typeof v === 'object'){
+      /* peers and similar arrive as {columns, rows} */
+      if(Array.isArray(v.rows)) return v.rows.length;
+      return Object.keys(v).length;
+    }
+    return 0;
+  }
+  if(kind === 'k'){
+    if(Array.isArray(v)) return v.length;
+    if(typeof v === 'object'){
+      return Object.keys(v).filter(function(k){
+        var x = v[k];
+        return x !== null && x !== undefined && x !== ''
+          && !(Array.isArray(x) && !x.length);
+      }).length;
+    }
+    return 0;
+  }
+  return 1;
+}
+function auditPayload(d){
+  var groups = {}, order = [], filled = 0;
+  AUDIT_SPEC.forEach(function(e){
+    var n = auditCount(atPath(d, e[2]), e[3]);
+    if(!groups[e[0]]){ groups[e[0]] = { key:e[0], name:AUDIT_GROUPS[e[0]], have:0, total:0, gaps:[] };
+                       order.push(groups[e[0]]); }
+    var g = groups[e[0]];
+    g.total++;
+    if(n > 0){ g.have++; filled++; } else { g.gaps.push(e[1]); }
+  });
+  return { groups:order, filled:filled, total:AUDIT_SPEC.length };
+}
+/* Which documents this payload can actually fill. */
+function docReadiness(d){
+  var a = {};
+  AUDIT_SPEC.forEach(function(e){ a[e[2]] = auditCount(atPath(d, e[2]), e[3]) > 0; });
+  var deepKeys = AUDIT_SPEC.filter(function(e){ return e[0] === 'deep'; });
+  var deepHave = deepKeys.filter(function(e){ return a[e[2]]; }).length;
+  return [
+    { name:'Institutional Research Report',
+      ok: a['meta.company'] && a['score_lines'] && deepHave >= Math.ceil(deepKeys.length / 2),
+      why: deepHave + ' of ' + deepKeys.length + ' deep-research sections' },
+    { name:'Company Research Report',
+      ok: a['meta.company'] && a['score_lines'] && a['financials.years'],
+      why: a['financials.years'] ? 'financials present' : 'no three-year financials' },
+    { name:'Executive Summary',
+      ok: a['meta.company'] && a['verdict.recommendation'] && a['financials.years'],
+      why: a['verdict.recommendation'] ? 'verdict present' : 'no verdict' },
+    { name:'Score Card',
+      ok: a['score_lines'],
+      why: a['score_basis'] ? 'scores and basis' : 'scores, no basis column' },
+    { name:'Investment Summary image',
+      ok: a['meta.company'] && a['verdict.recommendation'] && a['score_lines']
+          && a['financials.years'],
+      why: a['financials.years'] ? 'figures present' : 'no financials to chart' }
+  ];
+}
+
+function envelopeOf(raw, res){
+  /* Without a v3 payload nothing came from a data block, whatever the raw text
+     happens to contain — a stray brace in the prose is not an envelope. */
+  if(!res.v3) return 'the report prose';
+  if(res.how && /report text/i.test(res.how)) return 'the report prose';
+  if(/```/.test(raw) && /"schema"/.test(raw))  return 'a fenced json block';
+  if(/<<<IPO-ANALYST-DATA/.test(raw))          return 'the marker lines';
+  return 'a bare json object';
+}
+
 function showReview(res, raw){
   pendingImport = { res:res, raw:raw, fixes:{} };
-  var d = res.data, sum = sumLines(d.score_lines);
+  var d = res.data;
   var html = '<div class="rv">';
-  html += '<div class="rvh">Read '+res.found+' of 28 line items <span class="tagx">'+esc(res.how)+'</span></div>';
+
+  /* ---- headline: what arrived, and how much of it ---- */
   if(res.v3){
-    /* Describe what will actually be built rather than a fixed page count —
-       the documents grow and shrink with the payload, and this line had been
-       claiming a 10-page report and 450 DPI images long after both changed. */
-    var have = [];
-    if(d.deep && Object.keys(d.deep).length) have.push('the institutional report');
-    have.push('the company report', 'the executive summary', 'the score card',
-              'the investment summary image');
+    var au = auditPayload(d);
+    var pct = Math.round(au.filled / au.total * 100);
+    html += '<div class="rvh">Imported ' + au.filled + ' of ' + au.total + ' data sections'
+          + ' <span class="tagx">' + esc(envelopeOf(raw, res)) + '</span></div>';
+    html += '<div class="rvm">' + esc(coNameOf(d) || '(company not detected)')
+          + ' · ' + esc(d.recommendation || 'no verdict detected') + '</div>';
+    html += '<div class="rvbar"><i style="width:' + pct + '%"></i></div>';
+
     var guCount = (d.gu && Object.keys(d.gu).length) ? Object.keys(d.gu).length : 0;
-    html += '<div class="rvok"><b>Full payload read.</b> The app can build '
-          + esc(have.join(', ').replace(/, ([^,]*)$/, ' and $1'))
-          + (guCount ? ', in English and Gujarati.' : ', in English only — no Gujarati block was found.')
+    html += '<div class="' + (pct >= 80 ? 'rvok' : pct >= 55 ? 'rvwarn' : 'rvbad') + '">'
+          + '<b>' + pct + '% of the payload carries data.</b> '
+          + (guCount ? 'A Gujarati block arrived, so both languages will build.'
+                     : 'No Gujarati block arrived — English only.')
           + '</div>';
-  } else {
-    html += '<div class="rvwarn">Scores only. For the app to generate documents you need the full data '
-          + 'block from the framework — the one that begins <b>"schema": "ipo-analyst/4"</b>.</div>';
-  }
-  html += '<div class="rvm">'+esc(coNameOf(d)||'(company not detected)')
-        + ' · ' + esc(d.recommendation||'no verdict detected') + '</div>';
-  html += '<div class="rvsum">Line items total <b>'+sum.toFixed(1)+'</b>';
-  if(res.statedTotal != null){
-    var diff = Math.abs(sum - res.statedTotal);
-    html += ' · report states <b>'+res.statedTotal+'</b>';
-    if(diff > 1.5) html += '<div class="rvbad">These disagree by '+diff.toFixed(1)
-      +' points. Check the pasted text before saving — the line items are what drive the worksheet.</div>';
-  }
-  html += '</div>';
-  if(res.missing.length){
-    html += '<div class="rvmiss"><b>'+res.missing.length+' not found.</b> Type the values from the '
-          + 'report’s scoring table, or leave blank to score them zero.</div>';
-    res.missing.forEach(function(k){
-      html += '<div class="rvrow"><span>'+esc(labelOf(k))+'</span>'
-        + '<input type="number" step="0.5" min="0" max="'+maxOf(k)+'" data-fix="'+k+'" '
-        + 'inputmode="decimal" placeholder="0"><small>/'+maxOf(k)+'</small></div>';
+
+    /* ---- section by section ---- */
+    html += '<div class="rvsec">';
+    au.groups.forEach(function(g){
+      var full = g.have === g.total;
+      html += '<div class="rvsrow"><i class="' + (full ? 'dot ok' : g.have ? 'dot part' : 'dot none')
+            + '"></i><span>' + esc(g.name) + '</span><b>' + g.have + '/' + g.total + '</b></div>';
+      if(g.gaps.length){
+        html += '<div class="rvgap">missing: ' + esc(g.gaps.join(' · ')) + '</div>';
+      }
     });
+    html += '</div>';
+
+    /* ---- what will actually build ---- */
+    html += '<div class="rvdocs"><div class="rvdh">What this payload can build</div>';
+    docReadiness(d).forEach(function(x){
+      html += '<div class="rvsrow"><i class="' + (x.ok ? 'dot ok' : 'dot none') + '"></i>'
+            + '<span>' + esc(x.name) + '</span><b class="' + (x.ok ? '' : 'mutb') + '">'
+            + esc(x.ok ? 'ready' : x.why) + '</b></div>';
+    });
+    html += '</div>';
+
+    var sum = sumLines(d.score_lines);
+    html += '<div class="rvsum">All 28 score lines read · total <b>' + sum.toFixed(1) + '</b>'
+          + ' — the line-by-line check is on the <b>Score Card</b> tab.</div>';
+
+  } else {
+    /* ---- no data block: this is the case that produced empty documents ---- */
+    html += '<div class="rvh">No data block found <span class="tagx">'
+          + esc(envelopeOf(raw, res)) + '</span></div>';
+    html += '<div class="rvbad"><b>This was read from the report prose, not from the payload.</b> '
+          + 'Only scores can be recovered this way, so the reports and the Investment Summary will '
+          + 'come out empty. Go back to the chat and copy the fenced <b>json</b> block at the top of '
+          + 'the reply — the one beginning <b>"schema": "ipo-analyst/4"</b> — using its copy button. '
+          + 'If that block shows as an empty box in your chat app, reply <b>SPLIT</b> to the model and '
+          + 'paste the smaller blocks one after another.</div>';
+    html += '<div class="rvm">' + esc(coNameOf(d) || '(company not detected)')
+          + ' · ' + esc(d.recommendation || 'no verdict detected') + '</div>';
+
+    html += '<div class="rvsum">Recovered ' + res.found + ' of 28 score lines';
+    var sum2 = sumLines(d.score_lines);
+    html += ' · they total <b>' + sum2.toFixed(1) + '</b>';
+    if(res.statedTotal != null){
+      var diff = Math.abs(sum2 - res.statedTotal);
+      html += ' against a stated <b>' + res.statedTotal + '</b>';
+      if(diff > 1.5) html += '<div class="rvbad">These disagree by ' + diff.toFixed(1) + ' points.</div>';
+    }
+    html += '</div>';
+
+    if(res.missing.length){
+      html += '<div class="rvmiss"><b>' + res.missing.length + ' not found.</b> Type the values from '
+            + 'the report’s scoring table, or leave blank to score them zero.</div>';
+      res.missing.forEach(function(k){
+        html += '<div class="rvrow"><span>' + esc(labelOf(k)) + '</span>'
+          + '<input type="number" step="0.5" min="0" max="' + maxOf(k) + '" data-fix="' + k + '" '
+          + 'inputmode="decimal" placeholder="0"><small>/' + maxOf(k) + '</small></div>';
+      });
+    }
   }
+
   html += '</div>';
   $('#reviewBox').innerHTML = html;
   $('#reviewBox').classList.remove('hidden');
@@ -4177,7 +4460,7 @@ if('serviceWorker' in navigator){
 </script>
 <script src="vendor/html2canvas.min.js"></script>
 <script src="vendor/jspdf.umd.min.js"></script>
-<script>window.APP_BUILD="2026.08.25.2";</script>
+<script>window.APP_BUILD="2026.08.25.3";</script>
 <script src="render.js"></script>
 <script src="docs.js"></script>
 

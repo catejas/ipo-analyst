@@ -383,19 +383,51 @@ This means:
 Write the JSON as your final answer. Before it, you may show your working — the tables and
 reasoning you built — but the JSON is the deliverable that matters.
 
-## 47. THE OUTPUT — ONE BLOCK, AT THE TOP OF THE REPLY, NOT IN A CODE FENCE
+## 47. THE OUTPUT — ONE FENCED JSON BLOCK, AT THE TOP OF THE REPLY
 
-Your reply **opens** with the data package, and the written report follows underneath it.
+Your reply **opens** with a single fenced ```json code block containing the whole data package, and
+the written report follows underneath it.
 
-The package goes first for one practical reason: on a phone, the copy control sits at the top of a
-block, and a payload buried under twenty pages of prose means scrolling the whole report to reach
-it. First in the reply means no scrolling at all.
+The fence is not decoration. It is what gives the reader a **copy button**, and — far more
+important — what stops the chat client from re-typesetting the text. Plain JSON in a chat window
+gets smart quotes: `"Deteriorating"` comes back as `“Deteriorating”`, the paste is no longer JSON,
+and the app falls back to scraping the report prose and recovers a handful of scores instead of the
+whole payload. Inside a fence the characters are preserved byte for byte.
 
-### Send it as plain text, between the two marker lines — not inside ``` fences
+The block goes first because on a phone the copy button sits at the top of a code block, and a
+payload buried under twenty pages of prose means scrolling the whole report to reach it.
 
-Write the JSON as **ordinary text**, opened and closed by the two marker lines shown below. Do not
-put it inside a ```json fence, a ``` fence of any kind, a canvas, a document, or a collapsible
-panel.
+```
+════════════════════════════════════════
+IPO ANALYST — DATA PACKAGE
+Tap the copy button on the block below,
+then paste it into the app:
+Report → Import Data
+════════════════════════════════════════
+```
+
+Then the single fenced block. Then the written report for the human reader.
+
+### Also offer it as a file, when your client can attach files
+
+If you can create a downloadable file, save the identical payload as **`ipo-payload.json`** and
+offer it alongside the block. The app reads it directly: **Report → Import Data → choose file**. If
+you cannot attach files, say so in one line and rely on the fenced block — never skip the block in
+favour of a file you cannot produce.
+
+### If the code block comes through empty — the two fallback words
+
+A few mobile chat apps render a very large code block as an **empty box with a copy button that
+copies nothing**. The Gemini Android app does this; the same reply on Gemini's website is fine. If
+that happens, the user will send you one of two words, and you obey it immediately without
+regenerating any research:
+
+| The user sends | You reply with |
+|---|---|
+| `PLAIN` | The same payload as **plain text between the two marker lines below**, no fence, nothing else — no preamble, no report. Accept that quotes may be re-typeset; the app repairs curly quotes on import. |
+| `SPLIT` | The same payload as **three or four smaller fenced ```json blocks**, each a complete JSON object carrying a subset of the top-level keys. The app merges them — the user pastes them one after another and taps **Add To This Analysis**. Put `meta` and `score_lines` in the first block. |
+
+The marker lines for `PLAIN`:
 
 ```
 <<<IPO-ANALYST-DATA
@@ -403,30 +435,11 @@ panel.
 IPO-ANALYST-DATA>>>
 ```
 
-This is not a style preference. Several mobile chat apps — the Gemini Android app in particular —
-render a code block of this size as an **empty box with a copy button that copies nothing**. The
-same reply on the desktop web version shows the payload correctly, so the model did its job and the
-client threw the text away. Plain text between markers survives every client tested, and the app's
-importer finds the markers, finds a bare `{ … }` object, or finds a fenced block — all three still
-work, so an old reply still imports.
+`SPLIT` is the better of the two, because each smaller block still gets a working copy button and
+keeps its characters intact. Reach for `PLAIN` only if `SPLIT` also comes through empty.
 
-### Also attach it as a file, when your client can attach files
-
-If you are able to create a downloadable file, save the identical payload as **`ipo-payload.json`**
-and offer it alongside the text. The app reads it directly: **Report → Import Data → choose file**.
-Where copying from a chat window fails, the file always works. If you cannot attach files, say so in
-one line and rely on the plain-text block; do not skip the block in favour of a file you cannot
-produce.
-
-```
-════════════════════════════════════════
-IPO ANALYST — DATA PACKAGE
-Copy the block below, then paste it into
-the app:  Report → Import Data
-════════════════════════════════════════
-```
-
-Then the single block. Then the written report for the human reader.
+The importer accepts all of it — a fenced block, several fenced blocks, marker lines, a bare `{ … }`
+object, or the `.json` file — so no reply produced by any earlier version stops working.
 
 ### What goes in the one block
 
@@ -1137,7 +1150,7 @@ COMPLETENESS: 214 of 228 fields filled · 14 unavailable, each listed in sources
 If that count is below about 90 per cent, you have stopped early rather than run out of sources. Go
 back to the fields you skipped and search for them properly before sending.
 
-Then output the banner, the data package between its marker lines, the completeness line, and the
+Then output the banner, the data package as one fenced ```json block, the completeness line, and the
 written report.
 
 

@@ -1,4 +1,4 @@
-# IPO Analyst — standalone web app  ·  v4.6  ·  build 2026.08.25.2
+# IPO Analyst — standalone web app  ·  v4.6  ·  build 2026.08.25.3
 
 A single-page web app that turns the institutional IPO research protocol into something you can
 run from an icon on your phone. It works on Android and iPhone/iPad, installs to the home screen,
@@ -63,11 +63,36 @@ opened, and survives a reload.
 programmatic blob download opens in a viewer rather than saving, so the second one won. Each page
 now gets its own button and its own tap.
 
-**The payload no longer travels in a code fence.** The Gemini Android app renders a code block of
-this size as an empty box with a copy button that copies nothing — the same reply on desktop is
-fine. The framework now asks for the payload as plain text between `<<<IPO-ANALYST-DATA` marker
-lines, and asks the model to attach the same payload as `ipo-payload.json` where it can. Import Data
-accepts all of it: markers, a bare object, a fenced block, or the file.
+**The payload travels in a fenced json block — reversed from build .1, which was a mistake.**
+Build .1 asked the model to emit the payload as plain text between marker lines, to defeat the
+Gemini Android app's empty-code-box rendering. That removed the copy button, and worse: a chat
+client that renders JSON as prose runs it through a typesetter first, so `"Deteriorating"` came back
+as `“Deteriorating”`. With not one straight quote in the text the candidate scanner found no
+strings, no candidate and no payload, and the import fell back to scraping the report prose — a full
+analysis arrived as six score lines with empty documents behind it.
+
+The fence is primary again: it gives the copy button and it preserves the characters. Three things
+now stand behind it:
+
+- **The importer repairs curled quotes** rather than giving up. The raw text is tried first, so a
+  correct paste is never touched; only on failure are structural quotes straightened, and only then
+  every quote. All five envelopes — fenced block, marker lines, bare object, and either of the last
+  two with the quotes curled — now import the whole payload, `gu` and `deep` included.
+- **Two fallback words** if a code block still renders empty: reply `SPLIT` and the model resends as
+  three or four smaller fenced blocks, each with a working copy button, which the app merges; or
+  `PLAIN` for the unfenced marker form.
+- **`ipo-payload.json`** is offered where the client can attach files, and Import Data has a file
+  picker for it.
+
+**Import Data now reports what actually arrived.** The old screen counted one thing — the 28 score
+lines — which said nothing about whether the reports would come out full. A payload can carry all 28
+scores and still produce an empty Executive Summary because `financials` never arrived. Below READ
+IT you now get: the envelope it was read from, the share of the payload carrying data, a line per
+section with a have/total count and the names of what is missing, and a per-document readiness list
+— which of the five documents this payload can actually fill, and why not where it cannot. A paste
+with no data block is called out in red, with the fix, instead of being reported as a partial
+success. The 28-line reconciliation moved to the **Score Card** tab, beside the worksheet it
+describes, and survives a reload.
 
 **ChatGPT leaving points blank.** Section 50A adds a mandatory completeness audit: every key
 present, every empty field justified by a line in `sources.missing`, a search re-run before any
