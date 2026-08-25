@@ -1,8 +1,57 @@
-# IPO Analyst — standalone web app  ·  v4.5  ·  build 2026.08.19.4
+# IPO Analyst — standalone web app  ·  v4.6  ·  build 2026.08.25.1
 
 A single-page web app that turns the institutional IPO research protocol into something you can
 run from an icon on your phone. It works on Android and iPhone/iPad, installs to the home screen,
 runs full-screen with no address bar, and works offline for everything except the AI call itself.
+
+## What changed in v4.6
+
+**SWOT is a full SWOT.** The reports carried Strengths and Weaknesses and stopped there. Both long
+reports — Institutional and Company Research — now print all four quadrants as a 2×2, with
+Opportunities and Threats drawn from `decision.swot` where the model supplied it and from the
+catalysts and failure modes where it did not. The section, and its line in the Contents, is called
+**SWOT Analysis**. The Executive Summary follows the same heading.
+
+**The Gujarati edition is Gujarati.** An audit of a finished Gujarati report found 149 distinct
+English runs still on the page. A final pass now runs over every built document in Gujarati mode,
+outside tags and outside script and style, and resolves what is left:
+
+- a phrase dictionary of business, financial and product English — *industrial instrumentation* is
+  ઔદ્યોગિક ઉપકરણ, not a phonetic spelling of the English;
+- a table of Indian given names, surnames and places, because romanisation loses vowel length and no
+  rule can know that Kumar is કુમાર while Nirmal is નિર્મલ;
+- a rule-based transliterator for every other proper noun, so a promoter the model left in Latin
+  still reads as અમિત તલેસરા;
+- and a guard: where a sentence is mostly words no dictionary knows, it stays in English rather than
+  being turned into Gujarati letters spelling out English sounds, which is unreadable in a way the
+  English is not.
+
+Financial shorthand — P/E, EBITDA, ROCE, PAT, IPO, SEBI, GMP — stays Latin by design, because that
+is how Gujarati market copy reads. App-owned English residue across all five documents is now zero,
+measured on every build.
+
+**Find IPOs.** The imported list now carries the grey market premium, in rupees and as a percentage
+of the upper band. Each row reads on three lines: status tag and company name; Mainboard or SME with
+**Opens** and **Closes** dates; then the price band with a ₹ before both ends, the GMP in rupees and
+the GMP percentage, coloured by sign. The status tag is computed from **today**, never from the
+payload — a search run last week called an issue Upcoming and it has since opened and closed. The
+list is ordered OPEN first, then UPCOMING, then CLOSED; within each, the earliest closing date
+leads; and where two share a closing date, the higher GMP% sits on top.
+
+**The Investment Summary PNG opened on page 2.** Two downloads fired back to back, and on iOS a
+programmatic blob download opens in a viewer rather than saving, so the second one won. Each page
+now gets its own button and its own tap.
+
+**The payload no longer travels in a code fence.** The Gemini Android app renders a code block of
+this size as an empty box with a copy button that copies nothing — the same reply on desktop is
+fine. The framework now asks for the payload as plain text between `<<<IPO-ANALYST-DATA` marker
+lines, and asks the model to attach the same payload as `ipo-payload.json` where it can. Import Data
+accepts all of it: markers, a bare object, a fenced block, or the file.
+
+**ChatGPT leaving points blank.** Section 50A adds a mandatory completeness audit: every key
+present, every empty field justified by a line in `sources.missing`, a search re-run before any
+field is written off, and a `COMPLETENESS: n of m fields filled` line printed after the package so
+the gaps are visible instead of silent.
 
 ## What changed in v3.9
 

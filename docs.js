@@ -343,6 +343,22 @@ function offerShare(files, title, note){
     + 'Save to this device instead</button>');
 }
 
+/* One button per rendered page. PENDING_PAGES holds the blobs so the click
+   handler can open exactly the page that was tapped. */
+var PENDING_PAGES = null;
+
+function offerPages(pages){
+  PENDING_PAGES = pages;
+  msg('<b>' + pages.length + ' pages ready.</b> Tap a page to open or save it — '
+    + 'one at a time, so the right page opens.'
+    + pages.map(function(pg, i){
+        return '<button type="button" class="btn sm' + (i === 0 ? ' pri' : '')
+             + '" data-page="' + i + '" style="margin-top:8px;">' + pg.label + '</button>';
+      }).join('')
+    + '<div class="mut" style="margin-top:8px;">Send them on WhatsApp as a Document, not a Photo — '
+    + 'photo mode recompresses images and softens small type.</div>');
+}
+
 function share(files, title){
   return shareNow(files, title).then(function(r){ return r.ok; });
 }
@@ -442,16 +458,31 @@ function doAction(kind, act, msgTarget){
     return;
   }
   if(act === 'make'){
+    /* A multi-page PNG used to fire one download() per page back to back. On iOS a
+       programmatic blob download opens in a viewer instead of saving, so the pages
+       raced and whichever fired last — page 2 — was the one left on screen. Every
+       page now gets its own button, so the tap that opens a page is a fresh gesture
+       and the page the user asked for is the page they get. */
+    var pages = [];
     var run = function(ix){
       if(ix >= langs.length){
-        msg('Saved at 600 DPI. <b>Send it on WhatsApp as a Document, not a Photo</b> — photo mode '
-          + 'recompresses images and softens small type.');
+        if(pages.length === 1){
+          download(pages[0].blob, pages[0].name);
+          msg('Saved at 600 DPI. <b>Send it on WhatsApp as a Document, not a Photo</b> — photo mode '
+            + 'recompresses images and softens small type.');
+        } else {
+          offerPages(pages);
+        }
         return;
       }
       var lg = langs[ix];
+      msg('Rendering the image…');
       htmlToPngBlobs(buildHTML(p, kind, lg), selFor(kind)).then(function(blobs){
         blobs.forEach(function(b, i){
-          download(b, fileBase(p,kind,lg) + (blobs.length>1 ? '_p'+(i+1) : '') + '.png'); });
+          pages.push({ blob:b, name: fileBase(p,kind,lg) + (blobs.length>1 ? '_p'+(i+1) : '') + '.png',
+                       label: 'Page ' + (i+1) + ' of ' + blobs.length
+                              + (langs.length > 1 ? ' · ' + lg.toUpperCase() : '') });
+        });
         run(ix+1);
       }).catch(function(err){ msg('Could not render the image: '+err.message, true); });
     };
@@ -523,6 +554,13 @@ document.addEventListener('DOMContentLoaded', function(){
       PENDING_SHARE.files.forEach(function(f){ download(f, f.name); });
       msg('Saved ' + PENDING_SHARE.files.length + ' file(s) to this device.');
       PENDING_SHARE = null;
+      return;
+    }
+
+    var pb = t.closest && t.closest('[data-page]');
+    if(pb && PENDING_PAGES){
+      var pg = PENDING_PAGES[Number(pb.dataset.page)];
+      if(pg) download(pg.blob, pg.name);
       return;
     }
 

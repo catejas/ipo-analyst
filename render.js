@@ -151,10 +151,1421 @@ var VOCAB_GU = {
   'No reportable findings':'નોંધપાત્ર કંઈ મળ્યું નથી'
 };
 
+/* ---------------------------------------------------------------------------
+   TERM_GU — business, financial and product English that the payload keeps
+   writing in Latin no matter how firmly the contract asks for Gujarati.
+
+   VOCAB_GU above covers the app's own enum words. This covers the running
+   vocabulary of the reports: what a company makes, what a segment is called,
+   what a line of a balance sheet is. It is consulted phrase-first, so
+   "industrial instrumentation" is translated as a unit rather than as two
+   unrelated words.
+   -------------------------------------------------------------------------- */
+var TERM_GU = {
+  /* corporate suffixes and forms */
+  'limited':'લિમિટેડ', 'ltd':'લિમિટેડ', 'private limited':'પ્રાઇવેટ લિમિટેડ',
+  'private':'પ્રાઇવેટ', 'public limited':'પબ્લિક લિમિટેડ', 'incorporated':'ઇન્કોર્પોરેટેડ',
+  'corporation':'કોર્પોરેશન', 'industries':'ઇન્ડસ્ટ્રીઝ', 'enterprises':'એન્ટરપ્રાઇઝિસ',
+  'holdings':'હોલ્ડિંગ્સ', 'ventures':'વેન્ચર્સ', 'solutions':'સોલ્યુશન્સ',
+  'technologies':'ટેક્નોલોજીસ', 'systems':'સિસ્ટમ્સ', 'services':'સેવાઓ',
+  'group':'જૂથ', 'india':'ઇન્ડિયા', 'the':'',
+  /* instrumentation, engineering and manufacturing */
+  'industrial instrumentation':'ઔદ્યોગિક ઉપકરણ',
+  'instrumentation':'ઉપકરણ પ્રણાલી', 'instruments':'ઉપકરણો', 'instrument':'ઉપકરણ',
+  'temperature sensors':'તાપમાન સેન્સર', 'temperature sensor':'તાપમાન સેન્સર',
+  'thermocouples':'થર્મોકપલ', 'thermocouple':'થર્મોકપલ',
+  'resistance temperature detectors':'રેઝિસ્ટન્સ તાપમાન ડિટેક્ટર',
+  'heating elements':'હીટિંગ તત્ત્વો', 'heating element':'હીટિંગ તત્ત્વ',
+  'cables':'કેબલ', 'cable':'કેબલ', 'wires':'વાયર', 'wire':'વાયર',
+  'calibration':'કેલિબ્રેશન', 'sensors':'સેન્સર', 'sensor':'સેન્સર',
+  'transmitters':'ટ્રાન્સમીટર', 'transmitter':'ટ્રાન્સમીટર',
+  'valves':'વાલ્વ', 'valve':'વાલ્વ', 'pumps':'પંપ', 'pump':'પંપ',
+  'castings':'કાસ્ટિંગ', 'forgings':'ફોર્જિંગ', 'machining':'મશીનિંગ',
+  'engineering':'એન્જિનિયરિંગ', 'manufacturing':'ઉત્પાદન', 'fabrication':'ફેબ્રિકેશન',
+  'automation':'ઓટોમેશન', 'components':'ઘટકો', 'component':'ઘટક',
+  'equipment':'સાધનો', 'machinery':'યંત્રસામગ્રી', 'spare parts':'છૂટા ભાગો',
+  'raw material':'કાચો માલ', 'raw materials':'કાચો માલ',
+  'finished goods':'તૈયાર માલ', 'work in progress':'ચાલુ કામ',
+  /* sectors */
+  'pharmaceuticals':'ફાર્માસ્યુટિકલ્સ', 'chemicals':'રસાયણો', 'speciality chemicals':'વિશેષ રસાયણો',
+  'textiles':'કાપડ', 'apparel':'વસ્ત્રો', 'jewellery':'ઝવેરાત', 'jewelry':'ઝવેરાત',
+  'retail':'રિટેલ', 'logistics':'લોજિસ્ટિક્સ', 'infrastructure':'માળખાગત સુવિધા',
+  'construction':'બાંધકામ', 'real estate':'રિયલ એસ્ટેટ', 'hospitality':'આતિથ્ય',
+  'healthcare':'આરોગ્ય સંભાળ', 'education':'શિક્ષણ', 'agriculture':'કૃષિ',
+  'automotive':'ઓટોમોટિવ', 'renewable energy':'નવીનીકરણીય ઊર્જા', 'power':'વીજળી',
+  'oil and gas':'તેલ અને ગેસ', 'metals':'ધાતુઓ', 'steel':'સ્ટીલ', 'cement':'સિમેન્ટ',
+  'banking':'બેંકિંગ', 'insurance':'વીમો', 'defence':'સંરક્ષણ', 'defense':'સંરક્ષણ',
+  'aerospace':'એરોસ્પેસ', 'electronics':'ઇલેક્ટ્રોનિક્સ', 'semiconductor':'સેમિકન્ડક્ટર',
+  'food processing':'ખાદ્ય પ્રક્રિયા', 'packaging':'પેકેજિંગ', 'plastics':'પ્લાસ્ટિક',
+  'paper':'કાગળ', 'shipping':'શિપિંગ', 'aviation':'ઉડ્ડયન', 'telecom':'ટેલિકોમ',
+  /* financial statement lines */
+  'face value':'દર્શની કિંમત', 'book value':'બુક વેલ્યુ', 'market capitalisation':'બજાર મૂડી',
+  'market capitalization':'બજાર મૂડી', 'market cap':'બજાર મૂડી',
+  'revenue':'આવક', 'revenue from operations':'કામકાજમાંથી આવક', 'total income':'કુલ આવક',
+  'other income':'અન્ય આવક', 'expenses':'ખર્ચ', 'total expenses':'કુલ ખર્ચ',
+  'employee cost':'કર્મચારી ખર્ચ', 'finance cost':'નાણાકીય ખર્ચ',
+  'depreciation':'ઘસારો', 'amortisation':'પરિશોધન', 'amortization':'પરિશોધન',
+  'profit before tax':'કરવેરા પહેલાંનો નફો', 'profit after tax':'કરવેરા પછીનો નફો',
+  'net profit':'ચોખ્ખો નફો', 'gross profit':'કુલ નફો', 'operating profit':'કામકાજનો નફો',
+  'margin':'માર્જિન', 'margins':'માર્જિન', 'operating margin':'કામકાજનું માર્જિન',
+  'net margin':'ચોખ્ખું માર્જિન', 'gross margin':'કુલ માર્જિન',
+  'net worth':'ચોખ્ખી સંપત્તિ', 'reserves':'અનામત', 'share capital':'શેર મૂડી',
+  'equity':'ઇક્વિટી', 'debt':'દેવું', 'borrowings':'ઉધાર', 'total debt':'કુલ દેવું',
+  'net debt':'ચોખ્ખું દેવું', 'cash':'રોકડ', 'cash and equivalents':'રોકડ અને સમકક્ષ',
+  'inventory':'સ્ટોક', 'inventories':'સ્ટોક',
+  'trade receivables':'વેપારી લેણાં', 'receivables':'લેણાં',
+  'trade payables':'વેપારી દેવાં', 'payables':'દેવાં',
+  'working capital':'કાર્યકારી મૂડી', 'current assets':'ચાલુ મિલકતો',
+  'current liabilities':'ચાલુ જવાબદારીઓ', 'fixed assets':'સ્થાયી મિલકતો',
+  'total assets':'કુલ મિલકતો', 'contingent liabilities':'આકસ્મિક જવાબદારીઓ',
+  'capital expenditure':'મૂડી ખર્ચ', 'capex':'મૂડી ખર્ચ',
+  'free cash flow':'મુક્ત રોકડ પ્રવાહ', 'cash flow':'રોકડ પ્રવાહ',
+  'operating cash flow':'કામકાજનો રોકડ પ્રવાહ',
+  'investing':'રોકાણ', 'financing':'ધિરાણ', 'dividend':'ડિવિડન્ડ',
+  'earnings per share':'શેર દીઠ કમાણી', 'return on equity':'ઇક્વિટી પર વળતર',
+  'return on capital employed':'રોકાયેલી મૂડી પર વળતર',
+  'interest coverage':'વ્યાજ આવરણ', 'debt to equity':'દેવું-ઇક્વિટી',
+  'asset turnover':'મિલકત ટર્નઓવર', 'turnover':'ટર્નઓવર',
+  'order book':'ઓર્ડર બુક', 'capacity utilisation':'ક્ષમતા વપરાશ',
+  'capacity utilization':'ક્ષમતા વપરાશ', 'installed capacity':'સ્થાપિત ક્ષમતા',
+  /* issue and market words */
+  'price band':'ભાવ પટ્ટો', 'issue size':'ઇશ્યૂ કદ', 'lot size':'લોટ કદ',
+  'fresh issue':'નવો ઇશ્યૂ', 'offer for sale':'વેચાણ માટેની ઓફર',
+  'offer':'ઓફર', 'issue':'ઇશ્યૂ', 'listing gain':'લિસ્ટિંગ ગેઇન',
+  'subscription':'સબસ્ક્રિપ્શન', 'allotment':'ફાળવણી', 'refund':'રિફંડ',
+  'lock-in':'લોક-ઇન', 'lock in':'લોક-ઇન', 'anchor investors':'એન્કર રોકાણકારો',
+  'anchor investor':'એન્કર રોકાણકાર', 'book running lead manager':'બુક રનિંગ લીડ મેનેજર',
+  'registrar':'રજિસ્ટ્રાર', 'underwriter':'અન્ડરરાઇટર',
+  'shareholding':'શેરહોલ્ડિંગ', 'shareholders':'શેરધારકો', 'shareholder':'શેરધારક',
+  'promoters':'પ્રમોટરો', 'promoter group':'પ્રમોટર જૂથ',
+  'dilution':'મંદન', 'valuation':'મૂલ્યાંકન', 'peers':'સમકક્ષો', 'peer':'સમકક્ષ',
+  'grey market premium':'ગ્રે માર્કેટ પ્રીમિયમ', 'grey market':'ગ્રે માર્કેટ',
+  /* governance and legal */
+  'board of directors':'બોર્ડ ઓફ ડિરેક્ટર્સ', 'board':'બોર્ડ',
+  'independent director':'સ્વતંત્ર ડિરેક્ટર', 'independent directors':'સ્વતંત્ર ડિરેક્ટરો',
+  'managing director':'મેનેજિંગ ડિરેક્ટર', 'chairman':'ચેરમેન',
+  'chief executive officer':'મુખ્ય કારોબારી અધિકારી',
+  'chief financial officer':'મુખ્ય નાણાકીય અધિકારી',
+  'whole-time director':'પૂર્ણ-સમય ડિરેક્ટર', 'auditor':'ઓડિટર', 'auditors':'ઓડિટરો',
+  'audit committee':'ઓડિટ સમિતિ', 'related party':'સંબંધિત પક્ષ',
+  'related party transactions':'સંબંધિત પક્ષ વ્યવહારો',
+  'litigation':'મુકદ્દમા', 'penalty':'દંડ', 'demand':'માંગણું', 'notice':'નોટિસ',
+  'income tax':'આવકવેરો', 'appeal':'અપીલ', 'tribunal':'ટ્રિબ્યુનલ',
+  'high court':'હાઈકોર્ટ', 'supreme court':'સુપ્રીમ કોર્ટ', 'court':'અદાલત',
+  'compliance':'પાલન', 'regulatory':'નિયમનકારી', 'approval':'મંજૂરી',
+  'licence':'લાઇસન્સ', 'license':'લાઇસન્સ',
+  /* generic business prose */
+  'customers':'ગ્રાહકો', 'customer':'ગ્રાહક', 'clients':'ગ્રાહકો',
+  'suppliers':'સપ્લાયર્સ', 'supplier':'સપ્લાયર', 'vendors':'વિક્રેતાઓ',
+  'employees':'કર્મચારીઓ', 'plants':'પ્લાન્ટ', 'plant':'પ્લાન્ટ',
+  'facilities':'સુવિધાઓ', 'facility':'સુવિધા', 'factory':'કારખાનું',
+  'exports':'નિકાસ', 'export':'નિકાસ', 'imports':'આયાત', 'domestic':'સ્થાનિક',
+  'market share':'બજાર હિસ્સો', 'competition':'સ્પર્ધા', 'competitors':'સ્પર્ધકો',
+  'growth':'વૃદ્ધિ', 'demand':'માંગ', 'supply':'પુરવઠો', 'pricing':'ભાવ નિર્ધારણ',
+  'concentration':'કેન્દ્રીકરણ', 'diversification':'વૈવિધ્યકરણ',
+  'segment':'વિભાગ', 'segments':'વિભાગો', 'product':'ઉત્પાદન', 'products':'ઉત્પાદનો',
+  'brand':'બ્રાન્ડ', 'brands':'બ્રાન્ડ', 'patent':'પેટન્ટ', 'patents':'પેટન્ટ',
+  'research and development':'સંશોધન અને વિકાસ', 'quality':'ગુણવત્તા',
+  'certification':'પ્રમાણપત્ર', 'standard':'ધોરણ', 'and':'અને', 'of':'ના',
+  'for':'માટે', 'in':'માં', 'with':'સાથે', 'to':'થી', 'per':'દીઠ',
+  'others':'અન્ય', 'other':'અન્ય', 'total':'કુલ', 'net':'ચોખ્ખું', 'gross':'કુલ'
+};
+
+/* Common English that keeps turning up in payload prose. Without it the sweep
+   has nothing to translate a sentence with, and a transliterated English
+   sentence is unreadable in a way the English itself is not. */
+var COMMON_GU = {
+  'access':'પ્રવેશ',
+  'accounts':'હિસ્સો ધરાવે છે',
+  'accrual':'ઉપાર્જન',
+  'acquired':'હસ્તગત',
+  'acquisition':'હસ્તાંતરણ',
+  'acquisitions':'હસ્તાંતરણો',
+  'ahead':'આગળ',
+  'already':'પહેલેથી',
+  'aluminium':'એલ્યુમિનિયમ',
+  'amalgamation':'એકીકરણ',
+  'amounts':'રકમો',
+  'appellate':'અપીલ',
+  'asia':'એશિયા',
+  'assembly':'એસેમ્બલી',
+  'back':'પાછું',
+  'backward':'પાછળનું',
+  'backwards':'પાછળ',
+  'bank':'બેંક',
+  'becomes':'બને છે',
+  'benchmarking':'માપદંડ સરખામણી',
+  'beyond':'ઉપરાંત',
+  'bidding':'બિડિંગ',
+  'broader':'વ્યાપક',
+  'broadly':'વ્યાપક રીતે',
+  'calibrators':'કેલિબ્રેટર',
+  'camera':'કેમેરો',
+  'cameras':'કેમેરા',
+  'capital-employed':'રોકાયેલી મૂડી',
+  'cartridge':'કાર્ટ્રિજ',
+  'ceiling':'મર્યાદા',
+  'certified':'પ્રમાણિત',
+  'clearly':'સ્પષ્ટપણે',
+  'closes':'બંધ થાય છે',
+  'comparable':'સરખાવવા યોગ્ય',
+  'composition':'રચના',
+  'compressing':'સંકોચાતું',
+  'confirming':'પુષ્ટિ કરતું',
+  'conflict':'વિરોધાભાસ',
+  'consecutive':'સળંગ',
+  'consolidated':'એકીકૃત',
+  'contractor':'કોન્ટ્રાક્ટર',
+  'contractors':'કોન્ટ્રાક્ટરો',
+  'control':'નિયંત્રણ',
+  'conversion':'રૂપાંતરણ',
+  'copper':'તાંબુ',
+  'count':'સંખ્યા',
+  'course':'ક્રમ',
+  'coverage':'આવરણ',
+  'cuts':'કાપ',
+  'cycles':'ચક્રો',
+  'data':'માહિતી',
+  'de-rating':'ડી-રેટિંગ',
+  'dealings':'વ્યવહારો',
+  'debt-funded':'દેવા-આધારિત',
+  'decelerated':'ધીમું પડ્યું',
+  'definition':'વ્યાખ્યા',
+  'delivered':'આપ્યું',
+  'designations':'હોદ્દા',
+  'deteriorated':'બગડ્યું',
+  'direct':'સીધું',
+  'directly':'સીધું',
+  'disappointment':'નિરાશા',
+  'distribution':'વિતરણ',
+  'distributor':'વિતરક',
+  'distributors':'વિતરકો',
+  'does':'કરે છે',
+  'dropped':'ઘટ્યું',
+  'duty':'ડ્યુટી',
+  'earnings':'કમાણી',
+  'easing':'હળવું થવું',
+  'east':'પૂર્વ',
+  'employee':'કર્મચારી',
+  'entities':'સંસ્થાઓ',
+  'entity':'સંસ્થા',
+  'entry':'પ્રવેશ',
+  'equity-accounted':'ઇક્વિટી-આધારિત',
+  'euro':'યુરો',
+  'even':'પણ',
+  'everything':'બધું',
+  'exact':'ચોક્કસ',
+  'exist':'અસ્તિત્વ ધરાવે છે',
+  'expires':'સમાપ્ત થાય છે',
+  'explained':'સમજાવેલ',
+  'expressed':'વ્યક્ત',
+  'facilities':'સુવિધાઓ',
+  'factor':'પરિબળ',
+  'factors':'પરિબળો',
+  'falling':'ઘટતું',
+  'family':'પરિવાર',
+  'flagged':'ચિહ્નિત',
+  'flow':'પ્રવાહ',
+  'fragmented':'વિખરાયેલ',
+  'franchise':'ફ્રેન્ચાઇઝી',
+  'fully':'સંપૂર્ણપણે',
+  'furnace':'ભઠ્ઠી',
+  'furnaces':'ભઠ્ઠીઓ',
+  'gauge':'ગેજ',
+  'gauges':'ગેજ',
+  'general':'સામાન્ય',
+  'generation':'નિર્માણ',
+  'genuinely':'ખરેખર',
+  'grown':'વધ્યું',
+  'guarantee':'ગેરંટી',
+  'guarantees':'ગેરંટી',
+  'headroom':'અવકાશ',
+  'heat-trace':'હીટ-ટ્રેસ',
+  'heater':'હીટર',
+  'heaters':'હીટર',
+  'here':'અહીં',
+  'historic':'ઐતિહાસિક',
+  'identification':'ઓળખ',
+  'imager':'ઇમેજર',
+  'imagers':'ઇમેજર',
+  'imaging':'ઇમેજિંગ',
+  'immersion':'ઇમર્શન',
+  'implied':'સૂચિત',
+  'import':'આયાત',
+  'inception':'શરૂઆત',
+  'income-tax':'આવકવેરો',
+  'indian':'ભારતીય',
+  'industrial-goods':'ઔદ્યોગિક માલ',
+  'inferred':'અનુમાનિત',
+  'infrared':'ઇન્ફ્રારેડ',
+  'integration':'એકીકરણ',
+  'intensity':'તીવ્રતા',
+  'interest':'વ્યાજ',
+  'involving':'સંડોવતા',
+  'jump':'ઉછાળો',
+  'jumps':'ઉછળે છે',
+  'just':'માત્ર',
+  'korean':'કોરિયન',
+  'laboratory':'પ્રયોગશાળા',
+  'leverage':'લિવરેજ',
+  'list':'યાદી',
+  'live':'ચાલુ',
+  'maintenance':'જાળવણી',
+  'manufacturer':'ઉત્પાદક',
+  'marathon':'મેરેથોન',
+  'marketing':'માર્કેટિંગ',
+  'matching':'મેળ ખાતું',
+  'matters':'બાબતો',
+  'meaningful':'અર્થપૂર્ણ',
+  'measurement':'માપન',
+  'merger':'વિલય',
+  'met':'પૂરું થયું',
+  'mid-cap':'મિડ-કેપ',
+  'middle':'મધ્ય',
+  'mineral-insulated':'ખનિજ-ઇન્સ્યુલેટેડ',
+  'minority':'લઘુમતી',
+  'multi-billion':'બહુ-અબજ',
+  'multiple':'ગુણાંક',
+  'multiples':'ગુણાંકો',
+  'named':'નામિત',
+  'names':'નામો',
+  'narrower':'સાંકડું',
+  'needs':'જરૂર છે',
+  'net-worth':'ચોખ્ખી સંપત્તિ',
+  'nickel':'નિકલ',
+  'nil':'શૂન્ય',
+  'non-contact':'બિન-સંપર્ક',
+  'norms':'ધોરણો',
+  'object':'ઉદ્દેશ',
+  'objects':'ઉદ્દેશો',
+  'once':'એકવાર',
+  'opens':'ખૂલે છે',
+  'ordinary':'સામાન્ય',
+  'organic':'સજીવ',
+  'organised':'સંગઠિત',
+  'out':'બહાર',
+  'outlier':'અપવાદ',
+  'parent':'મૂળ કંપની',
+  'pass-through':'પસાર',
+  'passed':'પસાર થયું',
+  'paying':'ચૂકવતું',
+  'plant-wise':'પ્લાન્ટવાર',
+  'platinum':'પ્લેટિનમ',
+  'player':'ખેલાડી',
+  'players':'ખેલાડીઓ',
+  'policy':'નીતિ',
+  'pop':'ઉછાળો',
+  'post-issue':'ઇશ્યૂ પછી',
+  'post-listing':'લિસ્ટિંગ પછી',
+  'pressure':'દબાણ',
+  'process':'પ્રક્રિયા',
+  'process-monitoring':'પ્રક્રિયા દેખરેખ',
+  'project':'પ્રોજેક્ટ',
+  'prospectus':'પ્રોસ્પેક્ટસ',
+  'push':'દબાણ',
+  'pyrometer':'પાયરોમીટર',
+  'pyrometers':'પાયરોમીટર',
+  'rather':'બદલે',
+  're-accelerating':'ફરી વેગ પકડતું',
+  're-rate':'પુનઃમૂલ્યાંકન',
+  'recorded':'નોંધાયેલ',
+  'related-party':'સંબંધિત પક્ષ',
+  'reproduced':'પુનઃપ્રસ્તુત',
+  'rerate':'પુનઃમૂલ્યાંકન',
+  'restated':'પુનઃગણતરી કરેલ',
+  'retained':'જાળવેલ',
+  'retention':'જાળવણી',
+  'revival':'પુનરુત્થાન',
+  'rewarding':'લાભદાયી',
+  'rhodium':'રોડિયમ',
+  'role':'ભૂમિકા',
+  'roles':'ભૂમિકાઓ',
+  'run':'ચલાવવું',
+  'runs':'ચલાવે છે',
+  'rupee':'રૂપિયો',
+  'safety':'સલામતી',
+  'sanctioned':'મંજૂર',
+  'scheme':'યોજના',
+  'selling':'વેચાણ',
+  'sentiment':'ભાવના',
+  'sharp':'તીવ્ર',
+  'sharply':'તીવ્રપણે',
+  'showing':'દર્શાવતું',
+  'skids':'સ્કિડ',
+  'slowdown':'મંદી',
+  'spend':'ખર્ચ',
+  'spike':'ઉછાળો',
+  'stainless':'સ્ટેનલેસ',
+  'standalone':'સ્વતંત્ર',
+  'steady':'સ્થિર',
+  'strain':'તાણ',
+  'stretch':'ખેંચાણ',
+  'stripping':'બાદ કરીને',
+  'subsequent':'ત્યારપછીનું',
+  'sum':'સરવાળો',
+  'supports':'ટેકો આપે છે',
+  'sustained':'ટકાઉ',
+  'there':'ત્યાં',
+  'thermal':'થર્મલ',
+  'thermowell':'થર્મોવેલ',
+  'thermowells':'થર્મોવેલ',
+  'though':'જોકે',
+  'thousand-plus':'હજારથી વધુ',
+  'toward':'તરફ',
+  'tracker':'ટ્રેકર',
+  'trade-policy':'વેપાર નીતિ',
+  'transaction':'વ્યવહાર',
+  'transactions':'વ્યવહારો',
+  'triggers':'પ્રેરે છે',
+  'tubular':'ટ્યુબ્યુલર',
+  'turns':'વળે છે',
+  'underlying':'મૂળભૂત',
+  'undrawn':'બિનવપરાયેલ',
+  'unexplained':'અસ્પષ્ટ',
+  'unorganised':'અસંગઠિત',
+  'unresolved':'વણઉકેલાયેલ',
+  'utilisation':'વપરાશ',
+  'utilization':'વપરાશ',
+  'verification':'ચકાસણી',
+  'weaken':'નબળું પડવું',
+  'went':'ગયું',
+  'whose':'જેની',
+  'working-capital':'કાર્યકારી મૂડી',
+  'above':'ઉપર',
+  'across':'સર્વત્ર',
+  'around':'આસપાસ',
+  'band':'પટ્ટો',
+  'based':'આધારિત',
+  'between':'વચ્ચે',
+  'billion':'બિલિયન',
+  'bonus':'બોનસ',
+  'bought':'ખરીદાયું',
+  'broad':'વ્યાપક',
+  'build':'બાંધવું',
+  'built':'બાંધેલ',
+  'bulk':'મોટા ભાગ',
+  'buys':'ખરીદે છે',
+  'cap':'મૂડી',
+  'categories':'શ્રેણીઓ',
+  'category':'શ્રેણી',
+  'cent':'ટકા',
+  'close':'નજીક',
+  'closer':'નજીક',
+  'clustered':'કેન્દ્રિત',
+  'component':'ઘટક',
+  'contact':'સંપર્ક',
+  'crore':'કરોડ',
+  'cut':'ઘટાડાયું',
+  'deep':'ઊંડું',
+  'depend':'આધાર રાખવો',
+  'depends':'આધાર રાખે છે',
+  'document':'દસ્તાવેજ',
+  'domestic':'સ્થાનિક',
+  'draft':'ડ્રાફ્ટ',
+  'driven':'સંચાલિત',
+  'drives':'ચલાવે છે',
+  'eight':'આઠ',
+  'eighty':'એંસી',
+  'electrical':'વિદ્યુત',
+  'excluding':'બાદ કરતાં',
+  'existing':'હાલના',
+  'fall':'ઘટવું',
+  'fast':'ઝડપી',
+  'fell':'ઘટ્યું',
+  'figure':'આંકડો',
+  'figures':'આંકડા',
+  'final':'અંતિમ',
+  'five':'પાંચ',
+  'four':'ચાર',
+  'fresh':'નવો',
+  'further':'વધુ',
+  'give':'આપવું',
+  'gives':'આપે છે',
+  'grew':'વધ્યું',
+  'grow':'વધવું',
+  'growing':'વધતું',
+  'heating':'હીટિંગ',
+  'heavy':'ભારે',
+  'holder':'ધારક',
+  'holders':'ધારકો',
+  'holds':'ધરાવે છે',
+  'hundred':'સો',
+  'implies':'સૂચિત કરે છે',
+  'improved':'સુધર્યું',
+  'include':'સમાવવું',
+  'includes':'સમાવે છે',
+  'including':'સહિત',
+  'indicates':'સૂચવે છે',
+  'item':'બાબત',
+  'items':'બાબતો',
+  'keep':'રાખવું',
+  'kept':'રાખેલ',
+  'lakh':'લાખ',
+  'larger':'મોટું',
+  'left':'બાકી',
+  'light':'હળવું',
+  'line':'લીટી',
+  'lines':'લીટીઓ',
+  'lower':'નીચું',
+  'lowered':'ઘટાડ્યું',
+  'made':'બનાવેલ',
+  'make':'બનાવવું',
+  'maker':'ઉત્પાદક',
+  'makers':'ઉત્પાદકો',
+  'makes':'બનાવે છે',
+  'means':'અર્થ',
+  'million':'મિલિયન',
+  'moved':'ખસેડાયું',
+  'multiple':'બહુવિધ',
+  'multiple of':'ગુણાંક',
+  'narrow':'સાંકડું',
+  'nine':'નવ',
+  'ninety':'નેવું',
+  'non-contact':'બિન-સંપર્ક',
+  'now':'હવે',
+  'number':'સંખ્યા',
+  'numbers':'સંખ્યાઓ',
+  'over':'ઉપર',
+  'page':'પાનું',
+  'peer':'સમકક્ષ',
+  'per cent':'ટકા',
+  'percent':'ટકા',
+  'percentage':'ટકાવારી',
+  'planned':'આયોજિત',
+  'point':'મુદ્દો',
+  'points':'મુદ્દા',
+  'put':'મૂકેલ',
+  'raise':'ઊભું કરવું',
+  'raised':'વધારાયું',
+  'reduce':'ઘટાડવું',
+  'reduces':'ઘટાડે છે',
+  'reflects':'પ્રતિબિંબિત કરે છે',
+  'remain':'રહેવું',
+  'remains':'રહે છે',
+  'report':'અહેવાલ',
+  'reports':'અહેવાલો',
+  'rise':'વધવું',
+  'rose':'વધ્યું',
+  'sale':'વેચાણ',
+  'sanity':'ચકાસણી',
+  'section':'વિભાગ',
+  'sells':'વેચે છે',
+  'sensing':'સેન્સિંગ',
+  'set':'નિર્ધારિત',
+  'seven':'સાત',
+  'several':'કેટલાક',
+  'show':'દર્શાવવું',
+  'shows':'દર્શાવે છે',
+  'single':'એકલ',
+  'six':'છ',
+  'slow':'ધીમું',
+  'slowed':'ધીમું પડ્યું',
+  'sold':'વેચાયું',
+  'solution':'ઉકેલ',
+  'solutions':'ઉકેલો',
+  'spanning':'ફેલાયેલ',
+  'stays':'રહે છે',
+  'suggests':'સૂચવે છે',
+  'table':'કોષ્ટક',
+  'take':'લેવું',
+  'takes':'લે છે',
+  'ten':'દસ',
+  'than':'કરતાં',
+  'thin':'પાતળું',
+  'thousand':'હજાર',
+  'unit':'એકમ',
+  'units':'એકમો',
+  'upper':'ઉપલો',
+  'various':'વિવિધ',
+  'vertical':'ઊભો વિભાગ',
+  'verticals':'ઊભા વિભાગો',
+  'way':'રીત',
+  'ways':'રીતો',
+  'weighted':'ભારિત',
+  'while':'જ્યારે',
+  'wide':'વ્યાપક',
+  'worsened':'બગડ્યું',
+  'worth':'સંપત્તિ',
+  'about':'વિશે',
+  'above':'ઉપર',
+  'across':'સર્વત્ર',
+  'adverse':'પ્રતિકૂળ',
+  'after':'પછી',
+  'against':'સામે',
+  'all':'બધા',
+  'also':'પણ',
+  'amount':'રકમ',
+  'any':'કોઈ',
+  'are':'છે',
+  'as':'તરીકે',
+  'associated':'સંકળાયેલ',
+  'at':'ખાતે',
+  'available':'ઉપલબ્ધ',
+  'average':'સરેરાશ',
+  'background':'પૃષ્ઠભૂમિ',
+  'basis':'આધાર',
+  'be':'હોવું',
+  'because':'કારણ કે',
+  'been':'રહ્યું',
+  'before':'પહેલાં',
+  'being':'હોવાથી',
+  'below':'નીચે',
+  'between':'વચ્ચે',
+  'both':'બંને',
+  'business':'વ્યવસાય',
+  'businesses':'વ્યવસાયો',
+  'but':'પરંતુ',
+  'buyers':'ખરીદદારો',
+  'by':'દ્વારા',
+  'can':'શકે',
+  'capacity':'ક્ષમતા',
+  'capital':'મૂડી',
+  'case':'કિસ્સો',
+  'cases':'કિસ્સા',
+  'change':'ફેરફાર',
+  'changes':'ફેરફારો',
+  'check':'ચકાસણી',
+  'checks':'ચકાસણી',
+  'clean':'સ્વચ્છ',
+  'clear':'સ્પષ્ટ',
+  'closed':'બંધ',
+  'companies':'કંપનીઓ',
+  'company':'કંપની',
+  'confirmed':'પુષ્ટિ થયેલ',
+  'contingent':'આકસ્મિક',
+  'core':'મુખ્ય',
+  'cost':'ખર્ચ',
+  'costs':'ખર્ચ',
+  'could':'શકે',
+  'current':'ચાલુ',
+  'cycle':'ચક્ર',
+  'date':'તારીખ',
+  'decrease':'ઘટાડો',
+  'defaulter':'ડિફોલ્ટર',
+  'dependence':'નિર્ભરતા',
+  'dependent':'નિર્ભર',
+  'designation':'હોદ્દો',
+  'did':'કર્યું',
+  'disclosed':'જાહેર કરેલ',
+  'disclosure':'જાહેરાત',
+  'do':'કરે',
+  'does':'કરે',
+  'during':'દરમિયાન',
+  'each':'દરેક',
+  'each of':'દરેક',
+  'early':'વહેલું',
+  'enforcement':'અમલ',
+  'established':'સ્થાપિત',
+  'estimated':'અંદાજિત',
+  'every':'દરેક',
+  'evidence':'પુરાવો',
+  'expense':'ખર્ચ',
+  'experience':'અનુભવ',
+  'exposure':'સંપર્ક',
+  'filing':'ફાઇલિંગ',
+  'filings':'ફાઇલિંગ',
+  'finance':'નાણાં',
+  'financial':'નાણાકીય',
+  'first':'પ્રથમ',
+  'fixed':'સ્થાયી',
+  'flag':'સંકેત',
+  'flags':'સંકેત',
+  'found':'મળ્યું',
+  'free':'મુક્ત',
+  'from':'માંથી',
+  'fund':'ભંડોળ',
+  'funds':'ભંડોળ',
+  'future':'ભાવિ',
+  'gross':'કુલ',
+  'had':'હતું',
+  'has':'ધરાવે છે',
+  'have':'ધરાવે છે',
+  'higher':'ઊંચું',
+  'history':'ઇતિહાસ',
+  'however':'જોકે',
+  'identified':'ઓળખાયેલ',
+  'if':'જો',
+  'impact':'અસર',
+  'income':'આવક',
+  'incorporated':'સ્થપાયેલ',
+  'incorporation':'સ્થાપના',
+  'increase':'વધારો',
+  'industry':'ઉદ્યોગ',
+  'information':'માહિતી',
+  'insolvency':'નાદારી',
+  'into':'માં',
+  'investment':'રોકાણ',
+  'investments':'રોકાણો',
+  'investor':'રોકાણકાર',
+  'investors':'રોકાણકારો',
+  'is':'છે',
+  'issue':'ઇશ્યૂ',
+  'issues':'મુદ્દા',
+  'it':'તે',
+  'its':'તેની',
+  'key':'મુખ્ય',
+  'large':'મોટું',
+  'largest':'સૌથી મોટું',
+  'last':'છેલ્લું',
+  'late':'મોડું',
+  'leadership':'નેતૃત્વ',
+  'leading':'અગ્રણી',
+  'least':'ઓછામાં ઓછું',
+  'legal':'કાયદાકીય',
+  'less':'ઓછું',
+  'level':'સ્તર',
+  'levels':'સ્તર',
+  'likely':'સંભવિત',
+  'listed':'લિસ્ટેડ',
+  'long':'લાંબું',
+  'loss':'નુકસાન',
+  'losses':'નુકસાન',
+  'lower':'નીચું',
+  'main':'મુખ્ય',
+  'major':'મોટું',
+  'management':'સંચાલન',
+  'market':'બજાર',
+  'markets':'બજારો',
+  'material':'નોંધપાત્ર',
+  'may':'શકે',
+  'minor':'નાનું',
+  'mix':'મિશ્રણ',
+  'month':'મહિનો',
+  'months':'મહિના',
+  'more':'વધુ',
+  'most':'મોટા ભાગના',
+  'must':'આવશ્યક',
+  'net':'ચોખ્ખું',
+  'new':'નવું',
+  'next':'આગામી',
+  'no':'કોઈ',
+  'none':'કોઈ નહીં',
+  'nor':'ન',
+  'not':'નથી',
+  'note':'નોંધ',
+  'notes':'નોંધ',
+  'old':'જૂનું',
+  'on':'પર',
+  'one':'એક',
+  'one of':'એક',
+  'ongoing':'ચાલુ',
+  'only':'માત્ર',
+  'open':'ખુલ્લું',
+  'operating':'કામકાજ',
+  'operations':'કામકાજ',
+  'or':'અથવા',
+  'order':'આદેશ',
+  'orders':'આદેશો',
+  'over':'ઉપર',
+  'overall':'એકંદરે',
+  'past':'ભૂતકાળ',
+  'pending':'બાકી',
+  'per':'દીઠ',
+  'performance':'કામગીરી',
+  'period':'સમયગાળો',
+  'plan':'યોજના',
+  'plans':'યોજનાઓ',
+  'pledge':'ગીરો',
+  'pledges':'ગીરો',
+  'possible':'શક્ય',
+  'post':'પછી',
+  'potential':'સંભાવના',
+  'pre':'પહેલાં',
+  'present':'વર્તમાન',
+  'pressure':'દબાણ',
+  'price':'ભાવ',
+  'prices':'ભાવ',
+  'proceeding':'કાર્યવાહી',
+  'proceedings':'કાર્યવાહી',
+  'proceeds':'રકમ',
+  'profit':'નફો',
+  'profits':'નફો',
+  'public':'જાહેર',
+  'quarter':'ત્રિમાસિક',
+  'rate':'દર',
+  'rates':'દર',
+  'ratio':'ગુણોત્તર',
+  'ratios':'ગુણોત્તર',
+  'reason':'કારણ',
+  'record':'નોંધ',
+  'records':'નોંધો',
+  'regulatory':'નિયમનકારી',
+  'reliable':'વિશ્વસનીય',
+  'reported':'નોંધાયેલ',
+  'required':'જરૂરી',
+  'resolved':'ઉકેલાયેલ',
+  'result':'પરિણામ',
+  'results':'પરિણામો',
+  'return':'વળતર',
+  'returns':'વળતર',
+  'revenue growth':'આવક વૃદ્ધિ',
+  'review':'સમીક્ષા',
+  'reviewed':'સમીક્ષા કરેલ',
+  'risk':'જોખમ',
+  'risks':'જોખમો',
+  'sales':'વેચાણ',
+  'same':'સમાન',
+  'scale':'સ્તર',
+  'search':'શોધ',
+  'searched':'શોધાયેલ',
+  'second':'બીજું',
+  'sector':'ક્ષેત્ર',
+  'segment':'વિભાગ',
+  'sellers':'વેચાણકારો',
+  'settled':'સમાધાન થયેલ',
+  'share':'શેર',
+  'share of':'હિસ્સો',
+  'shares':'શેર',
+  'short':'ટૂંકું',
+  'should':'જોઈએ',
+  'significant':'નોંધપાત્ર',
+  'since':'થી',
+  'size':'કદ',
+  'small':'નાનું',
+  'so':'તેથી',
+  'some':'કેટલાક',
+  'source':'સ્રોત',
+  'sources':'સ્રોતો',
+  'specific':'ચોક્કસ',
+  'stable':'સ્થિર',
+  'staff':'સ્ટાફ',
+  'stated':'જણાવેલ',
+  'status':'સ્થિતિ',
+  'statutory':'વૈધાનિક',
+  'still':'હજુ',
+  'stock':'સ્ટોક',
+  'strategy':'વ્યૂહરચના',
+  'strong':'મજબૂત',
+  'substitution':'અવેજી',
+  'supply':'પુરવઠો',
+  'support':'ટેકો',
+  'target':'લક્ષ્ય',
+  'targets':'લક્ષ્યાંકો',
+  'tax':'કર',
+  'taxes':'કર',
+  'team':'ટીમ',
+  'term':'મુદત',
+  'than':'કરતાં',
+  'that':'તે',
+  'their':'તેમની',
+  'therefore':'તેથી',
+  'these':'આ',
+  'third':'ત્રીજું',
+  'this':'આ',
+  'those':'તે',
+  'three':'ત્રણ',
+  'through':'મારફતે',
+  'time':'સમય',
+  'total':'કુલ',
+  'trend':'વલણ',
+  'trends':'વલણ',
+  'two':'બે',
+  'unavailable':'અનુપલબ્ધ',
+  'under':'હેઠળ',
+  'unlikely':'અસંભવિત',
+  'unlisted':'બિનલિસ્ટેડ',
+  'until':'સુધી',
+  'unverified':'ચકાસાયેલ નથી',
+  'upcoming':'આગામી',
+  'use':'ઉપયોગ',
+  'used':'વપરાયેલ',
+  'uses':'ઉપયોગો',
+  'value':'મૂલ્ય',
+  'values':'મૂલ્યો',
+  'verdict':'ચુકાદો',
+  'verified':'ચકાસાયેલ',
+  'very':'ખૂબ',
+  'volatility':'અસ્થિરતા',
+  'volume':'જથ્થો',
+  'was':'હતું',
+  'weak':'નબળું',
+  'well':'સારી રીતે',
+  'were':'હતા',
+  'what':'શું',
+  'when':'ક્યારે',
+  'where':'જ્યાં',
+  'which':'જે',
+  'while':'જ્યારે',
+  'who':'જે',
+  'whose':'જેની',
+  'wilful':'ઇરાદાપૂર્વક',
+  'will':'રહેશે',
+  'willful':'ઇરાદાપૂર્વક',
+  'within':'અંદર',
+  'without':'વગર',
+  'would':'રહેશે',
+  'year':'વર્ષ',
+  'years':'વર્ષ',
+  'yet':'છતાં',
+  'yield':'ઉપજ'
+};
+
+/* ---------------------------------------------------------------------------
+   NAME_GU -- Indian given names, surnames and places, spelled properly.
+
+   Romanisation loses vowel length: "Kumar" and "Nirmal" look identical in
+   Latin but are કુમાર and નિર્મલ in Gujarati, and no rule can tell them apart.
+   The names that actually appear in promoter tables and plant addresses are
+   therefore written out here, and the transliterator below is the fallback for
+   everything else.
+   -------------------------------------------------------------------------- */
+var NAME_GU = {
+  'abhishek':'અભિષેક',
+  'aditya':'આદિત્ય',
+  'arjun':'અર્જુન',
+  'ashwin':'અશ્વિન',
+  'behari':'બિહારી',
+  'bhupesh':'ભૂપેશ',
+  'dev':'દેવ',
+  'dhaval':'ધવલ',
+  'hardik':'હાર્દિક',
+  'harsh':'હર્ષ',
+  'ishan':'ઈશાન',
+  'jayesh':'જયેશ',
+  'jewellery mart':'જ્વેલરી માર્ટ',
+  'kailash':'કૈલાશ',
+  'kartik':'કાર્તિક',
+  'kaushik':'કૌશિક',
+  'krunal':'ક્રુણાલ',
+  'lal':'લાલ',
+  'lalithaa':'લલિતા',
+  'maulik':'મૌલિક',
+  'nimesh':'નિમેષ',
+  'pratap':'પ્રતાપ',
+  'pratik':'પ્રતીક',
+  'pyrosens':'પાયરોસેન્સ',
+  'rathi':'રાઠી',
+  'rohan':'રોહન',
+  'rushabh':'ઋષભ',
+  'shiprocket':'શિપરોકેટ',
+  'siddharth':'સિદ્ધાર્થ',
+  'talesara':'તલેસરા',
+  'tempsens':'ટેમ્પસેન્સ',
+  'tushar':'તુષાર',
+  'udaipur':'ઉદયપુર',
+  'vinay':'વિનય',
+  'viral':'વિરલ',
+  'virendra':'વીરેન્દ્ર',
+  'yash':'યશ',
+  'aarti':'આરતી',
+  'abhijit':'અભિજિત',
+  'adani':'અદાણી',
+  'agarwal':'અગ્રવાલ',
+  'agarwala':'અગ્રવાલા',
+  'aggarwal':'અગ્રવાલ',
+  'agrawal':'અગ્રવાલ',
+  'ahmedabad':'અમદાવાદ',
+  'ajay':'અજય',
+  'akhil':'અખિલ',
+  'alok':'આલોક',
+  'ambani':'અંબાણી',
+  'amin':'અમીન',
+  'amit':'અમિત',
+  'anand':'આણંદ',
+  'anil':'અનિલ',
+  'anita':'અનિતા',
+  'anjali':'અંજલિ',
+  'ankit':'અંકિત',
+  'ankleshwar':'અંકલેશ્વર',
+  'arora':'અરોડા',
+  'arun':'અરુણ',
+  'arvind':'અરવિંદ',
+  'asha':'આશા',
+  'ashish':'આશિષ',
+  'ashok':'અશોક',
+  'assam':'આસામ',
+  'bajaj':'બજાજ',
+  'banerjee':'બેનર્જી',
+  'bangalore':'બેંગલુરુ',
+  'bansal':'બંસલ',
+  'baroda':'વડોદરા',
+  'bengaluru':'બેંગલુરુ',
+  'bharuch':'ભરૂચ',
+  'bhatt':'ભટ્ટ',
+  'bhavesh':'ભાવેશ',
+  'bhavna':'ભાવના',
+  'bhavnagar':'ભાવનગર',
+  'bhopal':'ભોપાલ',
+  'bhupendra':'ભૂપેન્દ્ર',
+  'bihar':'બિહાર',
+  'birla':'બિરલા',
+  'bose':'બોઝ',
+  'chandra':'ચંદ્ર',
+  'chatterjee':'ચેટર્જી',
+  'chaturvedi':'ચતુર્વેદી',
+  'chavan':'ચવ્હાણ',
+  'chennai':'ચેન્નઈ',
+  'china':'ચીન',
+  'chirag':'ચિરાગ',
+  'chokshi':'ચોકસી',
+  'chopra':'ચોપડા',
+  'coimbatore':'કોઇમ્બતૂર',
+  'das':'દાસ',
+  'dave':'દવે',
+  'deepa':'દીપા',
+  'deepak':'દીપક',
+  'delhi':'દિલ્હી',
+  'desai':'દેસાઈ',
+  'deshmukh':'દેશમુખ',
+  'devendra':'દેવેન્દ્ર',
+  'dinesh':'દિનેશ',
+  'doshi':'દોશી',
+  'dubai':'દુબઈ',
+  'dubey':'દુબે',
+  'dutta':'દત્તા',
+  'europe':'યુરોપ',
+  'falguni':'ફાલ્ગુની',
+  'gaikwad':'ગાયકવાડ',
+  'gandhi':'ગાંધી',
+  'gandhinagar':'ગાંધીનગર',
+  'garg':'ગર્ગ',
+  'gaurav':'ગૌરવ',
+  'geeta':'ગીતા',
+  'germany':'જર્મની',
+  'ghosh':'ઘોષ',
+  'girish':'ગિરીશ',
+  'godrej':'ગોદરેજ',
+  'gopal':'ગોપાલ',
+  'govind':'ગોવિંદ',
+  'goyal':'ગોયલ',
+  'gujarat':'ગુજરાત',
+  'gupta':'ગુપ્તા',
+  'hari':'હરિ',
+  'harish':'હરીશ',
+  'haryana':'હરિયાણા',
+  'hema':'હેમા',
+  'hetal':'હેતલ',
+  'hitesh':'હિતેશ',
+  'hyderabad':'હૈદરાબાદ',
+  'india':'ભારત',
+  'indore':'ઇન્દોર',
+  'iyengar':'આયંગર',
+  'iyer':'ઐયર',
+  'jadhav':'જાધવ',
+  'jai':'જય',
+  'jain':'જૈન',
+  'jaipur':'જયપુર',
+  'jamnagar':'જામનગર',
+  'japan':'જાપાન',
+  'jatin':'જતિન',
+  'jhaveri':'ઝવેરી',
+  'jignesh':'જિજ્ઞેશ',
+  'jindal':'જિંદાલ',
+  'jitendra':'જિતેન્દ્ર',
+  'jodhpur':'જોધપુર',
+  'joshi':'જોષી',
+  'joshi ':'જોષી',
+  'junagadh':'જૂનાગઢ',
+  'jyoti':'જ્યોતિ',
+  'kamal':'કમલ',
+  'kanpur':'કાનપુર',
+  'kapoor':'કપૂર',
+  'karan':'કરણ',
+  'karnataka':'કર્ણાટક',
+  'kaur':'કૌર',
+  'kavita':'કવિતા',
+  'kerala':'કેરળ',
+  'keyur':'કેયૂર',
+  'khanna':'ખન્ના',
+  'kiran':'કિરણ',
+  'kochi':'કોચી',
+  'kolkata':'કોલકાતા',
+  'komal':'કોમલ',
+  'korea':'કોરિયા',
+  'kothari':'કોઠારી',
+  'krishna':'કૃષ્ણ',
+  'krishnan':'કૃષ્ણન',
+  'kuldeep':'કુલદીપ',
+  'kulkarni':'કુલકર્ણી',
+  'kumar':'કુમાર',
+  'kunal':'કુણાલ',
+  'lata':'લતા',
+  'lucknow':'લખનૌ',
+  'madhav':'માધવ',
+  'madhya pradesh':'મધ્ય પ્રદેશ',
+  'maharashtra':'મહારાષ્ટ્ર',
+  'mahavir':'મહાવીર',
+  'mahendra':'મહેન્દ્ર',
+  'mahesh':'મહેશ',
+  'malhotra':'મલ્હોત્રા',
+  'manish':'મનીષ',
+  'manish kumar':'મનીષ કુમાર',
+  'manoj':'મનોજ',
+  'meena':'મીના',
+  'mehsana':'મહેસાણા',
+  'mehta':'મહેતા',
+  'menon':'મેનન',
+  'mihir':'મિહિર',
+  'mishra':'મિશ્રા',
+  'mittal':'મિત્તલ',
+  'modi':'મોદી',
+  'mohit':'મોહિત',
+  'more':'મોરે',
+  'mukesh':'મુકેશ',
+  'mukherjee':'મુખર્જી',
+  'mumbai':'મુંબઈ',
+  'murali':'મુરલી',
+  'murthy':'મૂર્તિ',
+  'nadar':'નાડર',
+  'nagpur':'નાગપુર',
+  'naidu':'નાયડુ',
+  'nair':'નાયર',
+  'narendra':'નરેન્દ્ર',
+  'naresh':'નરેશ',
+  'nashik':'નાશિક',
+  'natarajan':'નટરાજન',
+  'neha':'નેહા',
+  'new delhi':'નવી દિલ્હી',
+  'nikhil':'નિખિલ',
+  'nilesh':'નિલેશ',
+  'nirmal':'નિર્મલ',
+  'nisha':'નિશા',
+  'nitin':'નીતિન',
+  'odisha':'ઓડિશા',
+  'om':'ઓમ',
+  'pande':'પાંડે',
+  'pandey':'પાંડે',
+  'pandya':'પંડ્યા',
+  'pankaj':'પંકજ',
+  'parag':'પરાગ',
+  'paresh':'પરેશ',
+  'parikh':'પરીખ',
+  'patel':'પટેલ',
+  'patil':'પાટીલ',
+  'payal':'પાયલ',
+  'pillai':'પિલ્લઈ',
+  'pooja':'પૂજા',
+  'pradeep':'પ્રદીપ',
+  'prakash':'પ્રકાશ',
+  'preeti':'પ્રીતિ',
+  'premji':'પ્રેમજી',
+  'priya':'પ્રિયા',
+  'pune':'પુણે',
+  'punit':'પુનિત',
+  'punjab':'પંજાબ',
+  'rahul':'રાહુલ',
+  'rajasthan':'રાજસ્થાન',
+  'rajendra':'રાજેન્દ્ર',
+  'rajesh':'રાજેશ',
+  'rajkot':'રાજકોટ',
+  'rakesh':'રાકેશ',
+  'rakhi':'રાખી',
+  'ram':'રામ',
+  'raman':'રામન',
+  'ramanathan':'રામનાથન',
+  'ramesh':'રમેશ',
+  'ranjit':'રણજિત',
+  'rao':'રાવ',
+  'raval':'રાવલ',
+  'ravi':'રવિ',
+  'reddy':'રેડ્ડી',
+  'reema':'રીમા',
+  'rekha':'રેખા',
+  'ritesh':'રિતેશ',
+  'ritu':'રિતુ',
+  'rohit':'રોહિત',
+  'roy':'રોય',
+  'sachin':'સચિન',
+  'samir':'સમીર',
+  'sandeep':'સંદીપ',
+  'sanghvi':'સંઘવી',
+  'sanjay':'સંજય',
+  'sarosh':'સરોશ',
+  'satish':'સતીશ',
+  'saurabh':'સૌરભ',
+  'seema':'સીમા',
+  'sen':'સેન',
+  'sethi':'સેઠી',
+  'shah':'શાહ',
+  'shailesh':'શૈલેષ',
+  'sharma':'શર્મા',
+  'shinde':'શિંદે',
+  'shiv':'શિવ',
+  'shweta':'શ્વેતા',
+  'shyam':'શ્યામ',
+  'singapore':'સિંગાપોર',
+  'singh':'સિંહ',
+  'singhal':'સિંઘલ',
+  'sita':'સીતા',
+  'sneha':'સ્નેહા',
+  'sonal':'સોનલ',
+  'soni':'સોની',
+  'srinivas':'શ્રીનિવાસ',
+  'subramanian':'સુબ્રમણ્યન',
+  'sudhir':'સુધીર',
+  'sumit':'સુમિત',
+  'sunil':'સુનીલ',
+  'sunita':'સુનીતા',
+  'surat':'સુરત',
+  'surendra':'સુરેન્દ્ર',
+  'suresh':'સુરેશ',
+  'sushil':'સુશીલ',
+  'swati':'સ્વાતિ',
+  'talesara':'તલેસરા',
+  'tamil nadu':'તમિલનાડુ',
+  'tarun':'તરુણ',
+  'tata':'ટાટા',
+  'telangana':'તેલંગાણા',
+  'thakkar':'ઠક્કર',
+  'tiwari':'તિવારી',
+  'trivedi':'ત્રિવેદી',
+  'uae':'યુએઈ',
+  'udaipur':'ઉદયપુર',
+  'usa':'અમેરિકા',
+  'usha':'ઉષા',
+  'uttar pradesh':'ઉત્તર પ્રદેશ',
+  'vadodara':'વડોદરા',
+  'vaibhav':'વૈભવ',
+  'vapi':'વાપી',
+  'varun':'વરુણ',
+  'venkat':'વેંકટ',
+  'verma':'વર્મા',
+  'vijay':'વિજય',
+  'vimal':'વિમલ',
+  'vipul':'વિપુલ',
+  'virendra':'વીરેન્દ્ર',
+  'vishal':'વિશાલ',
+  'vivek':'વિવેક',
+  'vora':'વોરા',
+  'vyas':'વ્યાસ',
+  'west bengal':'પશ્ચિમ બંગાળ',
+  'yadav':'યાદવ',
+  'yogesh':'યોગેશ'
+};
+
+/* ---------------------------------------------------------------------------
+   Latin -> Gujarati transliteration, for proper nouns only.
+
+   A promoter's name has no translation; it has a spelling. Gujarati financial
+   writing renders "Amit Talesara" as અમિત તલેસરા, and a reader of the Gujarati
+   edition should not be dropped back into Latin script for the one word on the
+   page that names a person. The model is asked to supply these in the `gu`
+   payload, where it does the job well; this is the net beneath that, so a
+   missed name still comes out in Gujarati rather than in English.
+   -------------------------------------------------------------------------- */
+var GU_CONS = [
+  ['chh','છ'], ['sch','સ્ક'], ['shr','શ્ર'], ['tch','ચ'],
+  ['kh','ખ'], ['gh','ઘ'], ['ch','ચ'], ['jh','ઝ'], ['th','થ'], ['dh','ધ'],
+  ['ph','ફ'], ['bh','ભ'], ['sh','શ'], ['zh','ઝ'], ['ck','ક'], ['kk','ક્ક'],
+  ['tt','ટ્ટ'], ['dd','ડ્ડ'], ['nn','ન્ન'], ['ll','લ્લ'], ['ss','સ્સ'],
+  ['mm','મ્મ'], ['pp','પ્પ'], ['bb','બ્બ'], ['gg','ગ્ગ'], ['jj','જ્જ'],
+  ['k','ક'], ['g','ગ'], ['c','ક'], ['j','જ'], ['t','ત'], ['d','દ'],
+  ['n','ન'], ['p','પ'], ['b','બ'], ['m','મ'], ['y','ય'], ['r','ર'],
+  ['l','લ'], ['v','વ'], ['w','વ'], ['s','સ'], ['h','હ'], ['z','ઝ'],
+  ['f','ફ'], ['q','ક'], ['x','ક્સ']
+];
+var GU_VOW = [
+  ['aai',['આઈ','ાઈ']], ['aa',['આ','ા']], ['ai',['ઐ','ૈ']], ['au',['ઔ','ૌ']],
+  ['ee',['ઈ','ી']], ['ii',['ઈ','ી']], ['ea',['ઈ','ી']], ['oo',['ઊ','ૂ']],
+  ['uu',['ઊ','ૂ']], ['ou',['ઔ','ૌ']], ['ei',['એ','ે']], ['ie',['ઈ','ી']],
+  ['a',['અ','']], ['i',['ઇ','િ']], ['e',['એ','ે']], ['u',['ઉ','ુ']], ['o',['ઓ','ો']]
+];
+var GU_HALANT = '્', GU_ANUSVARA = 'ં';
+/* A nasal is written as the anusvara dot only before a homorganic stop --
+   Mumbai, Chandra, Pande. Before a fricative or a liquid it stays a full
+   consonant, so Tempsens is ટેમ્પસેન્સ and not ટેંપસેંસ. */
+var GU_NASAL_NEXT = {
+  n: ['kh','gh','ch','jh','th','dh','k','g','c','j','t','d','q'],
+  m: ['bh','b']
+};
+
+function matchList(list, s, i){
+  for(var k = 0; k < list.length; k++){
+    var key = list[k][0];
+    if(s.substr(i, key.length) === key) return list[k];
+  }
+  return null;
+}
+function translitWordGu(w){
+  var s = w.toLowerCase(), out = '', i = 0, openCons = false, clusterLen = 0, lastCons = '';
+  while(i < s.length){
+    var v = matchList(GU_VOW, s, i);
+    if(v){
+      var isFinal = (i + v[0].length) >= s.length;
+      if(v[0] === 'ai' && isFinal && openCons){
+        out += 'ઈ'; openCons = false; clusterLen = 0; i += 2; continue;
+      }
+      /* A word-final bare "a" is the inherent vowel in most positions, but a
+         name ending "-ara" or "-ma" carries a long aa. The exception is a glide
+         cluster (Chandra, Mitra), where the final a really is inherent. */
+      if(v[0] === 'a' && isFinal && openCons){
+        var glide = clusterLen > 1 && (lastCons === 'r' || lastCons === 'y' || lastCons === 'v');
+        if(!glide) out += 'ા';
+      } else {
+        out += openCons ? v[1][1] : v[1][0];
+      }
+      openCons = false; clusterLen = 0;
+      i += v[0].length;
+      continue;
+    }
+    var c = matchList(GU_CONS, s, i);
+    if(c){
+      /* n or m directly before another consonant is a nasal, written as the
+         anusvara dot rather than as a full conjunct. */
+      if((c[0] === 'n' || c[0] === 'm') && openCons === false && out){
+        var after = matchList(GU_CONS, s, i + c[0].length);
+        if(after && !matchList(GU_VOW, s, i + c[0].length)
+           && GU_NASAL_NEXT[c[0]].indexOf(after[0]) >= 0){
+          out += GU_ANUSVARA;
+          i += c[0].length;
+          continue;
+        }
+      }
+      if(openCons) out += GU_HALANT, clusterLen++;
+      else clusterLen = 1;
+      out += c[1];
+      lastCons = c[0].charAt(c[0].length - 1);
+      openCons = true;
+      i += c[0].length;
+      continue;
+    }
+    i++;                                   /* apostrophe, hyphen inside a word */
+  }
+  return out;
+}
+/* Cache: the same twenty names are transliterated on every page of a report. */
+var GU_TR_CACHE = {};
+function translitGu(w){
+  if(GU_TR_CACHE[w] !== undefined) return GU_TR_CACHE[w];
+  var r = translitWordGu(w) || w;
+  GU_TR_CACHE[w] = r;
+  return r;
+}
+
 /* Financial shorthand that stays English by design, per section 51.1. */
 var KEEP_EN = ['PAT','EBITDA','EBIT','ROE','ROCE','ROA','CFO','FCF','GMP','OFS','IPO','DRHP','RHP',
   'QIB','NII','HNI','UHNI','CAGR','PEG','SEBI','NSE','BSE','GST','MF','FPI','SME','EV','P/E','P/B',
   'D/E','YoY','NAV','AUM','WC','TTM'];
+
+/* ---------------------------------------------------------------------------
+   guSweep — the last pass over a finished Gujarati document.
+
+   Everything upstream translates what it knows about: app labels through T,
+   payload prose through gu.*, enum words through VOCAB_GU. What was left was
+   the residue — a product name the model wrote in English, a promoter's name,
+   a stray "Face value" in a chart caption. Auditing found 149 distinct English
+   runs still on screen in one Gujarati report.
+
+   This pass runs over the built HTML, outside tags and outside <script> and
+   <style>, and converts every remaining Latin word run: a phrase dictionary
+   first (longest phrase wins), then the app vocabulary, then transliteration
+   for what must be a proper noun. Only the financial shorthand in KEEP_SET
+   survives in Latin, because that is how Gujarati market copy actually reads.
+   -------------------------------------------------------------------------- */
+var KEEP_SET = (function(){
+  var o = {};
+  KEEP_EN.concat(['ESG','CEO','CFO','COO','MD','WACC','DCF','KPI','SWOT','RBI','MCA','NCLT',
+    'IBBI','CCI','CDSL','NSDL','INR','USD','EUR','ISIN','PAN','TAN','CIN','LEI','UPI','ASBA',
+    'NBFC','MSME','FDI','FII','DII','EPS','PBT','PAT','PBIT','NPA','CRAR','IRR','NPV','ARPU',
+    'B2B','B2C','OEM','ODM','SKU','ERP','CRM','AI','ML','IT','ITES','BPO','KYC','AGM','EGM',
+    'IND','AS','IFRS','GAAP','TDS','TCS','VAT','CST','MAT','ROIC','ROA','EBT','LTM','FYTD',
+    'ICRA','CRISIL','CARE','ISO','BIS','CE','UL','ATEX','IEC','ASME','API'])
+    .forEach(function(k){ o[k.toUpperCase()] = 1; });
+  return o;
+})();
+function guKeepToken(t){
+  if(KEEP_SET[t.toUpperCase()]) return true;
+  if(/^(?:FY|Q[1-4]|H[12])[0-9'’]*$/i.test(t)) return true;
+  if(t.length === 1) return true;                    /* A+, x, ×, footnote marks */
+  return false;
+}
+/* Longest-phrase-first lookup across the two dictionaries. */
+function guTerm(phrase){
+  var k = phrase.toLowerCase().replace(/\s+/g,' ').trim();
+  if(TERM_GU[k] !== undefined) return TERM_GU[k];
+  if(NAME_GU[k] !== undefined) return NAME_GU[k];
+  if(COMMON_GU[k] !== undefined) return COMMON_GU[k];
+  var v = vocab(phrase);
+  return v || null;
+}
+/* A word the dictionaries do not know is either a proper noun — which
+   transliterates well — or an ordinary English word the model failed to
+   translate, which transliterates into unreadable nonsense. Capitalisation is
+   the only signal available, and it is a good one: promoter and brand names are
+   capitalised, sentence vocabulary is not. */
+function guProperish(tok, atStart){
+  if(/^[A-Z]/.test(tok) && !atStart) return true;      /* capitalised mid-sentence */
+  if(/^[A-Z]{2,}$/.test(tok)) return true;             /* an unrecognised acronym */
+  return false;
+}
+/* The guard below decides sentence by sentence, not chunk by chunk. A table
+   cell reading "Face value" and a paragraph the model never translated often
+   arrive in the same text node, and reverting the whole node for the sake of
+   the paragraph would drag a perfectly good label back into English with it. */
+function guWords(text){
+  return text.split(/([.;:!?|\t\n]+|\u2014|\u2013)/).map(function(seg, i){
+    return (i % 2) ? seg : guSegment(seg);
+  }).join('');
+}
+function guSegment(text){
+  if(!/[A-Za-z]/.test(text)) return text;
+  /* tokens: Latin runs, everything else passes through untouched */
+  var guessed = 0, unknown = 0, known = 0;
+  var parts = text.split(/([A-Za-z][A-Za-z'’]*)/);
+  /* rebuild with phrase lookahead over word tokens */
+  var out = '', i = 0;
+  while(i < parts.length){
+    var tok = parts[i];
+    var isWord = (i % 2) === 1;
+    if(!isWord){ out += tok; i++; continue; }
+    /* try a 3-word then 2-word phrase, allowing only spaces between */
+    var hit = null, span = 1;
+    for(var n = 3; n >= 2; n--){
+      var idx = i + (n - 1) * 2;
+      if(idx >= parts.length) continue;
+      var joiners = true, phrase = parts[i];
+      for(var j = 1; j < n; j++){
+        var sep = parts[i + j*2 - 1];
+        if(!/^[ ]$/.test(sep)){ joiners = false; break; }
+        phrase += ' ' + parts[i + j*2];
+      }
+      if(!joiners) continue;
+      var t = guTerm(phrase);
+      if(t !== null){ hit = t; span = n; break; }
+    }
+    if(hit !== null){ known++; }
+    if(hit === null){
+      if(guKeepToken(tok)){ hit = tok; known++; }
+      else {
+        var one = guTerm(tok);
+        if(one !== null){ hit = one; known++; }
+        else {
+          /* first word of the chunk, or first after a full stop, tells us
+             nothing about whether the capital is a name or a sentence start */
+          var atStart = (i === 1);
+          if(guProperish(tok, atStart)){ guessed++; }
+          else { unknown++; }
+          hit = translitGu(tok);
+        }
+      }
+    }
+    out += hit;
+    i += (span - 1) * 2 + 1;
+  }
+  /* Two or more ordinary English words that no dictionary could translate means
+     this is a sentence the model left untranslated, not a name. Transliterating
+     it produces sounds rather than meaning, which is strictly worse than the
+     English — so the chunk is handed back as it came. The framework's gu.text
+     sweep is what closes these properly. */
+  var words = guessed + unknown + known;
+  if(unknown >= 2 && unknown > 0.35 * Math.max(words, 1)) return text;
+  /* an emptied term ("the") can leave a double space behind */
+  return out.replace(/  +/g,' ');
+}
+function guSweep(html){
+  /* Entities carry Latin letters that are markup, not words. Park them. */
+  var ents = [];
+  var s = String(html).replace(/&[#A-Za-z0-9]+;/g, function(m){
+    ents.push(m); return '\u0001' + (ents.length - 1) + '\u0002'; });
+
+  s = s.replace(/<script[\s\S]*?<\/script>|<style[\s\S]*?<\/style>|<[^>]*>|[^<]+/g, function(chunk){
+    if(chunk.charAt(0) === '<') return chunk;        /* a tag or a skipped block */
+    if(!/[A-Za-z]/.test(chunk)) return chunk;
+    return guWords(chunk);
+  });
+
+  return s.replace(/\u0001(\d+)\u0002/g, function(_, n){ return ents[Number(n)]; });
+}
 
 /* Look a string up in the app vocabulary, case-insensitively, and handle
    "Improving, still negative" style compounds by translating the head word. */
@@ -573,7 +1984,7 @@ var T = {
   standard:       ['Standard','ધોરણ'],
   governance:     ['Corporate governance','કોર્પોરેટ ગવર્નન્સ'],
   flag_:          ['Flag','સંકેત'],
-  str_weak:       ['Strengths and weaknesses','મજબૂતાઈ અને નબળાઈ'],
+  str_weak:       ['SWOT Analysis','SWOT વિશ્લેષણ'],
   strengths:      ['Strengths','મજબૂતાઈ'],
   weaknesses:     ['Weaknesses','નબળાઈ'],
   opportunities:  ['Opportunities','તકો'],
@@ -825,6 +2236,10 @@ body.gu .tile .k{ letter-spacing:.03em; font-size:6.6pt; }
           font-family:"Helvetica Neue",Helvetica,Arial,sans-serif; }
 .bar .tick{ position:absolute; top:0; bottom:0; width:.5pt; background:#fff; opacity:.9; }
 .grid2{ display:grid; grid-template-columns:1fr 1fr; gap:5mm; }
+/* SWOT is a 2x2: the second row needs a rule above it or the four quadrants
+   read as one long double column instead of a matrix. */
+.swotg{ row-gap:3.4mm; }
+.swotg > div:nth-child(n+3){ border-top:.3mm solid var(--rule); padding-top:2.6mm; }
 .grid3{ display:grid; grid-template-columns:repeat(3,1fr); gap:3mm; }
 .grid4{ display:grid; grid-template-columns:repeat(4,1fr); gap:2.5mm; }
 .kv{ border:.6pt solid var(--rule); border-radius:1mm; padding:2.4mm 2.8mm; background:var(--panel2); }
@@ -909,8 +2324,12 @@ function dmy(v){
     return d + '-' + mo + '-' + y; });
 }
 function shell(title, bodyCls, pages, extraCss){
+  /* The Gujarati sweep runs on the page markup only — never on CSS or on the
+     fitting script, which are Latin by necessity. */
+  var ttl = e(title);
+  if(bodyCls === 'gu'){ ttl = guSweep(ttl); pages = guSweep(pages); }
   return '<!DOCTYPE html><html lang="'+(bodyCls==='gu'?'gu':'en')+'"><head><meta charset="utf-8">'
-    + '<title>'+e(title)+'</title><style>'+CSS+(extraCss||'')+'</style></head><body class="'+bodyCls+'">'
+    + '<title>'+ttl+'</title><style>'+CSS+(extraCss||'')+'</style></head><body class="'+bodyCls+'">'
     + pages + '<!--FIT-->' + AUTOFIT + '</body></html>';
 }
 
@@ -1488,17 +2907,7 @@ function buildReport(p, lang){
     + '<div class="grow"></div>', lang);
 
   out += page(p, 10, TOT, L(lang,'pg_decision'), grpHead(lang,'irg_risks') + sec('25', L(lang,'str_weak'))
-    + '<div class="grid2">'
-      + '<div><div class="eyebrow" style="color:var(--s5-5)">'+e(L(lang,'strengths'))+'</div><ul class="blist" style="margin-top:1mm">'
-        + arr(pick(p,lang,'decision.strengths', arr(d.strengths))).map(function(x,i){
-            var en = arr(d.strengths)[i]||{};
-            return '<li><b>'+e(safeTr(S(en.title), S(x.title)||S(tr(p,lang,en.title))))+'</b> — '+e(safeTr(S(en.evidence), S(x.evidence)||S(tr(p,lang,en.evidence))))+'</li>'; }).join('')
-        + '</ul></div>'
-      + '<div><div class="eyebrow" style="color:var(--s5-1)">'+e(L(lang,'weaknesses'))+'</div><ul class="blist" style="margin-top:1mm">'
-        + arr(pick(p,lang,'decision.weaknesses', arr(d.weaknesses))).map(function(x,i){
-            var en = arr(d.weaknesses)[i]||{};
-            return '<li><b>'+e(safeTr(S(en.title), S(x.title)||S(tr(p,lang,en.title))))+'</b> — '+e(safeTr(S(en.evidence), S(x.evidence)||S(tr(p,lang,en.evidence))))+'</li>'; }).join('')
-        + '</ul></div></div>'
+    + swotGrid(p, lang, 5)
     + sec('26', L(lang,'red_flags'))
     + tbl([L(lang,'red_flag'),L(lang,'evidence'),L(lang,'severity')], arr(d.red_flags).map(function(x,i){
         var g = arr(pick(p,lang,'decision.red_flags', []))[i]||{};
@@ -1575,14 +2984,7 @@ function buildExec(p, lang){
   var cases = arr((f.scenarios||{}).cases);
   var maxV = Math.max.apply(null, cases.map(function(x){ return Number(x.value_per_share)||0; }).concat([1]));
   out += page(p, 3, TOT, L(lang,'pg_risk'), sec('07', L(lang,'str_weak'))
-    + '<div class="grid2">'
-      + '<div><div class="eyebrow" style="color:var(--good)">'+e(L(lang,'strengths'))+'</div><ul class="blist" style="margin-top:1mm">'
-        + arr(pick(p,lang,'decision.strengths', arr(d.strengths))).slice(0,5).map(function(x,i){
-            var en=arr(d.strengths)[i]||{}; return '<li><b>'+e(safeTr(S(en.title), S(x.title)||S(tr(p,lang,en.title))))+'</b> — '+e(safeTr(S(en.evidence), S(x.evidence)||S(tr(p,lang,en.evidence))))+'</li>'; }).join('')
-      + '</ul></div><div><div class="eyebrow" style="color:var(--bad)">'+e(L(lang,'weaknesses'))+'</div><ul class="blist" style="margin-top:1mm">'
-        + arr(pick(p,lang,'decision.weaknesses', arr(d.weaknesses))).slice(0,5).map(function(x,i){
-            var en=arr(d.weaknesses)[i]||{}; return '<li><b>'+e(safeTr(S(en.title), S(x.title)||S(tr(p,lang,en.title))))+'</b> — '+e(safeTr(S(en.evidence), S(x.evidence)||S(tr(p,lang,en.evidence))))+'</li>'; }).join('')
-      + '</ul></div></div>'
+    + swotGrid(p, lang, 4)
     + sec('08', L(lang,'red_flags'))
     + tbl([L(lang,'red_flag'),L(lang,'evidence'),L(lang,'severity')], arr(d.red_flags).map(function(x,i){
         var g = arr(pick(p,lang,'decision.red_flags', []))[i]||{};
@@ -1631,6 +3033,57 @@ function levelsOf(p, lang, d){
     var o = g[i] || {};
     return { action: o.action || x.action, price: x.price, rationale: o.rationale || x.rationale };
   });
+}
+/* Full four-quadrant SWOT for the two long reports. Strengths and weaknesses
+   keep their rich title/evidence pairs; opportunities and threats use
+   decision.swot when the model supplied it and otherwise fall back to
+   catalysts and failure modes, which carry the same meaning. */
+function swotRich(p, lang, cap){
+  cap = cap || 4;
+  var d = p.decision||{}, sw = d.swot||{};
+  var gsw = ((p.gu||{}).decision||{}).swot||{};
+  function pair(enList, keyA, keyB, path){
+    var g = arr(pick(p, lang, path, arr(enList)));
+    return arr(enList).slice(0, cap).map(function(en, i){
+      var x = g[i] || {};
+      return { t: safeTr(S(en[keyA]), S(x[keyA])||S(tr(p,lang,en[keyA]))),
+               e: safeTr(S(en[keyB]), S(x[keyB])||S(tr(p,lang,en[keyB]))) };
+    });
+  }
+  function plain(en, gu){
+    var src = arr(en);
+    if(!src.length) return null;
+    var g = lang==='gu' ? arr(gu) : [];
+    return src.slice(0, cap).map(function(s, i){
+      var t = lang==='gu' ? (S(g[i]) ? safeTr(S(s), S(g[i])) : S(tr(p,lang,s))) : S(s);
+      return { t: t, e: '' };
+    });
+  }
+  return {
+    s: pair(arr(d.strengths),  'title', 'evidence', 'decision.strengths'),
+    w: pair(arr(d.weaknesses), 'title', 'evidence', 'decision.weaknesses'),
+    o: plain(sw.opportunities, gsw.opportunities)
+       || pair(arr(d.catalysts), 'catalyst', 'mechanism', 'decision.catalysts'),
+    t: plain(sw.threats, gsw.threats)
+       || pair(arr(d.failure_modes), 'scenario', 'warning_sign', 'decision.failure_modes')
+  };
+}
+function swotGrid(p, lang, cap){
+  var q = swotRich(p, lang, cap);
+  function panel(title, items, col){
+    return '<div><div class="eyebrow" style="color:'+col+'">'+e(title)+'</div>'
+      + '<ul class="blist" style="margin-top:1mm">'
+      + arr(items).map(function(x){
+          return '<li>'+(x.t?'<b>'+e(x.t)+'</b>':'')+(x.t&&x.e?' — ':'')+(x.e?e(x.e):'')+'</li>';
+        }).join('')
+      + '</ul></div>';
+  }
+  return '<div class="grid2 swotg">'
+    + panel(L(lang,'strengths'),     q.s, 'var(--s5-5)')
+    + panel(L(lang,'weaknesses'),    q.w, 'var(--s5-1)')
+    + panel(L(lang,'opportunities'), q.o, 'var(--s5-4)')
+    + panel(L(lang,'threats'),       q.t, 'var(--s5-2)')
+    + '</div>';
 }
 function swotOf(p, lang){
   var d = p.decision||{}, sw = d.swot||{};
@@ -1849,8 +3302,10 @@ function buildVisual(p, lang){
           + '</b></td><td style="color:var(--ink2)">'+e(tr(p,lang,x.rationale))+'</td></tr>'; }).join('')+'</tbody></table>'
     + vfoot(2) + '</div>';
 
+  var vttl = e(m.company||'')+' — Investment Summary';
+  if(lang === 'gu'){ vttl = guSweep(vttl); p1 = guSweep(p1); p2 = guSweep(p2); }
   return '<!DOCTYPE html><html lang="'+(lang==='gu'?'gu':'en')+'"><head><meta charset="utf-8">'
-    + '<title>'+e(m.company||'')+' — Investment Summary</title><style>'+CSS+VCSS+'</style></head>'
+    + '<title>'+vttl+'</title><style>'+CSS+VCSS+'</style></head>'
     + '<body class="'+(lang==='gu'?'gu':'')+'" style="background:#E9E7E1">'+p1+p2
     + '<script>(function(){' +
       '/* Fit each page to A4. Gujarati runs longer than English, so this is what' +
@@ -2402,7 +3857,7 @@ var IR_GROUPS = [
                           'ir_anchors','capital_allocation']],
   ['irg_company',        ['what_it_does','ir_group','ir_products','ir_segments','ir_metrics',
                           'ir_industry','ir_moat','dp_competition','ir_concentration',
-                          'strengths','weaknesses']],
+                          'swot_analysis']],
   ['irg_promoters',      ['ir_promoters','management_quality','ir_gov']],
   ['irg_financials',     ['ir_pl','ir_fq','ir_cash','ir_cashflow','ir_opmetrics','ir_credit']],
   ['irg_valuation',      ['ir_val','dp_rdcf','ir_peers','ir_scen','dp_cases',
@@ -2763,17 +4218,8 @@ function irSections(lang, gate){
         { num:[1,2] })
     + note(tr(p,lang,lg.verdict)));
 
-  /* 21 strengths / weaknesses / red flags */
-  push('strengths', L(lang,'strengths'),
-    ul(arr(pick(p,lang,'decision.strengths', arr(d.strengths))).map(function(x,i){
-      var en = arr(d.strengths)[i]||{};
-      return '<b>'+e(safeTr(S(en.title), S(x.title)||S(tr(p,lang,en.title))))+'</b> — '
-           + e(safeTr(S(en.evidence), S(x.evidence)||S(tr(p,lang,en.evidence)))); })));
-  push('weaknesses', L(lang,'weaknesses'),
-    ul(arr(pick(p,lang,'decision.weaknesses', arr(d.weaknesses))).map(function(x,i){
-      var en = arr(d.weaknesses)[i]||{};
-      return '<b>'+e(safeTr(S(en.title), S(x.title)||S(tr(p,lang,en.title))))+'</b> — '
-           + e(safeTr(S(en.evidence), S(x.evidence)||S(tr(p,lang,en.evidence)))); })));
+  /* 21 SWOT analysis / red flags */
+  push('swot_analysis', L(lang,'str_weak'), swotGrid(p, lang, 6));
   push('red_flags', L(lang,'red_flags'),
     T2([L(lang,'red_flag'), L(lang,'evidence'), L(lang,'severity')], arr(d.red_flags).map(function(x,i){
       var gg = arr(pick(p,lang,'decision.red_flags', []))[i]||{};
@@ -3306,5 +4752,6 @@ global.IPODocs = { buildReport:buildReport, buildExec:buildExec, buildVisual:bui
                             peers:chartPeers, donut:chartDonut, ladder:chartLadder,
                             columns:chartColumns, columnsLine:chartColumnsLine,
                             waterfall:chartWaterfall, heat:chartHeat },
-                   buildScorecard:buildScorecard, BLOCKS:BLOCKS, S:S };
+                   buildScorecard:buildScorecard, BLOCKS:BLOCKS, S:S,
+                   guSweep:guSweep, translitGu:translitGu, guWords:guWords };
 })(window);
