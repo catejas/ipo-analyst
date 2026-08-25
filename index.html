@@ -256,8 +256,19 @@ details .in{padding:0 14px 14px;}
 /* Three lines per row: name, window, money. The money line carries the GMP, so
    it is set a shade darker than the window line — it is the number being scanned. */
 .pickpanel .pk span.pkl3{color:var(--ink2);margin-top:2px;font-weight:600;}
-.pickpanel .pk span .gmpup{color:var(--green);font-weight:700;}
-.pickpanel .pk span .gmpdn{color:var(--red);font-weight:700;}
+/* .pk span is display:block so each of the three lines stacks. Anything nested
+   inside a line has to be put back to inline, or the GMP drops onto a line of
+   its own and the row grows to five lines. */
+.pickpanel .pk span span{display:inline;font-size:inherit;margin-top:0;}
+.pickpanel .pk .pklbl{color:var(--ink3);font-weight:600;}
+.pickpanel .pk .bandlo{color:var(--red);font-weight:700;}
+.pickpanel .pk .bandhi{color:var(--green);font-weight:700;}
+.pickpanel .pk .ar{font-size:10px;vertical-align:.5px;}
+.pickpanel .pk .gmpup{color:var(--green);font-weight:700;}
+.pickpanel .pk .gmpdn{color:var(--red);font-weight:700;}
+.pickpanel .pk .gmpna{color:var(--ink3);font-weight:600;}
+.lblrow{display:flex;align-items:baseline;justify-content:space-between;gap:10px;}
+.stamp{font-size:10.5px;color:var(--ink3);text-align:right;white-space:nowrap;}
 .pkchip{display:inline-block;font-size:10px;font-weight:800;padding:1px 6px;border-radius:7px;
   margin-right:6px;vertical-align:1px;background:var(--surf);border:1px solid var(--line);color:var(--ink2);}
 .pkchip.open{background:rgba(24,160,91,.16);border-color:transparent;color:var(--green);}
@@ -351,7 +362,13 @@ body.previewing{overflow:hidden;}
 <!-- ============ ANALYSE ============ -->
 <section id="tab-analyse">
   <div class="card">
-    <label for="company">Company name</label>
+    <div class="lblrow">
+      <label for="company" style="margin:0;">Company name</label>
+      <!-- When the saved IPO list was last refreshed. Without it there is no way
+           to tell a list pulled this morning from one pulled a fortnight ago,
+           and a stale list is the thing most likely to mislead. -->
+      <span id="ipoStamp" class="stamp"></span>
+    </div>
     <div style="display:flex;gap:8px;">
       <div class="pickwrap" style="flex:1;">
         <input type="text" id="company" placeholder=""
@@ -3649,11 +3666,28 @@ function ipoKey(x){
     .replace(/\b(limited|ltd\.?|private|pvt\.?|india|the)\b/g,'')
     .replace(/[^a-z0-9]/g,'');
 }
+/* When the list was last actually imported — not when the app was last opened.
+   saveIpoList() runs on every load too, so a single ts would reset itself every
+   morning and always read "today", which tells you nothing. */
+var IPO_IMPORT_TS = 0;
+var GMP_FIELDS = { gmp_rs:1, gmp_pct:1, gmp:1 };
 function saveIpoList(){
-  set('ipo.list', JSON.stringify({ ts:Date.now(), list:IPO_LIST }));
+  set('ipo.list', JSON.stringify({ ts:Date.now(), imported:IPO_IMPORT_TS, list:IPO_LIST }));
+}
+function stampText(ms){
+  if(!ms) return '';
+  var d = new Date(ms), p2 = function(v){ return (v<10?'0':'')+v; };
+  return 'Last import ' + p2(d.getDate()) + '-' + p2(d.getMonth()+1) + '-' + d.getFullYear()
+       + ' \u00B7 ' + p2(d.getHours()) + ':' + p2(d.getMinutes());
+}
+function refreshStamp(){
+  var el = $('#ipoStamp');
+  if(!el) return;
+  el.textContent = IPO_LIST.length ? stampText(IPO_IMPORT_TS) : '';
 }
 function refreshPicker(){
   $('#btnPick').classList.toggle('hidden', !IPO_LIST.length);
+  refreshStamp();
   if(!IPO_LIST.length) closePicker(); else drawPicker();
 }
 /* replace the whole repository — only the explicit Delete does this */
@@ -3667,6 +3701,7 @@ function fillIpoList(list){
    whatever the new entry knows, and nothing already held is dropped */
 function mergeIpoList(list){
   if(!Array.isArray(list)) return { added:0, updated:0 };
+  IPO_IMPORT_TS = Date.now();
   var index = {}, added = 0, updated = 0;
   IPO_LIST.forEach(function(x, i){ index[ipoKey(x)] = i; });
   list.forEach(function(x){
@@ -3678,6 +3713,15 @@ function mergeIpoList(list){
     } else {
       var cur = IPO_LIST[index[k]], changed = false;
       Object.keys(x).forEach(function(f){
+        /* The premium is the one field where a newer null must win. It moves
+           daily and the list is ordered by it, so keeping last week's figure
+           because this week's reply said "not quoted" would sort the row on a
+           number that no longer exists. Every other field keeps what it had
+           rather than being emptied by a thinner reply. */
+        if(GMP_FIELDS[f]){
+          if(cur[f] !== x[f]){ cur[f] = x[f]; changed = true; }
+          return;
+        }
         if(x[f] !== undefined && x[f] !== null && x[f] !== '' && cur[f] !== x[f]){
           cur[f] = x[f]; changed = true; } });
       if(changed) updated++;
@@ -3794,22 +3838,35 @@ function drawPicker(filter){
     if(x.open_date)  l2.push('Opens '+esc(dmy(x.open_date)));
     if(x.close_date) l2.push('Closes '+esc(dmy(x.close_date)));
 
-    /* line 3 — price band with the rupee sign on BOTH ends, then the GMP */
+    /* line 3 — the price band, labelled, with a coloured arrow and a rupee sign
+       on each end, then the grey market premium in rupees and as a percentage.
+       When no premium is quoted the slot still prints, so an empty GMP reads as
+       "the market has not quoted one" rather than as a broken row. */
     var l3 = [];
     var ends = bandEnds(x);
     if(x.price_band){
-      l3.push(!isNaN(ends[0]) && !isNaN(ends[1]) && ends[0] !== ends[1]
-        ? '₹'+fmtIn(ends[0])+' – ₹'+fmtIn(ends[1])
-        : '₹'+esc(str(x.price_band)));
+      var band = (!isNaN(ends[0]) && !isNaN(ends[1]) && ends[0] !== ends[1])
+        ? '<span class="bandlo"><span class="ar">&#9660;</span>\u20B9' + fmtIn(ends[0]) + '</span>'
+          + '<span class="pklbl"> &ndash; </span>'
+          + '<span class="bandhi"><span class="ar">&#9650;</span>\u20B9' + fmtIn(ends[1]) + '</span>'
+        : '<span class="bandhi">\u20B9' + esc(str(x.price_band)) + '</span>';
+      l3.push('<span class="pklbl">Price Band :</span> ' + band);
     }
     var g = gmpRs(x), gp = gmpPct(x);
-    if(!isNaN(g)){
-      var cls = g < 0 ? 'gmpdn' : 'gmpup';
-      l3.push('GMP <span class="'+cls+'">₹'+fmtIn(g)+'</span>');
-    }
-    if(!isNaN(gp)){
-      var cls2 = gp < 0 ? 'gmpdn' : 'gmpup';
-      l3.push('<span class="'+cls2+'">'+(gp>0?'+':'')+gp.toFixed(1)+'%</span>');
+    if(isNaN(g) && isNaN(gp)){
+      l3.push('<span class="gmpna">GMP not quoted</span>');
+    } else {
+      /* green when the premium is positive, red when it is negative, neutral at
+         zero — a nil premium is not bad news, it is no news. */
+      var cls = function(v){ return v > 0 ? 'gmpup' : v < 0 ? 'gmpdn' : 'gmpna'; };
+      if(!isNaN(g)){
+        l3.push('<span class="pklbl">GMP</span> <span class="' + cls(g)
+          + '">' + (g > 0 ? '+' : g < 0 ? '\u2212' : '') + '\u20B9' + fmtIn(Math.abs(g)) + '</span>');
+      }
+      if(!isNaN(gp)){
+        l3.push('<span class="pklbl">GMP</span> <span class="' + cls(gp)
+          + '">' + (gp > 0 ? '+' : gp < 0 ? '\u2212' : '') + Math.abs(gp).toFixed(1) + '%</span>');
+      }
     }
 
     var nm = str(x.company);
@@ -3890,7 +3947,10 @@ document.addEventListener('keydown', function(ev){ if(ev.key === 'Escape') close
 (function(){ try{ var c=JSON.parse(get('ipo.list','null'));
   /* No expiry. The list is a repository you build up over months; discarding it
      after a day is what made a company researched last week unselectable. */
-  if(c && Array.isArray(c.list)) fillIpoList(c.list); }catch(e){} })();
+  if(c && Array.isArray(c.list)){
+    IPO_IMPORT_TS = Number(c.imported) || Number(c.ts) || 0;
+    fillIpoList(c.list);
+  } }catch(e){} })();
 
 function readIpoList(raw){
   var m = raw.match(/\{[\s\S]*"ipos"[\s\S]*\}/);
@@ -3930,8 +3990,10 @@ $('#btnSearchSave').addEventListener('click', function(){
 $('#btnSearchDel').addEventListener('click', function(){
   try{ localStorage.removeItem('ipo.list'); }catch(e){}
   IPO_LIST = [];
+  IPO_IMPORT_TS = 0;
   $('#ipoPanel').innerHTML = '';
   $('#btnPick').classList.add('hidden');
+  refreshStamp();
   closePicker();
   $('#searchMsg').textContent = 'Search list cleared. Saved analyses on the Report tab are untouched.';
 });
@@ -4115,7 +4177,7 @@ if('serviceWorker' in navigator){
 </script>
 <script src="vendor/html2canvas.min.js"></script>
 <script src="vendor/jspdf.umd.min.js"></script>
-<script>window.APP_BUILD="2026.08.25.1";</script>
+<script>window.APP_BUILD="2026.08.25.2";</script>
 <script src="render.js"></script>
 <script src="docs.js"></script>
 

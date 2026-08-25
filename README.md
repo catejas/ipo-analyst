@@ -1,4 +1,4 @@
-# IPO Analyst — standalone web app  ·  v4.6  ·  build 2026.08.25.1
+# IPO Analyst — standalone web app  ·  v4.6  ·  build 2026.08.25.2
 
 A single-page web app that turns the institutional IPO research protocol into something you can
 run from an icon on your phone. It works on Android and iPhone/iPad, installs to the home screen,
@@ -32,11 +32,32 @@ measured on every build.
 
 **Find IPOs.** The imported list now carries the grey market premium, in rupees and as a percentage
 of the upper band. Each row reads on three lines: status tag and company name; Mainboard or SME with
-**Opens** and **Closes** dates; then the price band with a ₹ before both ends, the GMP in rupees and
-the GMP percentage, coloured by sign. The status tag is computed from **today**, never from the
-payload — a search run last week called an issue Upcoming and it has since opened and closed. The
-list is ordered OPEN first, then UPCOMING, then CLOSED; within each, the earliest closing date
-leads; and where two share a closing date, the higher GMP% sits on top.
+**Opens** and **Closes** dates; then
+
+```
+Price Band : ▼₹96 – ▲₹102 · GMP +₹14 · GMP +13.7%
+```
+
+— the band labelled, low end in red under a down arrow, high end in green under an up arrow, then
+the premium in rupees and as a percentage, each green when positive, red when negative and neutral
+at nil. Where no premium is quoted the slot prints **GMP not quoted**, so a blank reads as an
+absent figure rather than a broken row.
+
+A bug found while mocking this up: `.pk span` is `display:block` so the three lines stack, and
+anything nested inside a line inherited it — the GMP would have dropped onto lines of its own and
+made every row five lines tall. Nested spans are pinned back to inline.
+
+The status tag is computed from **today**, never from the payload — a search run last week called an
+issue Upcoming and it has since opened and closed. The list is ordered OPEN first, then UPCOMING,
+then CLOSED; within each, the earliest closing date leads; and where two share a closing date, the
+higher GMP% sits on top. **Add IPOs** re-sorts the whole repository, not just the rows it added, and
+an updated row moves to wherever its new premium puts it. A newer reply saying a premium is no
+longer quoted clears the old figure — every other field keeps what it had, but the premium is what
+the list is ordered by, so a stale one would sort a row on a number that no longer exists.
+
+**When the IPO list was last refreshed** now shows right-aligned above the company name box —
+`Last import 25-08-2026 · 12:53`. It records the last actual import, not the last time the app was
+opened, and survives a reload.
 
 **The Investment Summary PNG opened on page 2.** Two downloads fired back to back, and on iOS a
 programmatic blob download opens in a viewer rather than saving, so the second one won. Each page
