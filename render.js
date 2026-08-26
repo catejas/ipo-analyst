@@ -280,6 +280,62 @@ var TERM_GU = {
    has nothing to translate a sentence with, and a transliterated English
    sentence is unreadable in a way the English itself is not. */
 var COMMON_GU = {
+  'accredited':'માન્યતાપ્રાપ્ત',
+  'captive':'સ્વયં-માલિકીનું',
+  'certification':'પ્રમાણપત્ર',
+  'certified':'પ્રમાણિત',
+  'competitive':'સ્પર્ધાત્મક',
+  'contingent liabilities':'આકસ્મિક જવાબદારીઓ',
+  'credit':'ધિરાણ',
+  'credit rating':'ક્રેડિટ રેટિંગ',
+  'credit rating rationale':'ક્રેડિટ રેટિંગ તર્ક',
+  'defaulter':'ડિફોલ્ટર',
+  'direct':'સીધું',
+  'disputed':'વિવાદિત',
+  'distributors':'વિતરકો',
+  'dues':'બાકી રકમ',
+  'enforcement':'અમલ',
+  'established':'સ્થાપિત',
+  'fittings':'ફિટિંગ્સ',
+  'forging':'ફોર્જિંગ',
+  'found':'મળ્યું',
+  'fraud':'છેતરપિંડી',
+  'hydraulic':'હાઇડ્રોલિક',
+  'hydraulics':'હાઇડ્રોલિક્સ',
+  'insolvency':'નાદારી',
+  'judgement':'ચુકાદો',
+  'judgment':'ચુકાદો',
+  'judgments':'ચુકાદા',
+  'liabilities':'જવાબદારીઓ',
+  'liability':'જવાબદારી',
+  'listed':'લિસ્ટેડ',
+  'local trade':'સ્થાનિક વેપાર',
+  'located':'મળી આવ્યું',
+  'lowest':'સૌથી નીચું',
+  'media':'મીડિયા',
+  'none':'કોઈ નહીં',
+  'nothing':'કંઈ નહીં',
+  'pledged':'ગીરવે મૂકેલ',
+  'precision':'ચોકસાઈ',
+  'proceeding':'કાર્યવાહી',
+  'rating':'રેટિંગ',
+  'ratings':'રેટિંગ',
+  'rationale':'તર્ક',
+  'record':'રેકોર્ડ',
+  'records':'રેકોર્ડ',
+  'registration':'નોંધણી',
+  'registrations':'નોંધણી',
+  'repeat':'પુનરાવર્તિત',
+  'scattered':'વિખરાયેલ',
+  'searched':'શોધાયેલ',
+  'status':'સ્થિતિ',
+  'strong':'મજબૂત',
+  'trade':'વેપાર',
+  'traded':'વેપાર થયેલ',
+  'unlisted':'બિનલિસ્ટેડ',
+  'wilful defaulter':'ઇરાદાપૂર્વક ડિફોલ્ટર',
+  'workshop':'વર્કશોપ',
+  'workshops':'વર્કશોપ',
   'abroad':'વિદેશમાં',
   'achievable':'પ્રાપ્ય',
   'africa':'આફ્રિકા',
@@ -1104,334 +1160,92 @@ var COMMON_GU = {
    therefore written out here, and the transliterator below is the fallback for
    everything else.
    -------------------------------------------------------------------------- */
+/* ---------------------------------------------------------------------------
+   PLACE_GU — Indian cities and states, and the countries that turn up in an
+   export table.
+
+   These are the only proper nouns still rendered in Gujarati. Their spellings
+   are settled and every Gujarati reader knows them, so writing મુંબઈ costs a
+   reader nothing and reads better than "Mumbai" mid-sentence.
+
+   Names of PEOPLE and COMPANIES are deliberately NOT here. A rule-guessed
+   spelling of a person's name is not recognisable and not checkable against the
+   RHP, and it changes with whatever romanisation the model happened to use —
+   so those stay in English, in both editions.
+   -------------------------------------------------------------------------- */
 var NAME_GU = {
-  'abb':'ABB',
-  'emerson':'એમર્સન',
-  'endress':'એન્ડ્રેસ',
-  'honeywell':'હનીવેલ',
-  'siemens':'સિમેન્સ',
-  'yokogawa':'યોકોગાવા',
-  'abhishek':'અભિષેક',
-  'aditya':'આદિત્ય',
-  'arjun':'અર્જુન',
-  'ashwin':'અશ્વિન',
-  'behari':'બિહારી',
-  'bhupesh':'ભૂપેશ',
-  'dev':'દેવ',
-  'dhaval':'ધવલ',
-  'hardik':'હાર્દિક',
-  'harsh':'હર્ષ',
-  'ishan':'ઈશાન',
-  'jayesh':'જયેશ',
-  'jewellery mart':'જ્વેલરી માર્ટ',
-  'kailash':'કૈલાશ',
-  'kartik':'કાર્તિક',
-  'kaushik':'કૌશિક',
-  'krunal':'ક્રુણાલ',
-  'lal':'લાલ',
-  'lalithaa':'લલિતા',
-  'maulik':'મૌલિક',
-  'nimesh':'નિમેષ',
-  'pratap':'પ્રતાપ',
-  'pratik':'પ્રતીક',
-  'pyrosens':'પાયરોસેન્સ',
-  'rathi':'રાઠી',
-  'rohan':'રોહન',
-  'rushabh':'ઋષભ',
-  'shiprocket':'શિપરોકેટ',
-  'siddharth':'સિદ્ધાર્થ',
-  'talesara':'તલેસરા',
-  'tempsens':'ટેમ્પસેન્સ',
-  'tushar':'તુષાર',
-  'udaipur':'ઉદયપુર',
-  'vinay':'વિનય',
-  'viral':'વિરલ',
-  'virendra':'વીરેન્દ્ર',
-  'yash':'યશ',
-  'aarti':'આરતી',
-  'abhijit':'અભિજિત',
-  'adani':'અદાણી',
-  'agarwal':'અગ્રવાલ',
-  'agarwala':'અગ્રવાલા',
-  'aggarwal':'અગ્રવાલ',
-  'agrawal':'અગ્રવાલ',
   'ahmedabad':'અમદાવાદ',
-  'ajay':'અજય',
-  'akhil':'અખિલ',
-  'alok':'આલોક',
-  'ambani':'અંબાણી',
-  'amin':'અમીન',
-  'amit':'અમિત',
-  'anand':'આણંદ',
-  'anil':'અનિલ',
-  'anita':'અનિતા',
-  'anjali':'અંજલિ',
-  'ankit':'અંકિત',
   'ankleshwar':'અંકલેશ્વર',
-  'arora':'અરોડા',
-  'arun':'અરુણ',
-  'arvind':'અરવિંદ',
-  'asha':'આશા',
-  'ashish':'આશિષ',
-  'ashok':'અશોક',
   'assam':'આસામ',
-  'bajaj':'બજાજ',
-  'banerjee':'બેનર્જી',
+  'aurangabad':'ઔરંગાબાદ',
   'bangalore':'બેંગલુરુ',
-  'bansal':'બંસલ',
   'baroda':'વડોદરા',
   'bengaluru':'બેંગલુરુ',
   'bharuch':'ભરૂચ',
-  'bhatt':'ભટ્ટ',
-  'bhavesh':'ભાવેશ',
-  'bhavna':'ભાવના',
   'bhavnagar':'ભાવનગર',
   'bhopal':'ભોપાલ',
-  'bhupendra':'ભૂપેન્દ્ર',
   'bihar':'બિહાર',
-  'birla':'બિરલા',
-  'bose':'બોઝ',
-  'chandra':'ચંદ્ર',
-  'chatterjee':'ચેટર્જી',
-  'chaturvedi':'ચતુર્વેદી',
-  'chavan':'ચવ્હાણ',
   'chennai':'ચેન્નઈ',
   'china':'ચીન',
-  'chirag':'ચિરાગ',
-  'chokshi':'ચોકસી',
-  'chopra':'ચોપડા',
   'coimbatore':'કોઇમ્બતૂર',
-  'das':'દાસ',
-  'dave':'દવે',
-  'deepa':'દીપા',
-  'deepak':'દીપક',
   'delhi':'દિલ્હી',
-  'desai':'દેસાઈ',
-  'deshmukh':'દેશમુખ',
-  'devendra':'દેવેન્દ્ર',
-  'dinesh':'દિનેશ',
-  'doshi':'દોશી',
   'dubai':'દુબઈ',
-  'dubey':'દુબે',
-  'dutta':'દત્તા',
   'europe':'યુરોપ',
-  'falguni':'ફાલ્ગુની',
-  'gaikwad':'ગાયકવાડ',
-  'gandhi':'ગાંધી',
+  'faridabad':'ફરીદાબાદ',
   'gandhinagar':'ગાંધીનગર',
-  'garg':'ગર્ગ',
-  'gaurav':'ગૌરવ',
-  'geeta':'ગીતા',
   'germany':'જર્મની',
-  'ghosh':'ઘોષ',
-  'girish':'ગિરીશ',
-  'godrej':'ગોદરેજ',
-  'gopal':'ગોપાલ',
-  'govind':'ગોવિંદ',
-  'goyal':'ગોયલ',
   'gujarat':'ગુજરાત',
-  'gupta':'ગુપ્તા',
-  'hari':'હરિ',
-  'harish':'હરીશ',
+  'gurugram':'ગુરુગ્રામ',
   'haryana':'હરિયાણા',
-  'hema':'હેમા',
-  'hetal':'હેતલ',
-  'hitesh':'હિતેશ',
   'hyderabad':'હૈદરાબાદ',
   'india':'ભારત',
   'indore':'ઇન્દોર',
-  'iyengar':'આયંગર',
-  'iyer':'ઐયર',
-  'jadhav':'જાધવ',
-  'jai':'જય',
-  'jain':'જૈન',
   'jaipur':'જયપુર',
   'jamnagar':'જામનગર',
   'japan':'જાપાન',
-  'jatin':'જતિન',
-  'jhaveri':'ઝવેરી',
-  'jignesh':'જિજ્ઞેશ',
-  'jindal':'જિંદાલ',
-  'jitendra':'જિતેન્દ્ર',
   'jodhpur':'જોધપુર',
-  'joshi':'જોષી',
-  'joshi ':'જોષી',
   'junagadh':'જૂનાગઢ',
-  'jyoti':'જ્યોતિ',
-  'kamal':'કમલ',
   'kanpur':'કાનપુર',
-  'kapoor':'કપૂર',
-  'karan':'કરણ',
   'karnataka':'કર્ણાટક',
-  'kaur':'કૌર',
-  'kavita':'કવિતા',
+  'kavathe':'કાવઠે',
   'kerala':'કેરળ',
-  'keyur':'કેયૂર',
-  'khanna':'ખન્ના',
-  'kiran':'કિરણ',
   'kochi':'કોચી',
+  'kolhapur':'કોલ્હાપુર',
   'kolkata':'કોલકાતા',
-  'komal':'કોમલ',
   'korea':'કોરિયા',
-  'kothari':'કોઠારી',
-  'krishna':'કૃષ્ણ',
-  'krishnan':'કૃષ્ણન',
-  'kuldeep':'કુલદીપ',
-  'kulkarni':'કુલકર્ણી',
-  'kumar':'કુમાર',
-  'kunal':'કુણાલ',
-  'lata':'લતા',
   'lucknow':'લખનૌ',
-  'madhav':'માધવ',
+  'ludhiana':'લુધિયાણા',
   'madhya pradesh':'મધ્ય પ્રદેશ',
+  'madhya પ્રદેશ':'મધ્ય પ્રદેશ',
   'maharashtra':'મહારાષ્ટ્ર',
-  'mahavir':'મહાવીર',
-  'mahendra':'મહેન્દ્ર',
-  'mahesh':'મહેશ',
-  'malhotra':'મલ્હોત્રા',
-  'manish':'મનીષ',
-  'manish kumar':'મનીષ કુમાર',
-  'manoj':'મનોજ',
-  'meena':'મીના',
   'mehsana':'મહેસાણા',
-  'mehta':'મહેતા',
-  'menon':'મેનન',
-  'mihir':'મિહિર',
-  'mishra':'મિશ્રા',
-  'mittal':'મિત્તલ',
-  'modi':'મોદી',
-  'mohit':'મોહિત',
-  'more':'મોરે',
-  'mukesh':'મુકેશ',
-  'mukherjee':'મુખર્જી',
   'mumbai':'મુંબઈ',
-  'murali':'મુરલી',
-  'murthy':'મૂર્તિ',
-  'nadar':'નાડર',
   'nagpur':'નાગપુર',
-  'naidu':'નાયડુ',
-  'nair':'નાયર',
-  'narendra':'નરેન્દ્ર',
-  'naresh':'નરેશ',
   'nashik':'નાશિક',
-  'natarajan':'નટરાજન',
-  'neha':'નેહા',
   'new delhi':'નવી દિલ્હી',
-  'nikhil':'નિખિલ',
-  'nilesh':'નિલેશ',
-  'nirmal':'નિર્મલ',
-  'nisha':'નિશા',
-  'nitin':'નીતિન',
+  'noida':'નોઇડા',
   'odisha':'ઓડિશા',
-  'om':'ઓમ',
-  'pande':'પાંડે',
-  'pandey':'પાંડે',
-  'pandya':'પંડ્યા',
-  'pankaj':'પંકજ',
-  'parag':'પરાગ',
-  'paresh':'પરેશ',
-  'parikh':'પરીખ',
-  'patel':'પટેલ',
-  'patil':'પાટીલ',
-  'payal':'પાયલ',
-  'pillai':'પિલ્લઈ',
-  'pooja':'પૂજા',
-  'pradeep':'પ્રદીપ',
-  'prakash':'પ્રકાશ',
-  'preeti':'પ્રીતિ',
-  'premji':'પ્રેમજી',
-  'priya':'પ્રિયા',
+  'pithampur':'પિથમપુર',
   'pune':'પુણે',
-  'punit':'પુનિત',
   'punjab':'પંજાબ',
-  'rahul':'રાહુલ',
   'rajasthan':'રાજસ્થાન',
-  'rajendra':'રાજેન્દ્ર',
-  'rajesh':'રાજેશ',
   'rajkot':'રાજકોટ',
-  'rakesh':'રાકેશ',
-  'rakhi':'રાખી',
-  'ram':'રામ',
-  'raman':'રામન',
-  'ramanathan':'રામનાથન',
-  'ramesh':'રમેશ',
-  'ranjit':'રણજિત',
-  'rao':'રાવ',
-  'raval':'રાવલ',
-  'ravi':'રવિ',
-  'reddy':'રેડ્ડી',
-  'reema':'રીમા',
-  'rekha':'રેખા',
-  'ritesh':'રિતેશ',
-  'ritu':'રિતુ',
-  'rohit':'રોહિત',
-  'roy':'રોય',
-  'sachin':'સચિન',
-  'samir':'સમીર',
-  'sandeep':'સંદીપ',
-  'sanghvi':'સંઘવી',
-  'sanjay':'સંજય',
-  'sarosh':'સરોશ',
-  'satish':'સતીશ',
-  'saurabh':'સૌરભ',
-  'seema':'સીમા',
-  'sen':'સેન',
-  'sethi':'સેઠી',
-  'shah':'શાહ',
-  'shailesh':'શૈલેષ',
-  'sharma':'શર્મા',
-  'shinde':'શિંદે',
-  'shiv':'શિવ',
-  'shweta':'શ્વેતા',
-  'shyam':'શ્યામ',
+  'satara':'સાતારા',
+  'shirwal':'શિરવળ',
   'singapore':'સિંગાપોર',
-  'singh':'સિંહ',
-  'singhal':'સિંઘલ',
-  'sita':'સીતા',
-  'sneha':'સ્નેહા',
-  'sonal':'સોનલ',
-  'soni':'સોની',
-  'srinivas':'શ્રીનિવાસ',
-  'subramanian':'સુબ્રમણ્યન',
-  'sudhir':'સુધીર',
-  'sumit':'સુમિત',
-  'sunil':'સુનીલ',
-  'sunita':'સુનીતા',
   'surat':'સુરત',
-  'surendra':'સુરેન્દ્ર',
-  'suresh':'સુરેશ',
-  'sushil':'સુશીલ',
-  'swati':'સ્વાતિ',
-  'talesara':'તલેસરા',
   'tamil nadu':'તમિલનાડુ',
-  'tarun':'તરુણ',
-  'tata':'ટાટા',
   'telangana':'તેલંગાણા',
-  'thakkar':'ઠક્કર',
-  'tiwari':'તિવારી',
-  'trivedi':'ત્રિવેદી',
+  'thane':'થાણે',
   'uae':'યુએઈ',
   'udaipur':'ઉદયપુર',
+  'united kingdom':'બ્રિટન',
+  'united states':'અમેરિકા',
   'usa':'અમેરિકા',
-  'usha':'ઉષા',
   'uttar pradesh':'ઉત્તર પ્રદેશ',
   'vadodara':'વડોદરા',
-  'vaibhav':'વૈભવ',
   'vapi':'વાપી',
-  'varun':'વરુણ',
-  'venkat':'વેંકટ',
-  'verma':'વર્મા',
-  'vijay':'વિજય',
-  'vimal':'વિમલ',
-  'vipul':'વિપુલ',
-  'virendra':'વીરેન્દ્ર',
-  'vishal':'વિશાલ',
-  'vivek':'વિવેક',
-  'vora':'વોરા',
-  'vyas':'વ્યાસ',
   'west bengal':'પશ્ચિમ બંગાળ',
-  'yadav':'યાદવ',
-  'yogesh':'યોગેશ'
 };
 
 /* ---------------------------------------------------------------------------
@@ -1576,7 +1390,8 @@ var KEEP_SET = (function(){
     'NBFC','MSME','FDI','FII','DII','EPS','PBT','PAT','PBIT','NPA','CRAR','IRR','NPV','ARPU',
     'B2B','B2C','OEM','ODM','SKU','ERP','CRM','AI','ML','IT','ITES','BPO','KYC','AGM','EGM',
     'IFRS','GAAP','TDS','TCS','VAT','CST','MAT','ROIC','ROA','EBT','LTM','FYTD',
-    'ICRA','CRISIL','CARE','ISO','BIS','CE','UL','ATEX','IEC','ASME','API'])
+    'ICRA','CRISIL','CARE','ISO','BIS','CE','UL','ATEX','IEC','ASME','API',
+    'G-sec','T-bill','LIBOR','MIBOR','SOFR','CPI','WPI','GDP','MSP','PLI'])
     .forEach(function(k){ o[k.toUpperCase()] = 1; });
   return o;
 })();
@@ -1600,11 +1415,14 @@ function guTerm(phrase){
    translate, which transliterates into unreadable nonsense. Capitalisation is
    the only signal available, and it is a good one: promoter and brand names are
    capitalised, sentence vocabulary is not. */
-function guProperish(tok, atStart){
-  if(/^[A-Z]/.test(tok) && !atStart) return true;      /* capitalised mid-sentence */
-  if(/^[A-Z]{2,}$/.test(tok)) return true;             /* an unrecognised acronym */
-  return false;
+/* A capitalised word no dictionary knows is a person, a company or a brand.
+   It stays in English. A guessed transliteration is not the spelling on the
+   RHP, it changes with whatever romanisation the model used, and a reader who
+   wants to check the name has nothing to search for. */
+function guProperish(tok){
+  return /^[A-Z]/.test(tok);
 }
+
 /* The guard below decides sentence by sentence, not chunk by chunk. A table
    cell reading "Face value" and a paragraph the model never translated often
    arrive in the same text node, and reverting the whole node for the sake of
@@ -1613,8 +1431,8 @@ function guWords(text){
   /* Park the dotted abbreviations before the sentence splitter runs, or "n.a."
      is torn into two single letters by the full stops between them and each is
      kept as a one-letter token. */
-  text = String(text).replace(/\bn\s*[.\/]\s*a\.?/gi, '\u0007NA\u0007');
-  return text.split(/([.;:!?|\t\n]+|\u2014|\u2013)/).map(function(seg, i){
+  text = String(text).replace(/\bn\s*[.\/]\s*a\.?/gi, 'NA');
+  return text.split(/([.;:!?|\t\n]+|—|–)/).map(function(seg, i){
     return (i % 2) ? seg : guSegment(seg);
   }).join('');
 }
@@ -1624,24 +1442,59 @@ function guSegment(text){
   /* tokens: Latin runs, everything else passes through untouched */
   var guessed = 0, unknown = 0, known = 0, prosey = 0;
   var parts = text.split(/([A-Za-z][A-Za-z'’]*)/);
+
+  /* ---- proper-noun phrases -------------------------------------------------
+     A company is several capitalised words in a row and only some of them are
+     ordinary nouns: "Tempsens Instruments" would come back as "Tempsens
+     ઉપકરણો", half a name and half a translation. So a run of two or more
+     consecutive capitalised words, where at least one is a word no dictionary
+     knows, is treated as one name and kept whole in English. "Face Value" —
+     both words known — is still translated. */
+  var nameTok = {};
+  (function(){
+    var i = 1, run, novel;
+    while(i < parts.length){
+      if(!guProperish(parts[i])){ i += 2; continue; }
+      run = [i]; novel = (guTerm(parts[i]) === null && !guKeepToken(parts[i]));
+      var j = i + 2;
+      while(j < parts.length && /^[ \-]$/.test(parts[j-1]) && guProperish(parts[j])){
+        run.push(j);
+        if(guTerm(parts[j]) === null && !guKeepToken(parts[j])) novel = true;
+        j += 2;
+      }
+      /* "Managing Director" and "Independent Directors" are title-case labels,
+         not names — the phrase dictionary knows them, so they are translated.
+         Only a capitalised run the dictionary has never heard of is a name. */
+      if(run.length >= 2 && novel){
+        var whole = run.map(function(k){ return parts[k]; }).join(' ');
+        if(guTerm(whole) === null) run.forEach(function(k){ nameTok[k] = 1; });
+      }
+      i = j;
+    }
+  })();
+
   /* rebuild with phrase lookahead over word tokens */
   var out = '', i = 0;
   while(i < parts.length){
     var tok = parts[i];
     var isWord = (i % 2) === 1;
     if(!isWord){ out += tok; i++; continue; }
+
+    if(nameTok[i]){ out += tok; guessed++; i++; continue; }
+
     /* try a 3-word then 2-word phrase, allowing only spaces between */
     var hit = null, span = 1;
     for(var n = 3; n >= 2; n--){
       var idx = i + (n - 1) * 2;
       if(idx >= parts.length) continue;
-      var joiners = true, phrase = parts[i];
+      var joiners = true, phrase = parts[i], clean = true;
       for(var j = 1; j < n; j++){
         var sep = parts[i + j*2 - 1];
         if(!/^[ ]$/.test(sep)){ joiners = false; break; }
+        if(nameTok[i + j*2]) clean = false;
         phrase += ' ' + parts[i + j*2];
       }
-      if(!joiners) continue;
+      if(!joiners || !clean) continue;
       var t = guTerm(phrase);
       if(t !== null){ hit = t; span = n; break; }
     }
@@ -1652,45 +1505,35 @@ function guSegment(text){
       else {
         var one = guTerm(tok);
         if(one !== null){ hit = one; known++; }
-        else {
-          /* first word of the chunk, or first after a full stop, tells us
-             nothing about whether the capital is a name or a sentence start */
-          var atStart = (i === 1);
-          if(guProperish(tok, atStart)){ guessed++; }
-          else { unknown++; }
-          hit = translitGu(tok);
-        }
+        else if(guProperish(tok)){ hit = tok; guessed++; }
+        else { hit = tok; unknown++; }
       }
     }
     out += hit;
     i += (span - 1) * 2 + 1;
   }
-  /* Two or more ordinary English words that no dictionary could translate means
-     this is a sentence the model left untranslated, not a name. Transliterating
-     it produces sounds rather than meaning, which is strictly worse than the
-     English — so the chunk is handed back as it came. The framework's gu.text
-     sweep is what closes these properly. */
-  var words = guessed + unknown + known;
+
   /* Word-by-word substitution is honest for a label, a table heading or a short
-     noun phrase — "Face value", "Industrial instrumentation", a promoter's name.
-     It cannot produce a grammatical Gujarati SENTENCE, because the word order is
-     not the same: run it over a bull-case paragraph and you get Gujarati words
-     in English syntax, which reads as nonsense and is strictly worse than the
+     noun phrase — "Face value", "Industrial instrumentation". It cannot produce
+     a grammatical Gujarati SENTENCE, because the word order is not the same:
+     run it over a bull-case paragraph and you get Gujarati vocabulary in
+     English syntax, which reads as nonsense and is strictly worse than the
      English it replaced. So a long run is translated only when the model
-     supplied a translation for it upstream — gu.text and the gu.* keys — and is
+     supplied a translation upstream — gu.text and the gu.* keys — and is
      otherwise handed back untouched.
 
      Section 51 of the framework is what closes these properly; this is the line
      that refuses to fake it in the meantime. */
-  function back(t){ return String(t).replace(/\u0007NA\u0007/g, 'n.a.')
-                                    .replace(/\u0007NM\u0007/g, 'nm'); }
+  function back(t){ return String(t).replace(/NA/g, 'n.a.')
+                                    .replace(/NM/g, 'nm'); }
+  var words = guessed + unknown + known;
   if(words > GU_PHRASE_MAX) return back(text);
   if(prosey && words > 2) return back(text);
   if(unknown >= 2 && unknown > 0.35 * Math.max(words, 1)) return back(text);
   /* an emptied term ("the") can leave a double space behind */
   return out.replace(/  +/g,' ')
-            .replace(/\u0007NA\u0007/g, '\u0AB2\u0ABE\u0A97\u0AC1 \u0AA8\u0AA5\u0AC0')
-            .replace(/\u0007NM\u0007/g, '\u0A85\u0AB0\u0ACD\u0AA5\u0AAA\u0AC2\u0AB0\u0ACD\u0AA3 \u0AA8\u0AA5\u0AC0');
+            .replace(/NA/g, 'લાગુ નથી')
+            .replace(/NM/g, 'અર્થપૂર્ણ નથી');
 }
 /* Text wrapped in EN() is left in English by the sweep. The running head and
    the footer are the case that matters: a Gujarati file forwarded to someone
@@ -1700,7 +1543,12 @@ function guSegment(text){
 var EN_OPEN = '\u0011', EN_CLOSE = '\u0012';
 function EN(t){ return EN_OPEN + t + EN_CLOSE; }
 function stripEnMarks(t){
-  return String(t).replace(/[\u0011\u0012]/g, '');
+  /* \u0011 and \u0012 fence the runs held back from translation; \u0007
+     fences an abbreviation parked before the sentence splitter. A parked
+     token the dictionary translated on its own leaves its fences behind,
+     so every marker is cleared here — the one place all output passes
+     through. */
+  return String(t).replace(/[\u0007\u0011\u0012]/g, '');
 }
 function guSweep(html){
   /* Entities carry Latin letters that are markup, not words. Park them. */
@@ -2685,7 +2533,7 @@ function cover(p, lang, docTitle, pages){
   var inner =
     '<div style="height:7mm"></div>'
     + '<div class="eyebrow en">'+EN(e(docTitle))+' &nbsp;·&nbsp; '+e(A(lang,m.ipo_type||'Mainboard'))+' &nbsp;·&nbsp; '+e(L(lang,'india'))+'</div>'
-    + '<h1 class="en" style="margin-top:2mm">'+e(m.company||'')+'</h1>'
+    + '<h1 class="en" style="margin-top:2mm">'+EN(e(m.company||''))+'</h1>'
     + '<div class="mut" style="margin-top:1mm;font-size:8pt">'+sectorHtml(p,lang)
       + (m.sector?' &nbsp;·&nbsp; ':'')+e(dmy(m.analysis_datetime))+'</div>'
     + '<div style="height:2.5mm;background:var(--teal);width:26mm;border-radius:1mm;margin:4mm 0 5mm"></div>'
@@ -3292,6 +3140,27 @@ var VCSS = `
 .vpage .vfoot{ flex:0 0 auto; }
 .vpage .vfootw{ flex:0 0 auto; }
 body.gu .vpage{ font-size:19px; line-height:1.72; }
+/* Business overview and the two side-by-side score cards. */
+.vlead{ font-size:21px; line-height:1.5; color:var(--ink); margin-top:10px; }
+.vnote{ font-size:18px; line-height:1.5; color:var(--ink2); margin-top:8px;
+        border-left:4px solid var(--teal); background:#EEF5F3; padding:10px 14px; border-radius:0 6px 6px 0; }
+.vscores{ display:grid; grid-template-columns:1fr 1fr; gap:26px; margin-top:12px; align-items:start; }
+.vsc{ min-width:0; }
+.vsch{ display:flex; justify-content:space-between; align-items:baseline; gap:10px;
+       font-size:15px; font-weight:800; letter-spacing:.05em; text-transform:uppercase;
+       color:var(--ink3); border-bottom:3px solid var(--navy); padding-bottom:7px; margin-bottom:10px; }
+.vsch b{ font-size:19px; color:var(--navy); letter-spacing:0; text-transform:none; white-space:nowrap; }
+/* The two cards share one geometry so their rows line up across the gutter:
+   a fixed label column, a fixed bar column, a fixed figure column. Without it
+   the bars start at a different x in each card and the pair reads as two
+   unrelated tables sitting next to each other. */
+.vbar.sm{ margin:7px 0; gap:10px; min-height:26px; }
+.vbar.sm .l{ flex:0 0 172px; font-size:17px; line-height:1.25;
+             overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+.vbar.sm .t{ flex:1 1 auto; height:15px; }
+.vbar.sm .v{ flex:0 0 76px; font-size:18px; min-width:0; text-align:right; }
+.vbar.sm .v .of{ color:var(--ink4); font-size:14px; }
+body.gu .vbar.sm .l{ font-size:16px; }
 .vmast{ display:flex; justify-content:space-between; align-items:flex-end;
         border-bottom:5px solid var(--navy); padding-bottom:14px; }
 .vmast h1{ font-size:40px; letter-spacing:-.02em; color:var(--navy); line-height:1.08; }
@@ -3365,7 +3234,7 @@ function buildVisual(p, lang){
   var cases = arr((f.scenarios||{}).cases);
   var maxV = Math.max.apply(null, cases.map(function(x){ return Number(x.value_per_share)||0; }).concat([1]));
   function vmast(sub, right){
-    return '<div class="vmast"><div><h1 class="en">'+e(m.company||'')+'</h1>'
+    return '<div class="vmast"><div><h1 class="en">'+EN(e(m.company||''))+'</h1>'
       + '<div class="s">'+e(sub)+'</div></div><div class="r en">'+right+'</div></div>';
   }
   function vfoot(i){
@@ -3379,24 +3248,15 @@ function buildVisual(p, lang){
   var objText = arr(ipo.objects).slice(0,3).map(function(o){
     return tr(p,lang,o.use)+' '+cr(o.amount_cr); }).join('  ·  ');
 
+  var c = p.company||{}, peers = f.peers||{};
   var p1 = '<div class="vpage">'
     + vmast(sectorText(p,lang)+' · '+A(lang,S(m.ipo_type||'Mainboard'))+' IPO',
         'IPO Company Research<br><b style="color:#12161C">'+e(dmy(m.analysis_datetime))+'</b><br>Page 1 of 2')
     + '<div class="vhero"><div class="h">'+e(L(lang,'verdict_h'))+'</div><div class="c">'
       + '<div class="v">'+e(pick(p,lang,'verdict.headline', v.headline))+'</div>'
       + '<p>'+e(pick(p,lang,'verdict.one_liner', v.one_liner))+'</p></div></div>'
-    + '<div class="vtiles">'
-      + [['ipo_quality','/100'],['long_term','/100'],['listing_gain','/100']].map(function(t){
-          return '<div class="vtile"><div class="k">'+e(L(lang,t[0]))+'</div><div class="v en" style="color:'
-            + ragBar(sc[t[0]])+'">'+n(sc[t[0]],1)+'<small>'+t[1]+'</small></div>'
-            + '<div class="s">'+e(A(lang, (v.score_bands||{})[t[0]]||bandOf(sc[t[0]])))+'</div></div>'; }).join('')
-      + '<div class="vtile"><div class="k">'+e(L(lang,'gmp'))+'</div><div class="v en" style="color:var(--teal)">'
-        + ((ipo.gmp&&ipo.gmp.value!=null)? '₹'+n(ipo.gmp.value)
-             + ((ipo.gmp.pct!=null)? '<small> ('+pct(ipo.gmp.pct,1)+')</small>' : '') : '—')
-        + '</div><div class="s">'+e(L(lang,'unoff_unver'))+'</div></div>'
-      + '<div class="vtile"><div class="k">'+e(L(lang,'allocation'))+'</div><div class="v en">'
-        + e(v.allocation_band||'—')+'</div><div class="s">'+e(L(lang,'of_portfolio'))+'</div></div></div>'
-    /* --- NEW: IPO basics + GMP --- */
+    /* The five score tiles that used to sit here are gone. They repeated the
+       score card on page 2 and pushed the issue itself below the fold. */
     + '<div class="vsec">'+e(L(lang,'ipo_basics'))+'</div>'
     + '<div class="vinfo">'
       + '<div class="c"><div class="k">'+e(L(lang,'price_band'))+'</div><div class="v en">₹'+e(ipo.price_band||'—')
@@ -3411,14 +3271,29 @@ function buildVisual(p, lang){
         + pct((ipo.gmp||{}).pct)+' · '+L(lang,'unoff_unver')+'</div></div></div>'
     + '<div class="vobj"><div class="k">'+e(L(lang,'objective'))+'</div><div class="b"><span class="en">'
       + e(objText||'—')+'</span>'+(topObject?' — '+e(tr(p,lang,topObject.verdict)):'')+'</div></div>'
-    /* --- scorecard --- */
-    + '<div class="vsec">'+e(L(lang,'scorecard'))+'</div>'
-    + BLOCKS.map(function(b){ var got = blockScore(p,b);
-        return '<div class="vbar"><div class="l">'+e(bName(b,lang))+'</div><div class="t"><div class="f" style="width:'
-          + (got/b[2]*100)+'%;background:'+(got/b[2]>=0.65?'var(--good)':got/b[2]>=0.5?'var(--teal)':'var(--amber)')
-          + '"></div></div><div class="v en">'+got.toFixed(1)+'<span style="color:var(--ink4);font-size:15px">/'
-          + b[2]+'</span></div></div>'; }).join('')
-    /* --- NEW: three-year financials --- */
+    /* Business overview — institutional point 8, so the reader knows what the
+       company does before being shown what it is worth. */
+    + (S(pick(p,lang,'company.what_it_does', c.what_it_does))
+        ? '<div class="vsec">'+e(L(lang,'what_it_does'))+'</div>'
+          + '<div class="vlead">'+e(pick(p,lang,'company.what_it_does', c.what_it_does))+'</div>'
+          + (S(pick(p,lang,'company.how_it_earns', c.how_it_earns))
+              ? '<div class="vnote">'+e(pick(p,lang,'company.how_it_earns', c.how_it_earns))+'</div>' : '')
+        : '')
+    /* Peer comparison — institutional point 28, table only. The P/E bar chart
+       says the same thing as the P/E column and costs a third of the page. */
+    + (arr(peers.rows).length
+        ? '<div class="vsec">'+e(L(lang,'ir_peers'))+'</div>'
+          + '<table class="vtab"><thead><tr>'
+          + arr(peers.columns).map(function(x, i){
+              return '<th'+(i?' class="n"':'')+'>'+e(tr(p,lang,x))+'</th>'; }).join('')
+          + '</tr></thead><tbody>'
+          + arr(peers.rows).map(function(r){
+              return '<tr'+(r.is_subject?' class="hi"':'')+'>'
+                + arr(r.cells).map(function(x, i){
+                    return '<td'+(i?' class="n en"':'')+'>'+e(S(x))+'</td>'; }).join('')
+                + '</tr>'; }).join('')
+          + '</tbody></table>'
+        : '')
     + '<div class="vsec">'+e(L(lang,'three_yr'))+'</div>'
     + '<table class="vtab"><thead><tr><th>'+e(L(lang,'rs_crore'))+'</th>'
       + arr(f.years).map(function(y){ return '<th class="n en">'+e(y)+'</th>'; }).join('')
@@ -3436,10 +3311,11 @@ function buildVisual(p, lang){
     return '<div class="q"><h4 style="background:'+colour+'">'+e(title)+'</h4><ul>'
       + arr(items).slice(0,3).map(function(x){ return '<li>'+e(x)+'</li>'; }).join('')+'</ul></div>';
   }
+  var lg = ipo.listing_gain||{};
+  var lgTotal = Number(lg.score);
   var p2 = '<div class="vpage">'
-    + vmast(L(lang,'swot')+' · '+L(lang,'scenarios')+' · '+L(lang,'red_flags'),
+    + vmast(L(lang,'swot')+' · '+L(lang,'red_flags')+' · '+L(lang,'scorecard'),
         'IPO Company Research<br><b style="color:#12161C">'+e(dmy(m.analysis_datetime))+'</b><br>Page 2 of 2')
-    /* --- NEW: SWOT --- */
     + '<div class="vsec">'+e(L(lang,'swot'))+'</div>'
     + '<div class="vswot">'
       + quad(L(lang,'strengths'), sw.s, 'var(--good)')
@@ -3447,12 +3323,6 @@ function buildVisual(p, lang){
       + quad(L(lang,'opportunities'), sw.o, 'var(--teal)')
       + quad(L(lang,'threats'), sw.t, 'var(--amber)')
     + '</div>'
-    + '<div class="vsec">'+e(L(lang,'scenarios'))+'</div>'
-    + cases.map(function(x){
-        var col = x.case==='Bear'?'var(--bad)':x.case==='Bull'?'var(--good)':'var(--navy2)';
-        return '<div class="vbar"><div class="l">'+e(A(lang,x.case))+'</div><div class="t"><div class="f" style="width:'
-          + ((Number(x.value_per_share)||0)/maxV*100)+'%;background:'+col+'"></div></div>'
-          + '<div class="v en">₹'+n(x.value_per_share)+'</div></div>'; }).join('')
     + '<div class="vsec">'+e(L(lang,'red_flags'))+'</div>'
     + '<table class="vtab"><thead><tr><th>'+e(L(lang,'red_flag'))+'</th><th>'+e(L(lang,'evidence'))
       + '</th><th style="width:150px">'+e(L(lang,'severity'))+'</th></tr></thead><tbody>'
@@ -3464,15 +3334,29 @@ function buildVisual(p, lang){
             + (sv==='CRITICAL'?'var(--crit)':sv==='HIGH'?'var(--bad)':sv==='MEDIUM'?'var(--amber)':'#7C838C')
             + '">'+e(A(lang,x.severity))+'</span></td></tr>'; }).join('')
       + '</tbody></table>'
-    + '<div class="vsec">'+e(L(lang,'alloc_levels'))+'</div>'
-    + '<div style="border:3px solid var(--navy);border-radius:14px;overflow:hidden">'
-      + '<div style="background:var(--navy);color:#fff;padding:11px 18px;font-size:19px;font-weight:800">'
-        + e(A(lang,v.recommendation||''))+' · '+e(v.allocation_band||'')+'</div>'
-      + '<div style="padding:15px 18px;font-size:18px;line-height:1.55;color:var(--ink2)">'
-        + e(pick(p,lang,'decision.allocation_note', d.allocation_note))+'</div></div>'
-    + '<table class="vtab" style="margin-top:14px"><tbody>'+levelsOf(p,lang,d).slice(0,3).map(function(x){
-        return '<tr><td style="width:34%">'+e(tr(p,lang,x.action))+'</td><td style="width:18%"><b class="en">'+e(x.price)
-          + '</b></td><td style="color:var(--ink2)">'+e(tr(p,lang,x.rationale))+'</td></tr>'; }).join('')+'</tbody></table>'
+    /* Two score cards side by side, sharing one heading. The 100-point score is
+       on the left because it is the headline number; the listing-gain build-up
+       sits beside it, stripped of its Basis column and given the same 5-colour
+       bars so the two read as one instrument rather than two tables. */
+    + '<div class="vsec">'+e(L(lang,'scorecard'))+'</div>'
+    + '<div class="vscores">'
+      + '<div class="vsc">'
+        + '<div class="vsch">'+e(L(lang,'ir_score'))+'<b class="en">'+n(sc.ipo_quality,1)+' / 100</b></div>'
+        + BLOCKS.map(function(b){ var got = blockScore(p,b);
+            return '<div class="vbar sm"><div class="l">'+e(bName(b,lang))+'</div><div class="t"><div class="f" style="width:'
+              + (got/b[2]*100)+'%;background:'+ragBarHex(got/b[2]*100)
+              + '"></div></div><div class="v en">'+got.toFixed(1)+'<span class="of">/'+b[2]+'</span></div></div>'; }).join('')
+      + '</div>'
+      + '<div class="vsc">'
+        + '<div class="vsch">'+e(L(lang,'listing_assess'))+'<b class="en">'
+          + (isNaN(lgTotal)?'—':n(lgTotal,0)+' / 100')+'</b></div>'
+        + arr(lg.components).map(function(x){
+            var mx = Number(x.max)||0, got = Number(x.score)||0;
+            return '<div class="vbar sm"><div class="l">'+e(tr(p,lang,x.factor))+'</div><div class="t"><div class="f" style="width:'
+              + (mx? (got/mx*100) : 0)+'%;background:'+ragBarHex(mx? got/mx*100 : 0)
+              + '"></div></div><div class="v en">'+n(got,0)+'<span class="of">/'+n(mx,0)+'</span></div></div>'; }).join('')
+      + '</div>'
+    + '</div>'
     + vfoot(2) + '</div>';
 
   var vttl = e(m.company||'')+' — Investment Summary';
@@ -3562,7 +3446,7 @@ function buildScorecard(p, lang){
 
   var head = '<div class="sc-top"><div style="height:4mm"></div>'
     + '<div class="eyebrow">'+e(L(lang,'score_card'))+' &nbsp;·&nbsp; '+e(A(lang,m.ipo_type||'Mainboard'))+' &nbsp;·&nbsp; '+e(L(lang,'india'))+'</div>'
-    + '<h1 class="en" style="margin-top:1.5mm;font-size:18pt">'+e(m.company||'')+'</h1>'
+    + '<h1 class="en" style="margin-top:1.5mm;font-size:18pt">'+EN(e(m.company||''))+'</h1>'
     + '<div class="mut en" style="margin-top:1mm">'+e(dmy(m.analysis_datetime))+'</div>'
     + '<div style="height:2.5mm;background:var(--teal);width:26mm;border-radius:1mm;margin:2.5mm 0 3.5mm"></div>'
     + '<div class="tiles">'
@@ -4748,9 +4632,26 @@ function irSections(lang, gate){
         ragPill(x.assessment, lang, 'quality'),
         '<span class="mut">'+e(tr(p,lang,x.evidence))+'</span>'] }; }); });
 
+  /* Each sentence becomes its own paragraph so a case longer than a page can be
+     divided at a sentence boundary instead of being carried whole. */
+  function caseBody(t){
+    var txt = S(t);
+    if(!txt) return '';
+    var bits = txt.split(/(?<=[.!?])\s+(?=[A-Z\u0A80-\u0AFF])/);
+    if(bits.length < 2) return '<p>'+e(txt)+'</p>';
+    var out = '', buf = '';
+    bits.forEach(function(b){
+      buf = buf ? buf + ' ' + b : b;
+      if(buf.length >= 180){ out += '<p>'+e(buf)+'</p>'; buf = ''; }
+    });
+    if(buf) out += '<p>'+e(buf)+'</p>';
+    return out;
+  }
   push('dp_cases', L(lang,'dp_cases'),
-      (S(dp.bull_case_detail) ? '<div class="note ok"><b>'+e(L(lang,'dp_bull'))+'</b><br>'+e(tr(p,lang,dp.bull_case_detail))+'</div>' : '')
-    + (S(dp.bear_case_detail) ? '<div class="note bad" style="margin-top:2.5mm"><b>'+e(L(lang,'dp_bear'))+'</b><br>'+e(tr(p,lang,dp.bear_case_detail))+'</div>' : ''));
+      (S(dp.bull_case_detail) ? '<div class="note ok"><b>'+e(L(lang,'dp_bull'))+'</b>'
+        + caseBody(tr(p,lang,dp.bull_case_detail))+'</div>' : '')
+    + (S(dp.bear_case_detail) ? '<div class="note bad" style="margin-top:2.5mm"><b>'+e(L(lang,'dp_bear'))+'</b>'
+        + caseBody(tr(p,lang,dp.bear_case_detail))+'</div>' : ''));
   push('dp_change_mind', L(lang,'dp_change_mind'), ul(arr(dp.what_would_change_our_mind).map(function(x){ return e(tr(p,lang,x)); })));
   push('dp_questions', L(lang,'dp_questions'), ul(arr(dp.key_questions_for_management).map(function(x){ return e(tr(p,lang,x)); })));
 
@@ -4819,7 +4720,7 @@ function irSections(lang, gate){
   var tocPage = '<div style="height:3mm"></div>'
     + '<div class="eyebrow en">'+EN(e(L('en','ir_title')))+' &nbsp;·&nbsp; '
       + e(A(lang,m.ipo_type||'Mainboard'))+' &nbsp;·&nbsp; '+e(L(lang,'india'))+'</div>'
-    + '<h1 class="en" style="margin-top:1.5mm;font-size:19pt">'+e(m.company||'')+'</h1>'
+    + '<h1 class="en" style="margin-top:1.5mm;font-size:19pt">'+EN(e(m.company||''))+'</h1>'
     + '<div class="mut" style="margin-top:1mm;font-size:8pt">'+sectorHtml(p,lang)
       + (m.sector?' &nbsp;·&nbsp; ':'')+e(dmy(m.analysis_datetime))+'</div>'
     + '<div style="height:2.5mm;background:var(--gold);width:26mm;border-radius:1mm;margin:3mm 0 4mm"></div>'
@@ -4855,7 +4756,12 @@ function irSections(lang, gate){
     + 'body.gu .ir-blk td,body.gu .ir-blk th{ padding-top:1.8mm; padding-bottom:1.8mm; }\n'
     + '.ir-blk .sec{ margin:5mm 0 2.5mm; }\n'
     + '.ir-blk .ti{ font-size:11.5pt; }\n'
-    + '.ir-blk .note{ font-size:9pt; line-height:1.55; margin-top:2mm; }\n'
+    + '.ir-blk .note{ font-size:8.8pt; line-height:1.55; margin-top:2mm; }\n'
+    /* A long case runs to several paragraphs. Marking them as blocks the
+       packer can divide is what stops one over-long box from being an
+       indivisible slab that forces the whole document to be scaled. */
+    + '.ir-blk .note p{ margin:0 0 1.8mm; }\n'
+    + '.ir-blk .note p:last-child{ margin-bottom:0; }\n'
     + 'body.gu .ir-blk .note{ line-height:1.72; }\n'
     + '.ir-blk .lead{ font-size:10pt; line-height:1.55; }\n'
     + '.ir-ul{ margin:2mm 0 2.5mm 5mm; padding:0; }\n'
@@ -4920,11 +4826,29 @@ function irSections(lang, gate){
         + 'if(!kids.length) return false;'
         + 'if(kids.length===1){'
           + 'var only=kids[0];'
-          + 'if(only.children.length<2) return false;'
-          + 'var carry=document.createElement("div"); carry.className="ir-blk";'
-          + 'while(only.scrollHeight>A-8 && only.children.length>1){'
-            + 'carry.insertBefore(only.children[only.children.length-1], carry.firstChild); }'
-          + 'if(!carry.children.length) return false;'
+          /* Descend to the deepest node that still has something to divide. A
+             block reduced to a single long note — a bull or bear case that runs
+             past a page on its own — has one child at the top level and its
+             paragraphs one level down. Stopping at the top level is what left
+             such a block indivisible, and an indivisible block is what forces
+             the whole document to be scaled. */
+          + 'var host=only, depth=0;'
+          + 'while(host.children.length===1 && depth++<6) host=host.children[0];'
+          + 'if(host.children.length<2) return false;'
+          /* Rebuild the ancestors so the continuation keeps its box, its colour
+             and its type — the carried half must not look like a different
+             element from the half above it. The id is dropped: it anchors the
+             contents entry and must stay on the first half only. */
+          + 'var carry=only.cloneNode(false); carry.removeAttribute("id");'
+          + 'var path=[], node=host;'
+          + 'while(node!==only){ path.unshift(node); node=node.parentNode; }'
+          + 'var cur=carry;'
+          + 'path.forEach(function(el){ var c=el.cloneNode(false);'
+            + 'c.removeAttribute("id"); cur.appendChild(c); cur=c; });'
+          + 'var g3=0;'
+          + 'while(only.scrollHeight>A-8 && host.children.length>1 && g3++<400){'
+            + 'cur.insertBefore(host.children[host.children.length-1], cur.firstChild); }'
+          + 'if(!cur.children.length) return false;'
           + 'boxes[i+1].insertBefore(carry, boxes[i+1].firstChild);'
           + 'continue;'
         + '}'

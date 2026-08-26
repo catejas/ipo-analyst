@@ -1,8 +1,61 @@
-# IPO Analyst — standalone web app  ·  v4.6  ·  build 2026.08.26.1
+# IPO Analyst — standalone web app  ·  v4.6  ·  build 2026.08.26.2
 
 A single-page web app that turns the institutional IPO research protocol into something you can
 run from an icon on your phone. It works on Android and iPhone/iPad, installs to the home screen,
 runs full-screen with no address bar, and works offline for everything except the AI call itself.
+
+## What changed in v4.6 build 2026.08.26.2
+
+**The Investment Summary is a different document.** The five headline tiles are gone — they repeated
+the score card and pushed the issue itself below the fold. Page 1 now runs **IPO at a Glance →
+Objective of the Issue → Business Overview → Peer Comparison → Three-Year Financials**, with the
+recommendation banner still at the top. Page 2 runs **SWOT Summary → Red Flags → Score Card**, and
+the score card is two cards side by side: the 100-point score on the left, the listing-gain
+assessment on the right with its Basis column dropped and the same 5-colour bars. Both cards share
+one geometry — fixed label, bar and figure columns — so their rows line up across the gutter instead
+of reading as two unrelated tables. The three-year scenario bars and the allocation-and-price-levels
+table are gone, and the peer P/E chart with them; the P/E column already says it.
+
+**Proper nouns, reversed.** Names of people and companies are back in **English** in the Gujarati
+edition — Hemant Tukaram Mondkar, Tempsens Instruments, WhiteOak Capital Multi Cap Fund. A
+rule-guessed Gujarati spelling is not the one on the RHP, it changes with whatever romanisation the
+model used, and a reader who wants to check a name has nothing to search for. **Places keep their
+Gujarati spellings** — મુંબઈ, અમદાવાદ, પુણે — because those are settled and every reader knows them.
+
+A company is several capitalised words in a row and only some of them are ordinary nouns, so
+"Tempsens Instruments" would have come back as "Tempsens ઉપકરણો" — half a name, half a translation.
+A run of two or more consecutive capitalised words containing at least one word no dictionary knows
+is now treated as one name and kept whole. "Managing Director" and "Independent Directors" are
+title-case *labels*, not names, so the phrase dictionary still translates them.
+
+**Institutional report.** The cover keeps the company name in English, as the running head already
+did. The bull and bear cases are split into paragraphs the packer can divide — a case longer than a
+page used to be one indivisible slab, which forced the whole document to be scaled and is what made
+one box's type look larger than everything around it; the note boxes are also brought down to the
+size of the tables beside them. The packer now descends a level when a block has a single child, so
+a long note continues onto the next page instead of stranding the document.
+
+**Import Data was lying, and it was my bug.** Four sections — Shareholding, Valuation ratios, Key
+people and Credit profile — were reported missing on every payload. The audit table was reading
+`ipo.shareholding`, `financials.valuation.ratios`, `deep.credit_profile` and a `people.key_people`
+that has never existed in the contract. The real paths are `ipo.selling_shareholders`,
+`financials.ratios`, `deep.credit` and `people.promoter_holding_pre`. The data was present the whole
+time and the reports were drawing it. A test now walks the audit table and fails if any path is one
+no renderer reads.
+
+**The payload is minified, last, and alone.** A pretty-printed payload is thousands of lines tall, so
+a chat client renders a box taller than the screen and the copy button — which sits at the top of the
+block — is a long scroll away. The IPO-list reply has always been minified and comes back as a
+one-line box with the copy button in plain sight; the research payload now does the same. It is the
+**last** thing in the reply with nothing after it, and there is no written prose report — the app
+builds five documents from the payload, and a second copy of the analysis in the chat window buries
+the thing you actually need. The fence stays: it is what gives the copy button and what stops the
+client re-typesetting the JSON into curly quotes.
+
+**Setup line.** `IPO Analyst v4.6 · Framework v4.6 · Build 26.08.2026.2` on one line, Indian date
+order, no "dev" and no repeated app name. It read "dev" because the build id was defined *after* the
+version stamp ran; it is now set in the head. A stale service worker is still called out, but in
+four words rather than by printing the whole cache name.
 
 ## What changed in v4.6 build 2026.08.26.1
 

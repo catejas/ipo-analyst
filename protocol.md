@@ -383,19 +383,13 @@ This means:
 Write the JSON as your final answer. Before it, you may show your working — the tables and
 reasoning you built — but the JSON is the deliverable that matters.
 
-## 47. THE OUTPUT — ONE FENCED JSON BLOCK, AT THE TOP OF THE REPLY
+## 47. THE OUTPUT — ONE MINIFIED JSON BLOCK, LAST, AND NOTHING ELSE
 
-Your reply **opens** with a single fenced ```json code block containing the whole data package, and
-the written report follows underneath it.
+Your reply is the data package. There is **no written report** — the app builds five documents from
+the payload, and a long prose report in the chat window is a second copy of the same analysis that
+nobody reads and that buries the thing the user actually needs.
 
-The fence is not decoration. It is what gives the reader a **copy button**, and — far more
-important — what stops the chat client from re-typesetting the text. Plain JSON in a chat window
-gets smart quotes: `"Deteriorating"` comes back as `“Deteriorating”`, the paste is no longer JSON,
-and the app falls back to scraping the report prose and recovers a handful of scores instead of the
-whole payload. Inside a fence the characters are preserved byte for byte.
-
-The block goes first because on a phone the copy button sits at the top of a code block, and a
-payload buried under twenty pages of prose means scrolling the whole report to reach it.
+So the whole reply is:
 
 ```
 ════════════════════════════════════════
@@ -406,40 +400,70 @@ Report → Import Data
 ════════════════════════════════════════
 ```
 
-Then the single fenced block. Then the written report for the human reader.
+then the completeness line from section 50A, then **one fenced ```json block containing the payload
+minified onto a single line**, and then nothing at all.
+
+### Minified — one line, no pretty-printing
+
+Print the JSON with **no line breaks and no indentation**. `{"schema":"ipo-analyst/4","meta":{...`
+straight through to the closing brace, as one line.
+
+This is not a preference either. A pretty-printed payload is several thousand lines tall, and a chat
+client renders that as a code block taller than the screen — so the copy button, which sits at the
+top of the block, is a long scroll away. The IPO-list reply in section 2B has always been minified
+and comes back as a **one-line box with the copy button in plain sight**; this makes the research
+payload behave the same way.
+
+### Fenced — and the fence stays
+
+The fence gives the copy button, and it stops the client re-typesetting the text. Plain JSON in a
+chat window gets smart quotes: `"Deteriorating"` comes back as `“Deteriorating”`, the paste is no
+longer JSON, and the app falls back to scraping prose. Inside a fence the characters survive byte
+for byte. Minified **and** fenced — both, not one or the other.
+
+### Last, with nothing after it
+
+The block is the final thing in the reply. Do not add a summary, a sign-off, a note about sources or
+an offer to explain further **after** it — anything printed after the block pushes it up the screen
+and undoes the point of minifying it. Everything you want to say goes **before** the block.
 
 ### Also offer it as a file, when your client can attach files
 
 If you can create a downloadable file, save the identical payload as **`ipo-payload.json`** and
-offer it alongside the block. The app reads it directly: **Report → Import Data → choose file**. If
-you cannot attach files, say so in one line and rely on the fenced block — never skip the block in
+offer it before the block. The app reads it directly: **Report → Import Data → choose file**. If you
+cannot attach files, say so in one line and rely on the fenced block — never skip the block in
 favour of a file you cannot produce.
 
-### If the code block comes through empty — the two fallback words
+### If the code block still comes through empty — the two fallback words
 
-A few mobile chat apps render a very large code block as an **empty box with a copy button that
-copies nothing**. The Gemini Android app does this; the same reply on Gemini's website is fine. If
-that happens, the user will send you one of two words, and you obey it immediately without
-regenerating any research:
+Minifying makes this far less likely: the box is one line tall, and the clients that mishandled a
+huge code block were choking on its size. If it still happens — the Gemini Android app is the one
+that does — the user sends you one of two words, and you obey it immediately without regenerating
+any research:
 
 | The user sends | You reply with |
 |---|---|
-| `PLAIN` | The same payload as **plain text between the two marker lines below**, no fence, nothing else — no preamble, no report. Accept that quotes may be re-typeset; the app repairs curly quotes on import. |
-| `SPLIT` | The same payload as **three or four smaller fenced ```json blocks**, each a complete JSON object carrying a subset of the top-level keys. The app merges them — the user pastes them one after another and taps **Add To This Analysis**. Put `meta` and `score_lines` in the first block. |
+| `SPLIT` | The same payload as **three or four smaller fenced ```json blocks**, each minified and each a complete JSON object carrying a subset of the top-level keys. The app merges them — the user pastes them one after another and taps **Add To This Analysis**. Put `meta` and `score_lines` in the first block. |
+| `PLAIN` | The same payload as **plain text between the two marker lines below**, no fence, nothing else. Accept that quotes may be re-typeset; the app repairs curly quotes on import. |
 
 The marker lines for `PLAIN`:
 
 ```
 <<<IPO-ANALYST-DATA
-{ …the whole JSON object… }
+{ …the whole JSON object, still on one line… }
 IPO-ANALYST-DATA>>>
 ```
 
 `SPLIT` is the better of the two, because each smaller block still gets a working copy button and
 keeps its characters intact. Reach for `PLAIN` only if `SPLIT` also comes through empty.
 
-The importer accepts all of it — a fenced block, several fenced blocks, marker lines, a bare `{ … }`
-object, or the `.json` file — so no reply produced by any earlier version stops working.
+The importer accepts all of it — one fenced block, several fenced blocks, marker lines, a bare
+`{ … }` object, or the `.json` file — so no reply produced by any earlier version stops working.
+
+### If the user asks for the analysis in words
+
+Only then, and only when asked, write it out — in a follow-up reply, after the payload has already
+been delivered. Never in the same reply as the block.
 
 ### What goes in the one block
 
@@ -1140,8 +1164,8 @@ So before you send, walk the payload key by key and count:
 4. **Never invent to fill a gap.** A `null` with a reason is correct; a plausible fabricated number
    is the one outcome worse than a blank.
 
-Then, **after** the data package and before the written report, print a short audit line so the gaps
-are visible rather than silent:
+Then, **before** the data package, print a short audit line so the gaps are visible rather than
+silent:
 
 ```
 COMPLETENESS: 214 of 228 fields filled · 14 unavailable, each listed in sources.missing
@@ -1150,8 +1174,8 @@ COMPLETENESS: 214 of 228 fields filled · 14 unavailable, each listed in sources
 If that count is below about 90 per cent, you have stopped early rather than run out of sources. Go
 back to the fields you skipped and search for them properly before sending.
 
-Then output the banner, the data package as one fenced ```json block, the completeness line, and the
-written report.
+Then output the banner, the completeness line, and the data package as one fenced ```json block
+minified onto a single line. Nothing after the block.
 
 
 ## 51. GUJARATI — A FULL TRANSLATION, NOT A PARTIAL ONE
