@@ -1165,6 +1165,16 @@ Both editions render from this one payload, so the numbers can never diverge.
 - Financial abbreviations: P/E, EV/EBITDA, ROE, ROCE, EBITDA, PAT, CFO, FCF, GMP, OFS, IPO, DRHP,
   RHP, QIB, NII, HNI, CAGR, D/E, and the names of exchanges and regulators (NSE, BSE, SEBI, NCLT).
 
+**The app will not invent Gujarati prose, and neither should you leave it to.**
+The app owns a Gujarati vocabulary for labels, headings, enum words, financial
+terms and proper nouns, and it renders those correctly whatever you send. It
+deliberately does **not** translate whole sentences word by word: Gujarati word
+order is not English word order, so substituting word for word produces Gujarati
+vocabulary in English syntax — text that reads as nonsense and is worse than the
+English it replaced. Any sentence you do not translate is therefore printed in
+**English** inside the Gujarati document. `gu.text` is not a nicety; it is the
+only route by which running prose reaches a Gujarati reader.
+
 **Proper nouns are not on this list any more.** A Gujarati reader should not be dropped back into
 Latin script for the one word on the page that names a person. Company names, promoter and director
 names, brand names, plant locations and anchor-investor names are all **transliterated into Gujarati
@@ -1174,6 +1184,9 @@ becomes મુંબઈ. Transliterate the sound; never translate the meaning of
 **Product and technical terms are translated, not transliterated.** "Industrial instrumentation" is
 ઔદ્યોગિક ઉપકરણ, not ઇન્ડસ્ટ્રિયલ ઇન્સ્ટ્રુમેન્ટેશન. Where a term has a settled Gujarati word, use
 the Gujarati word; fall back to transliteration only for coined names and trademarks.
+- **Units are Gujarati words, not abbreviations.** Write કરોડ, never `cr` or `Cr`; રૂ. or ₹,
+  never `Rs`; લાખ, never `lakh`. The app repairs these where it sees them, but a payload that
+  writes "Rs 71.07 cr" inside a Gujarati sentence forces the repair to guess at a word boundary.
 - **All numerals in Western Arabic digits** (2026, not ૨૦૨૬) — financial readers scan figures.
   Every figure in an English string must reappear, unchanged, in its Gujarati translation. Translate
   the words around the number; never round it, drop it, or convert the unit.

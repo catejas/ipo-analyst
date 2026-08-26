@@ -51,6 +51,26 @@ function msg(t, bad){
   el.innerHTML = t ? (bad ? '<b style="color:var(--red)">'+t+'</b>' : t) : '';
 }
 
+/* One capture path for both PDF and PNG.
+
+   html2canvas decides for itself how much of an element to photograph, and it
+   uses the scrolling box — so a page whose content overflows by a few pixels
+   produced a taller canvas, and one it measured short produced a shorter one.
+   Either way the result was then stretched into a fixed A4 rectangle, which
+   magnified or squashed that page relative to every other page in the document.
+   The capture is now pinned to the page element's own box, so what comes back
+   is always exactly one page. */
+function shootPage(el, scale){
+  var r = el.getBoundingClientRect();
+  var w = Math.round(r.width), h = Math.round(r.height);
+  return html2canvas(el, {
+    scale: scale, backgroundColor:'#ffffff', useCORS:true, logging:false,
+    width: w, height: h,
+    windowWidth: w, windowHeight: h,
+    scrollX: 0, scrollY: 0, x: 0, y: 0
+  });
+}
+
 /* hidden iframe so html2canvas has a real laid-out document to photograph */
 function stage(html){
   return new Promise(function(res){
@@ -205,14 +225,24 @@ function htmlToPdfBlob(html, sel){
 
     pages.forEach(function(el, i){
       chain = chain.then(function(){
-        return html2canvas(el, { scale:2, backgroundColor:'#ffffff', useCORS:true,
-                                 logging:false, windowWidth:el.offsetWidth })
+        return shootPage(el, 2)
           .then(function(cv){
             if(i) pdf.addPage();
-            pdf.addImage(cv.toDataURL('image/jpeg', 0.94), 'JPEG', 0, 0, W, H, undefined, 'FAST');
+            /* The canvas is drawn at the aspect ratio it actually has. It used
+               to be stretched into the full A4 box no matter what it captured,
+               so a page html2canvas measured even slightly short came out
+               magnified and lost its last lines under the footer — while the
+               text layer, which is computed from the DOM, stayed correct. That
+               mismatch is what made one page of a report look like a different
+               document. shootPage() now pins the capture to the page box, and
+               this keeps the drawing honest if it ever still differs. */
+            var ar = cv.height / (cv.width || 1);
+            var dw = W, dh = W * ar;
+            if(dh > H){ dh = H; dw = H / (ar || 1); }
+            pdf.addImage(cv.toDataURL('image/jpeg', 0.94), 'JPEG', 0, 0, dw, dh, undefined, 'FAST');
 
             var box = el.getBoundingClientRect();
-            var kx = W / (box.width || 1), ky = H / (box.height || 1);
+            var kx = dw / (box.width || 1), ky = dh / (box.height || 1);
 
             /* the invisible, searchable text layer */
             try{
@@ -289,8 +319,7 @@ function htmlToPngBlobs(html, sel){
     pages.forEach(function(el, i){
       chain = chain.then(function(){
         msg('Rendering image '+(i+1)+' of '+pages.length+' at 450 DPI…');
-        return html2canvas(el, { scale:PNG_SCALE, backgroundColor:'#ffffff', useCORS:true,
-                                 logging:false, windowWidth:el.offsetWidth })
+        return shootPage(el, PNG_SCALE)
           .then(function(cv){
             return new Promise(function(r){ cv.toBlob(function(b){ outs.push(b); r(); }, 'image/png'); });
           });

@@ -120,7 +120,7 @@ var VOCAB_GU = {
   'Under appeal':'અપીલ હેઠળ', 'Resolved in favour':'તરફેણમાં ઉકેલાયું',
   'Resolved against':'વિરુદ્ધ ઉકેલાયું', 'Settled':'સમાધાન થયું',
   'Unquantified':'રકમ નક્કી નથી', 'Company':'કંપની', 'Subsidiary':'પેટાકંપની',
-  'Promoter':'પ્રમોટર', 'Director':'ડિરેક્ટર', 'Group company':'જૂથ કંપની',
+  'Promoter':'પ્રમોટર', 'Director':'નિયામક', 'Group company':'જૂથ કંપની',
   /* group structure basis */
   'Step-down subsidiary':'પેટા-પેટાકંપની', 'Joint venture':'સંયુક્ત સાહસ',
   'Associate':'સહયોગી',
@@ -162,6 +162,11 @@ var VOCAB_GU = {
    unrelated words.
    -------------------------------------------------------------------------- */
 var TERM_GU = {
+  'ind as':'Ind AS',
+  'institutional':'સંસ્થાકીય',
+  'institutional research report':'સંસ્થાકીય સંશોધન રિપોર્ટ',
+  'research':'સંશોધન',
+  'research report':'સંશોધન રિપોર્ટ',
   /* corporate suffixes and forms */
   'limited':'લિમિટેડ', 'ltd':'લિમિટેડ', 'private limited':'પ્રાઇવેટ લિમિટેડ',
   'private':'પ્રાઇવેટ', 'public limited':'પબ્લિક લિમિટેડ', 'incorporated':'ઇન્કોર્પોરેટેડ',
@@ -241,13 +246,13 @@ var TERM_GU = {
   'dilution':'મંદન', 'valuation':'મૂલ્યાંકન', 'peers':'સમકક્ષો', 'peer':'સમકક્ષ',
   'grey market premium':'ગ્રે માર્કેટ પ્રીમિયમ', 'grey market':'ગ્રે માર્કેટ',
   /* governance and legal */
-  'board of directors':'બોર્ડ ઓફ ડિરેક્ટર્સ', 'board':'બોર્ડ',
-  'independent director':'સ્વતંત્ર ડિરેક્ટર', 'independent directors':'સ્વતંત્ર ડિરેક્ટરો',
-  'managing director':'મેનેજિંગ ડિરેક્ટર', 'chairman':'ચેરમેન',
+  'board of directors':'નિયામક મંડળ', 'board':'બોર્ડ',
+  'independent director':'સ્વતંત્ર નિયામક', 'independent directors':'સ્વતંત્ર નિયામકો',
+  'managing director':'વ્યવસ્થાપકીય નિયામક', 'chairman':'અધ્યક્ષ',
   'chief executive officer':'મુખ્ય કારોબારી અધિકારી',
   'chief financial officer':'મુખ્ય નાણાકીય અધિકારી',
-  'whole-time director':'પૂર્ણ-સમય ડિરેક્ટર', 'auditor':'ઓડિટર', 'auditors':'ઓડિટરો',
-  'audit committee':'ઓડિટ સમિતિ', 'related party':'સંબંધિત પક્ષ',
+  'whole-time director':'પૂર્ણ-સમય નિયામક', 'auditor':'હિસાબ-તપાસનીસ', 'auditors':'હિસાબ-તપાસનીસો',
+  'audit committee':'હિસાબ-તપાસ સમિતિ', 'related party':'સંબંધિત પક્ષ',
   'related party transactions':'સંબંધિત પક્ષ વ્યવહારો',
   'litigation':'મુકદ્દમા', 'penalty':'દંડ', 'demand':'માંગણું', 'notice':'નોટિસ',
   'income tax':'આવકવેરો', 'appeal':'અપીલ', 'tribunal':'ટ્રિબ્યુનલ',
@@ -275,6 +280,96 @@ var TERM_GU = {
    has nothing to translate a sentence with, and a transliterated English
    sentence is unreadable in a way the English itself is not. */
 var COMMON_GU = {
+  'abroad':'વિદેશમાં',
+  'achievable':'પ્રાપ્ય',
+  'africa':'આફ્રિકા',
+  'ambitious':'મહત્વાકાંક્ષી',
+  'assumption':'ધારણા',
+  'assumptions':'ધારણાઓ',
+  'audited':'ઓડિટ કરેલ',
+  'australia':'ઓસ્ટ્રેલિયા',
+  'barrier':'અવરોધ',
+  'barriers':'અવરોધો',
+  'bn':'અબજ',
+  'britain':'બ્રિટન',
+  'buying':'ખરીદી',
+  'coming':'આવી રહ્યું',
+  'comparable':'તુલનાત્મક',
+  'comparables':'તુલનાત્મક કંપનીઓ',
+  'countries':'દેશો',
+  'country':'દેશ',
+  'cr':'કરોડ',
+  'cr.':'કરોડ',
+  'crore':'કરોડ',
+  'crores':'કરોડ',
+  'cross selling':'ક્રોસ-વેચાણ',
+  'cross-selling':'ક્રોસ-વેચાણ',
+  'crs':'કરોડ',
+  'decade':'દાયકો',
+  'defensible':'બચાવી શકાય તેવું',
+  'derived':'વ્યુત્પન્ન',
+  'driver':'ચાલક',
+  'drivers':'ચાલકો',
+  'entry':'પ્રવેશ',
+  'european':'યુરોપિયન',
+  'exit':'એક્ઝિટ',
+  'far east':'દૂર પૂર્વ',
+  'forecast':'આગાહી',
+  'forecasts':'આગાહીઓ',
+  'france':'ફ્રાન્સ',
+  'german':'જર્મન',
+  'global':'વૈશ્વિક',
+  'gulf':'અખાતી દેશો',
+  'horizon':'સમયગાળો',
+  'illustrative':'દૃષ્ટાંતરૂપ',
+  'implied':'સૂચિત',
+  'ind':'ઇન્ડ',
+  'indigenisation':'સ્વદેશીકરણ',
+  'indigenization':'સ્વદેશીકરણ',
+  'indigenous':'સ્વદેશી',
+  'inr':'રૂ.',
+  'international':'આંતરરાષ્ટ્રીય',
+  'italy':'ઇટાલી',
+  'lac':'લાખ',
+  'lacs':'લાખ',
+  'lakhs':'લાખ',
+  'measurement':'માપન',
+  'mexican':'મેક્સિકન',
+  'mexico':'મેક્સિકો',
+  'middle east':'મધ્ય પૂર્વ',
+  'mn':'મિલિયન',
+  'n.a.':'લાગુ નથી',
+  'na':'લાગુ નથી',
+  'nil':'શૂન્ય',
+  'nm':'અર્થપૂર્ણ નથી',
+  'north america':'ઉત્તર અમેરિકા',
+  'overseas':'વિદેશી',
+  'poland':'પોલેન્ડ',
+  'polish':'પોલિશ',
+  'proxy':'અવેજી',
+  'recovers':'સુધરે છે',
+  'recovery':'સુધારો',
+  'region':'પ્રદેશ',
+  'regions':'પ્રદેશો',
+  'replacement':'બદલી',
+  'required':'જરૂરી',
+  'restated':'પુનઃગણતરી કરેલ',
+  'rs':'રૂ.',
+  'rs.':'રૂ.',
+  'rupee':'રૂપિયો',
+  'rupees':'રૂપિયા',
+  'russia':'રશિયા',
+  'scarcity':'દુર્લભતા',
+  'shorten':'ટૂંકા થાય',
+  'shortens':'ટૂંકા થાય છે',
+  'south america':'દક્ષિણ અમેરિકા',
+  'south east asia':'દક્ષિણ-પૂર્વ એશિયા',
+  'south-east asia':'દક્ષિણ-પૂર્વ એશિયા',
+  'spain':'સ્પેન',
+  'starting':'પ્રારંભિક',
+  'uk':'બ્રિટન',
+  'unaudited':'ઓડિટ વગરનું',
+  'worldwide':'વિશ્વભરમાં',
   'access':'પ્રવેશ',
   'accounts':'હિસ્સો ધરાવે છે',
   'accrual':'ઉપાર્જન',
@@ -1010,6 +1105,12 @@ var COMMON_GU = {
    everything else.
    -------------------------------------------------------------------------- */
 var NAME_GU = {
+  'abb':'ABB',
+  'emerson':'એમર્સન',
+  'endress':'એન્ડ્રેસ',
+  'honeywell':'હનીવેલ',
+  'siemens':'સિમેન્સ',
+  'yokogawa':'યોકોગાવા',
   'abhishek':'અભિષેક',
   'aditya':'આદિત્ય',
   'arjun':'અર્જુન',
@@ -1360,6 +1461,22 @@ var GU_VOW = [
   ['uu',['ઊ','ૂ']], ['ou',['ઔ','ૌ']], ['ei',['એ','ે']], ['ie',['ઈ','ી']],
   ['a',['અ','']], ['i',['ઇ','િ']], ['e',['એ','ે']], ['u',['ઉ','ુ']], ['o',['ઓ','ો']]
 ];
+/* The longest run the app will translate on its own. Above this it is prose,
+   not a label, and prose needs the model's translation or none. */
+var GU_PHRASE_MAX = 4;
+/* An English function word inside a run is the giveaway that it is prose rather
+   than a label: "Market cap at Rs 300" translated word for word gives Gujarati
+   words in English syntax. Runs carrying one of these are handed back in English
+   unless a phrase dictionary matched the whole thing. */
+var GU_PROSE_MARKERS = (function(){
+  var o = {};
+  ('a an the is are was were be been being has have had will would may might can '
+ + 'could should must do does did at to in with by on from for of into over under '
+ + 'about through than as its their which who whose where when what while because '
+ + 'so if then that this these those it he she they we you not no nor but or and'
+  ).split(' ').forEach(function(w){ o[w] = 1; });
+  return o;
+})();
 var GU_HALANT = '્', GU_ANUSVARA = 'ં';
 /* A nasal is written as the anusvara dot only before a homorganic stop --
    Mumbai, Chandra, Pande. Before a fricative or a liquid it stays a full
@@ -1458,7 +1575,7 @@ var KEEP_SET = (function(){
     'IBBI','CCI','CDSL','NSDL','INR','USD','EUR','ISIN','PAN','TAN','CIN','LEI','UPI','ASBA',
     'NBFC','MSME','FDI','FII','DII','EPS','PBT','PAT','PBIT','NPA','CRAR','IRR','NPV','ARPU',
     'B2B','B2C','OEM','ODM','SKU','ERP','CRM','AI','ML','IT','ITES','BPO','KYC','AGM','EGM',
-    'IND','AS','IFRS','GAAP','TDS','TCS','VAT','CST','MAT','ROIC','ROA','EBT','LTM','FYTD',
+    'IFRS','GAAP','TDS','TCS','VAT','CST','MAT','ROIC','ROA','EBT','LTM','FYTD',
     'ICRA','CRISIL','CARE','ISO','BIS','CE','UL','ATEX','IEC','ASME','API'])
     .forEach(function(k){ o[k.toUpperCase()] = 1; });
   return o;
@@ -1493,14 +1610,19 @@ function guProperish(tok, atStart){
    arrive in the same text node, and reverting the whole node for the sake of
    the paragraph would drag a perfectly good label back into English with it. */
 function guWords(text){
+  /* Park the dotted abbreviations before the sentence splitter runs, or "n.a."
+     is torn into two single letters by the full stops between them and each is
+     kept as a one-letter token. */
+  text = String(text).replace(/\bn\s*[.\/]\s*a\.?/gi, '\u0007NA\u0007');
   return text.split(/([.;:!?|\t\n]+|\u2014|\u2013)/).map(function(seg, i){
     return (i % 2) ? seg : guSegment(seg);
   }).join('');
 }
 function guSegment(text){
   if(!/[A-Za-z]/.test(text)) return text;
+
   /* tokens: Latin runs, everything else passes through untouched */
-  var guessed = 0, unknown = 0, known = 0;
+  var guessed = 0, unknown = 0, known = 0, prosey = 0;
   var parts = text.split(/([A-Za-z][A-Za-z'’]*)/);
   /* rebuild with phrase lookahead over word tokens */
   var out = '', i = 0;
@@ -1525,6 +1647,7 @@ function guSegment(text){
     }
     if(hit !== null){ known++; }
     if(hit === null){
+      if(GU_PROSE_MARKERS[tok.toLowerCase()]) prosey++;
       if(guKeepToken(tok)){ hit = tok; known++; }
       else {
         var one = guTerm(tok);
@@ -1548,9 +1671,36 @@ function guSegment(text){
      English — so the chunk is handed back as it came. The framework's gu.text
      sweep is what closes these properly. */
   var words = guessed + unknown + known;
-  if(unknown >= 2 && unknown > 0.35 * Math.max(words, 1)) return text;
+  /* Word-by-word substitution is honest for a label, a table heading or a short
+     noun phrase — "Face value", "Industrial instrumentation", a promoter's name.
+     It cannot produce a grammatical Gujarati SENTENCE, because the word order is
+     not the same: run it over a bull-case paragraph and you get Gujarati words
+     in English syntax, which reads as nonsense and is strictly worse than the
+     English it replaced. So a long run is translated only when the model
+     supplied a translation for it upstream — gu.text and the gu.* keys — and is
+     otherwise handed back untouched.
+
+     Section 51 of the framework is what closes these properly; this is the line
+     that refuses to fake it in the meantime. */
+  function back(t){ return String(t).replace(/\u0007NA\u0007/g, 'n.a.')
+                                    .replace(/\u0007NM\u0007/g, 'nm'); }
+  if(words > GU_PHRASE_MAX) return back(text);
+  if(prosey && words > 2) return back(text);
+  if(unknown >= 2 && unknown > 0.35 * Math.max(words, 1)) return back(text);
   /* an emptied term ("the") can leave a double space behind */
-  return out.replace(/  +/g,' ');
+  return out.replace(/  +/g,' ')
+            .replace(/\u0007NA\u0007/g, '\u0AB2\u0ABE\u0A97\u0AC1 \u0AA8\u0AA5\u0AC0')
+            .replace(/\u0007NM\u0007/g, '\u0A85\u0AB0\u0ACD\u0AA5\u0AAA\u0AC2\u0AB0\u0ACD\u0AA3 \u0AA8\u0AA5\u0AC0');
+}
+/* Text wrapped in EN() is left in English by the sweep. The running head and
+   the footer are the case that matters: a Gujarati file forwarded to someone
+   else still has to be recognisable as "Tempsens Instruments \u00B7 Institutional
+   Research Report", and a reader searching a folder looks for that, not for a
+   translation of it. */
+var EN_OPEN = '\u0011', EN_CLOSE = '\u0012';
+function EN(t){ return EN_OPEN + t + EN_CLOSE; }
+function stripEnMarks(t){
+  return String(t).replace(/[\u0011\u0012]/g, '');
 }
 function guSweep(html){
   /* Entities carry Latin letters that are markup, not words. Park them. */
@@ -1561,10 +1711,14 @@ function guSweep(html){
   s = s.replace(/<script[\s\S]*?<\/script>|<style[\s\S]*?<\/style>|<[^>]*>|[^<]+/g, function(chunk){
     if(chunk.charAt(0) === '<') return chunk;        /* a tag or a skipped block */
     if(!/[A-Za-z]/.test(chunk)) return chunk;
-    return guWords(chunk);
+    /* anything between the EN marks is handed back untouched */
+    return chunk.split(/(\u0011[^\u0012]*\u0012)/).map(function(part){
+      if(part.charAt(0) === '\u0011') return part;
+      return /[A-Za-z]/.test(part) ? guWords(part) : part;
+    }).join('');
   });
 
-  return s.replace(/\u0001(\d+)\u0002/g, function(_, n){ return ents[Number(n)]; });
+  return stripEnMarks(s.replace(/\u0001(\d+)\u0002/g, function(_, n){ return ents[Number(n)]; }));
 }
 
 /* Look a string up in the app vocabulary, case-insensitively, and handle
@@ -2328,6 +2482,7 @@ function shell(title, bodyCls, pages, extraCss){
      fitting script, which are Latin by necessity. */
   var ttl = e(title);
   if(bodyCls === 'gu'){ ttl = guSweep(ttl); pages = guSweep(pages); }
+  else { ttl = stripEnMarks(ttl); pages = stripEnMarks(pages); }
   return '<!DOCTYPE html><html lang="'+(bodyCls==='gu'?'gu':'en')+'"><head><meta charset="utf-8">'
     + '<title>'+ttl+'</title><style>'+CSS+(extraCss||'')+'</style></head><body class="'+bodyCls+'">'
     + pages + '<!--FIT-->' + AUTOFIT + '</body></html>';
@@ -2391,7 +2546,12 @@ var AUTOFIT = '<script>(function(){'
      page — Strengths at full size, Weaknesses a step smaller, and nothing to
      explain why. The tightest page now sets the factor and every page adopts
      it, so the document reads at a single size throughout. */
-  + 'var bs=[].slice.call(document.querySelectorAll(".page > .body"));'
+  /* A document with its own packer has already grown pages and, if it truly had
+     to, applied a single scale of its own. Running this pass over it as well
+     produced a second, different factor — two type sizes in one document, which
+     is the fault this pass exists to prevent. */
+  + 'var bs=document.body.hasAttribute("data-fitted") ? []'
+    + ' : [].slice.call(document.querySelectorAll(".page > .body"));'
   + 'var need=1;'
   + 'bs.forEach(function(bd){'
     + 'var t=bd.clientHeight; if(!t) return;'
@@ -2419,13 +2579,13 @@ var AUTOFIT = '<script>(function(){'
 function head(p, label){
   /* The company name stays in Latin script — it is a proper noun. The page
      label does not: it is ours, and in the Gujarati edition it is Gujarati. */
-  return '<div class="rh"><div class="l en">'+e(S(p.meta.short_name)||S(p.meta.company))+'</div>'
-       + '<div class="r">'+e(label)+'</div></div>';
+  return '<div class="rh"><div class="l en">'+EN(e(S(p.meta.short_name)||S(p.meta.company)))+'</div>'
+       + '<div class="r">'+EN(e(label))+'</div></div>';
 }
 function foot(p, i, total, lang, docName){
   return '<div class="rfw">'
        + '<div class="rfn">'+e(L(lang,'footnote'))+'</div>'
-       + '<div class="rf"><div><span>'+e(docName||L(lang,'doc_report'))+'</span><span class="en"> &nbsp;·&nbsp; '
+       + '<div class="rf"><div><span>'+EN(e(docName||L('en','doc_report')))+'</span><span class="en"> &nbsp;·&nbsp; '
        + e(dmy(p.meta.analysis_datetime)) + '</span> &nbsp;·&nbsp; ' + e(L(lang,'research_only'))
        + '</div><div class="en"><b class="pgnum">'+i+'</b> / <span class="pgtot">'+total+'</span></div></div>'
        + '</div>';
@@ -2442,7 +2602,20 @@ function tbl(cols, rows, opts){
   opts = opts || {};
   var num = opts.num || [];
   var h = cols.map(function(c,i){ return '<th'+(num.indexOf(i)>=0?' class="n en"':'')+'>'+e(c)+'</th>'; }).join('');
-  var b = rows.map(function(r){
+  /* A row whose every cell is empty is a row the payload never filled. Printing
+     it produced three ruled lines carrying nothing but a dash under the
+     earnings-quality flags — dead space that reads as a rendering fault. Total
+     rows are exempt: a zero total is a real answer. */
+  var live = rows.filter(function(r){
+    if(r && r.__cls) return true;
+    var cells = (r && r.cells) || r || [];
+    return cells.some(function(c){
+      var t = String(c == null ? '' : c).replace(/<[^>]*>/g,'').replace(/&[#A-Za-z0-9]+;/g,' ');
+      return t.replace(/[\s\u2014\u2013.\-]/g,'') !== '';
+    });
+  });
+  if(!live.length) return '';
+  var b = live.map(function(r){
     var cls = r.__cls ? ' class="'+r.__cls+'"' : '';
     var cells = (r.cells||r).map(function(c,i){
       return '<td'+(num.indexOf(i)>=0?' class="n en"':'')+'>'+(c==null?'—':c)+'</td>'; }).join('');
@@ -2511,7 +2684,7 @@ function cover(p, lang, docTitle, pages){
   ];
   var inner =
     '<div style="height:7mm"></div>'
-    + '<div class="eyebrow en">'+e(docTitle)+' &nbsp;·&nbsp; '+e(A(lang,m.ipo_type||'Mainboard'))+' &nbsp;·&nbsp; '+e(L(lang,'india'))+'</div>'
+    + '<div class="eyebrow en">'+EN(e(docTitle))+' &nbsp;·&nbsp; '+e(A(lang,m.ipo_type||'Mainboard'))+' &nbsp;·&nbsp; '+e(L(lang,'india'))+'</div>'
     + '<h1 class="en" style="margin-top:2mm">'+e(m.company||'')+'</h1>'
     + '<div class="mut" style="margin-top:1mm;font-size:8pt">'+sectorHtml(p,lang)
       + (m.sector?' &nbsp;·&nbsp; ':'')+e(dmy(m.analysis_datetime))+'</div>'
@@ -2653,7 +2826,7 @@ function buildReport(p, lang){
   lang = lang || 'en';
   var TOT = 10, out = '';
   var m = p.meta||{}, f = p.financials||{}, c = p.company||{}, pe = p.people||{}, d = p.decision||{}, ipo = p.ipo||{};
-  out += cover(p, lang, L(lang,'doc_report'), TOT);
+  out += cover(p, lang, L('en','doc_report'), TOT);
 
   /* Every derived value used by the sections is declared here, once. The
      sections are emitted in reading order rather than the order they were
@@ -2958,7 +3131,7 @@ function buildExec(p, lang){
   p = safePayload(p);
   lang = lang || 'en';
   var TOT = 4, out = '', f = p.financials||{}, d = p.decision||{}, m = p.meta||{};
-  out += cover(p, lang, L(lang,'doc_exec'), TOT);
+  out += cover(p, lang, L('en','doc_exec'), TOT);
 
   out += page(p, 2, TOT, L(lang,'pg_numbers'), sec('03', L(lang,'three_yr'))
     + chartFinancials(p, lang)
@@ -3304,6 +3477,7 @@ function buildVisual(p, lang){
 
   var vttl = e(m.company||'')+' — Investment Summary';
   if(lang === 'gu'){ vttl = guSweep(vttl); p1 = guSweep(p1); p2 = guSweep(p2); }
+  else { vttl = stripEnMarks(vttl); p1 = stripEnMarks(p1); p2 = stripEnMarks(p2); }
   return '<!DOCTYPE html><html lang="'+(lang==='gu'?'gu':'en')+'"><head><meta charset="utf-8">'
     + '<title>'+vttl+'</title><style>'+CSS+VCSS+'</style></head>'
     + '<body class="'+(lang==='gu'?'gu':'')+'" style="background:#E9E7E1">'+p1+p2
@@ -3313,7 +3487,12 @@ function buildVisual(p, lang){
       ' The CONTENT is scaled, never the sheet: zooming the page box itself made' +
       ' the exported PNG narrower than A4, so pages came out at different widths' +
       ' and messaging apps stretched them. */' +
-      'var MIN=0.66;' +
+      '/* The floor was 0.66, which was not low enough for Gujarati: page 1 needed'
+      + ' about 0.61 and was clamped, so the surplus was clipped by the wrapper'
+      + ' and the last lines of the objective simply vanished. Losing text is'
+      + ' worse than small text, so the floor is lower and a second measurement'
+      + ' below confirms what actually fits. */' +
+      'var MIN=0.50;' +
       'var ps=document.querySelectorAll(".vpage");' +
       'for(var i=0;i<ps.length;i++){ var el=ps[i];' +
         'var w=document.createElement("div");' +
@@ -3334,6 +3513,14 @@ function buildVisual(p, lang){
           'w.style.width=(100/z)+"%";' +
           'w.style.transformOrigin="top left";' +
           'w.style.transform="scale("+z+")";' +
+          '/* Measure again. The first pass scales on the natural height, but a'
+          + ' narrower box re-wraps its text and can grow taller than predicted,'
+          + ' so one correction is applied where it still does not fit. */' +
+          'for(var t=0;t<4 && w.scrollHeight*z>target+1;t++){' +
+            'z=Math.max(MIN, Math.floor((target/w.scrollHeight)*1000)/1000);' +
+            'w.style.width=(100/z)+"%";' +
+            'w.style.transform="scale("+z+")";' +
+          '}' +
         '}' +
       '}' +
     '})();<\/script>'
@@ -3417,8 +3604,8 @@ function buildScorecard(p, lang){
      actually need and removes the rest. Packing beats scaling: html2canvas
      renders a CSS-zoomed box with the wrong advance widths, which made Gujavati
      words on a scaled page overlap into each other. */
-  var pages = page(p,1,2,L(lang,'doc_score'),'<div class="sc-main">'+head+body+'</div>'+tail,lang,L(lang,'doc_score'))
-            + page(p,2,2,L(lang,'doc_score'),'<div class="sc-spill"></div>'+tail,lang,L(lang,'doc_score'));
+  var pages = page(p,1,2,L('en','doc_score'),'<div class="sc-main">'+head+body+'</div>'+tail,lang,L('en','doc_score'))
+            + page(p,2,2,L('en','doc_score'),'<div class="sc-spill"></div>'+tail,lang,L('en','doc_score'));
 
   /* Fixed geometry for every scoring table, so LINE ITEM, the bar, SCORE, MAX
      and BASIS sit at identical positions in every block and on both pages. */
@@ -3456,6 +3643,8 @@ function buildScorecard(p, lang){
            + '[data-dense="3"] .sc-top h1{font-size:16pt}\n';
 
   var FIT = '<script>(function(){'
+    /* This document packs itself; the generic guard must not scale it again. */
+    + 'document.body.setAttribute("data-fitted","1");'
     + 'var ps=[].slice.call(document.querySelectorAll(".page"));'
     + 'var boxes=ps.map(function(el){ return el.querySelector(".sc-main")||el.querySelector(".sc-spill"); });'
     + 'function avail(el){ var bd=el.querySelector(".body"), d=bd.querySelector(".sc-disc");'
@@ -3526,10 +3715,23 @@ var CH = { teal:'#149C8B', navy:'#1F6FB2', navy2:'#2E6BB8', amber:'#D69A0E',
 
 function chNum(v){ return (v==null || isNaN(v)) ? null : Number(v); }
 function chMax(a){ var m = 0; a.forEach(function(x){ if(chNum(x)!=null) m = Math.max(m, Math.abs(Number(x))); }); return m || 1; }
+/* A chart with nothing plottable must draw nothing at all. Returning an empty
+   SVG instead left a full-height blank rectangle holding space in the middle of
+   the page — which is what put a chart-shaped hole above the cash-flow table
+   when a payload carried no FY24 figures and no investing or financing lines. */
+function chHasData(){
+  for(var i = 0; i < arguments.length; i++){
+    var a = arguments[i];
+    if(!Array.isArray(a)) continue;
+    for(var j = 0; j < a.length; j++){ if(chNum(a[j]) != null) return true; }
+  }
+  return false;
+}
 
 /* Column chart with a value label on each bar. Negative values drop below the axis. */
 function chartColumns(labels, values, opts){
   opts = opts || {};
+  if(!chHasData(values)) return '';
   var W = opts.w || 520, H = opts.h || 150, pad = 22;
   var vals = values.map(chNum);
   var hasNeg = vals.some(function(v){ return v != null && v < 0; });
@@ -3566,6 +3768,7 @@ function chartColumns(labels, values, opts){
 /* Columns plus a line on a second scale — revenue bars with a margin line. */
 function chartColumnsLine(labels, bars, line, opts){
   opts = opts || {};
+  if(!chHasData(bars, line)) return '';
   var W = opts.w || 520, H = opts.h || 165, pad = 24;
   var bv = bars.map(chNum), lv = line.map(chNum);
   var bmx = chMax(bv), lmx = chMax(lv);
@@ -3730,6 +3933,7 @@ function bandColourHex(v){ v=Number(v)||0;
 /* Waterfall for use of proceeds. */
 function chartWaterfall(items, lang){
   if(!items.length) return '';
+  if(!chHasData(items.map(function(x){ return x.amount_cr; }))) return '';
   var W = 520, H = 150, pad = 20, base = H - 34;
   var mx = chMax(items.map(function(x){ return x.amount_cr; }));
   var slot = (W - pad*2)/items.length, bw = Math.min(slot*0.6, 54);
@@ -4613,7 +4817,7 @@ function irSections(lang, gate){
      jumps to the section. */
   var sc0 = (p.verdict||{}).scores||{}, bands0 = (p.verdict||{}).score_bands||{};
   var tocPage = '<div style="height:3mm"></div>'
-    + '<div class="eyebrow en">'+e(L(lang,'ir_title'))+' &nbsp;·&nbsp; '
+    + '<div class="eyebrow en">'+EN(e(L('en','ir_title')))+' &nbsp;·&nbsp; '
       + e(A(lang,m.ipo_type||'Mainboard'))+' &nbsp;·&nbsp; '+e(L(lang,'india'))+'</div>'
     + '<h1 class="en" style="margin-top:1.5mm;font-size:19pt">'+e(m.company||'')+'</h1>'
     + '<div class="mut" style="margin-top:1mm;font-size:8pt">'+sectorHtml(p,lang)
@@ -4636,13 +4840,13 @@ function irSections(lang, gate){
             + '<b>'+e(t.title)+'</b><i class="ir-toc-pg en" data-for="s'+t.no+'"></i></a>';
       }).join('') + '</div>';
 
-  var shells = page(p, 1, 25, L(lang,'ir_title'),
+  var shells = page(p, 1, 25, L('en','ir_title'),
       '<div class="ir-toc-page">'+tocPage+'</div><div class="grow"></div>',
-      lang, L(lang,'doc_inst'));
+      lang, L('en','doc_inst'));
   for(var i = 2; i <= 34; i++){
-    shells += page(p, i, 25, L(lang,'ir_title'),
+    shells += page(p, i, 25, L('en','ir_title'),
       '<div class="ir-box">' + (i === 2 ? B.join('') : '') + '</div><div class="grow"></div>',
-      lang, L(lang,'doc_inst'));
+      lang, L('en','doc_inst'));
   }
 
   var CSS2 = '\n.ir-blk{ break-inside:avoid; margin-bottom:4.5mm; }\n'
@@ -4701,26 +4905,50 @@ function irSections(lang, gate){
     + '.ir-box{ display:block; }\n';
 
   var FIT = '<script>(function(){'
+    /* This document packs itself; the generic guard must not scale it again. */
+    + 'document.body.setAttribute("data-fitted","1");'
     + 'var ps=[].slice.call(document.querySelectorAll(".page")).slice(1);'
     + 'var boxes=ps.map(function(el){ return el.querySelector(".ir-box"); });'
     + 'function avail(el){ return el.querySelector(".body").clientHeight - 4; }'
-    + 'for(var i=0;i<ps.length-1;i++){'
+    /* Move whatever will not fit on page i onto page i+1. A block taller than a
+       whole page is divided at its own child boundaries rather than being left
+       to spill, so a long table continues instead of losing its tail. */
+    + 'function drain(i){'
       + 'var A=avail(ps[i]), guard=0;'
       + 'while(boxes[i].scrollHeight>A && guard++<600){'
         + 'var kids=boxes[i].querySelectorAll(".ir-blk");'
-        + 'if(!kids.length) break;'
+        + 'if(!kids.length) return false;'
         + 'if(kids.length===1){'
           + 'var only=kids[0];'
-          + 'if(only.children.length<2) break;'
+          + 'if(only.children.length<2) return false;'
           + 'var carry=document.createElement("div"); carry.className="ir-blk";'
           + 'while(only.scrollHeight>A-8 && only.children.length>1){'
             + 'carry.insertBefore(only.children[only.children.length-1], carry.firstChild); }'
-          + 'if(!carry.children.length) break;'
+          + 'if(!carry.children.length) return false;'
           + 'boxes[i+1].insertBefore(carry, boxes[i+1].firstChild);'
           + 'continue;'
         + '}'
         + 'boxes[i+1].insertBefore(kids[kids.length-1], boxes[i+1].firstChild);'
       + '}'
+      + 'return boxes[i].scrollHeight<=A;'
+    + '}'
+    + 'for(var i=0;i<ps.length-1;i++) drain(i);'
+    /* Grow the document rather than squeeze it. The shells are written before
+       anything is measured, so a payload with more prose than usual can fill
+       every one of them and still have blocks left over — and `.page` is
+       overflow:hidden, which means the surplus does not merely look bad, it is
+       gone from the PDF without a trace. A fresh shell is cloned from the last
+       one and the overflow drains into it, as many times as it takes. */
+    + 'var grow=0;'
+    + 'while(boxes[boxes.length-1].scrollHeight>avail(ps[ps.length-1]) && grow++<40){'
+      + 'var lastPg=ps[ps.length-1];'
+      + 'var np=lastPg.cloneNode(true);'
+      + 'var nb=np.querySelector(".ir-box");'
+      + 'if(!nb) break;'
+      + 'while(nb.firstChild) nb.removeChild(nb.firstChild);'
+      + 'lastPg.parentNode.insertBefore(np, lastPg.nextSibling);'
+      + 'ps.push(np); boxes.push(nb);'
+      + 'if(!drain(ps.length-2)) break;'
     + '}'
     + 'for(var j=ps.length-1;j>=0;j--){'
       + 'if(!boxes[j].children.length) ps[j].parentNode.removeChild(ps[j]);'
@@ -4729,6 +4957,51 @@ function irSections(lang, gate){
     + 'for(var k=0;k<live.length;k++){'
       + 'var t=live[k].querySelector(".pgtot"); if(t) t.textContent=live.length;'
       + 'var nm=live[k].querySelector(".pgnum"); if(nm) nm.textContent=(k+1);'
+    + '}'
+    /* Last resort, for the one block that is taller than a page and cannot be
+       divided. transform:scale is used rather than zoom because html2canvas
+       reproduces transform faithfully and zoom corrupts Gujarati advance
+       widths. Nothing should reach this now, but overflow:hidden means a page
+       that does would lose text silently, so the guard stays. */
+    /* ONE factor for the whole document, not one per page. Scaling each page by
+       whatever it happened to need is what made type sizes differ from page to
+       page — the tightest page sets the factor and every page uses it, so the
+       document reads as one document. */
+    /* Page 1 carries the contents rather than an .ir-box, so it was outside the
+       packer entirely — and a contents list one line too long ran into the
+       footer. Every page now offers something scalable: its .ir-box where it has
+       one, and otherwise its body content wrapped for the purpose. */
+    + 'function target(pg){'
+      + 'var bd=pg.querySelector(".body"); if(!bd) return null;'
+      + 'var box=bd.querySelector(".ir-box");'
+      + 'if(box) return box;'
+      + 'if(bd.children.length===1 && bd.firstElementChild.className==="ir-fitwrap")'
+        + 'return bd.firstElementChild;'
+      + 'var w=document.createElement("div"); w.className="ir-fitwrap";'
+      + 'while(bd.firstChild) w.appendChild(bd.firstChild);'
+      + 'bd.appendChild(w); return w;'
+    + '}'
+    + 'var need=1;'
+    + 'live.forEach(function(pg){'
+      + 'var bd=pg.querySelector(".body"); if(!bd) return;'
+      + 'var box=target(pg); if(!box) return;'
+      + 'var A=bd.clientHeight-2;'
+      + 'if(box.scrollHeight<=A) return;'
+      + 'need=Math.min(need, A/box.scrollHeight);'
+    + '});'
+    + 'if(need<1){'
+      + 'var z=Math.max(0.35, Math.floor(need*1000)/1000);'
+      + 'live.forEach(function(pg){'
+        + 'var bd=pg.querySelector(".body"); if(!bd) return;'
+        + 'var box=target(pg); if(!box) return;'
+        + 'var A=bd.clientHeight-2;'
+        + 'var wrap=document.createElement("div");'
+        + 'wrap.style.cssText="height:"+A+"px;overflow:hidden";'
+        + 'box.parentNode.insertBefore(wrap, box); wrap.appendChild(box);'
+        + 'box.style.width=(100/z)+"%";'
+        + 'box.style.transformOrigin="top left";'
+        + 'box.style.transform="scale("+z+")";'
+      + '});'
     + '}'
     /* Fill the contents with the page each section actually landed on. The
        packing above decides that, so it cannot be known when the HTML is

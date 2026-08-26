@@ -1,8 +1,56 @@
-# IPO Analyst — standalone web app  ·  v4.6  ·  build 2026.08.25.3
+# IPO Analyst — standalone web app  ·  v4.6  ·  build 2026.08.26.1
 
 A single-page web app that turns the institutional IPO research protocol into something you can
 run from an icon on your phone. It works on Android and iPhone/iPad, installs to the home screen,
 runs full-screen with no address bar, and works offline for everything except the AI call itself.
+
+## What changed in v4.6 build 2026.08.26.1
+
+**Nothing runs off a page any more.** One page of the institutional report came out of the PDF with
+type a third larger than every other page and its last lines under the footer, above a blank
+rectangle where a chart should have been. Three separate causes:
+
+- **Charts with nothing to plot** returned an empty SVG at full height, so a payload with no FY24
+  cash-flow figures and no investing or financing lines left a chart-shaped hole holding space.
+  A chart with no plottable value now renders nothing at all.
+- **The packer ran out of pages.** It pushed overflow forward but stopped one page short of the end
+  and gave up whenever a block would not divide — and `.page` is `overflow:hidden`, so the surplus
+  did not merely look bad, it left the PDF without a trace. The packer now **grows** the document,
+  cloning a fresh page shell as many times as it takes; the contents page, which sits outside the
+  block flow, was brought inside it too. Where a single indivisible block is still taller than a
+  page, one scale factor is computed for the **whole document** so the type size never varies from
+  page to page, and the generic guard stands down for a document that packs itself.
+- **The rasteriser stretched every capture into a fixed A4 rectangle.** html2canvas decides for
+  itself how much of an element to photograph, so a page it measured short came out magnified and
+  clipped — while the text layer, computed from the DOM, stayed correct. That mismatch is why one
+  page looked like a different document. The capture is now pinned to the page element's own box,
+  and the image is drawn at the aspect ratio it actually has.
+
+A row whose every cell is empty is also dropped now, instead of printing ruled lines carrying a
+single dash.
+
+All five documents are checked in both languages, at normal size and again with every prose field
+inflated six-fold — sixty page-overflow assertions on every build.
+
+**Gujarati reads like Gujarati.** Three changes:
+
+- **Real words, not phonetic spellings.** `Rs 71.07 cr` was coming out as `સૈં 71.07 ક્ર`; it is
+  now `રૂ. 71.07 કરોડ`. Director is નિયામક rather than ડિરેક્ટર, Board of Directors is નિયામક મંડળ,
+  Chairman is અધ્યક્ષ, Auditor is હિસાબ-તપાસનીસ, Gulf is અખાતી દેશો, `n.a.` is લાગુ નથી.
+- **The app no longer fakes prose.** Word-by-word substitution is honest for a label or a short noun
+  phrase; it cannot produce a grammatical Gujarati sentence, because the word order is not the same.
+  Run over a bull-case paragraph it gave Gujarati vocabulary in English syntax — "તેજી કિસ્સો છે
+  દુર્લભતા પ્લુસ ઇંદિગેનિસતિઓન" — which is worse than the English it replaced. Runs longer than four
+  words, or carrying an English function word, are now left in English unless the model supplied a
+  translation in `gu.text`. Section 51 of the framework says so plainly, so the model knows the
+  consequence of skipping one.
+- **The running head and the footer stay English** in both editions — company name and document name
+  — so a Gujarati file forwarded to someone is still recognisable in a folder listing. Body headings
+  remain Gujarati.
+
+**Find IPOs: closed issues run backwards.** OPEN and UPCOMING sort by the next deadline, earliest
+first. CLOSED now sorts most-recently-closed first — an issue that closed yesterday is still news,
+one from a fortnight ago is history.
 
 ## What changed in v4.6
 
