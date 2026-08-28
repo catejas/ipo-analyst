@@ -1,8 +1,29 @@
-# IPO Analyst — standalone web app  ·  v4.6  ·  build 2026.08.28.1
+# IPO Analyst — standalone web app  ·  v4.6  ·  build 2026.08.28.3
 
 A single-page web app that turns the institutional IPO research protocol into something you can
 run from an icon on your phone. It works on Android and iPhone/iPad, installs to the home screen,
 runs full-screen with no address bar, and works offline for everything except the AI call itself.
+
+## What changed in v4.6 build 2026.08.28.3
+
+**A company row is three lines, never four.** Adding the price band pushed the second line over the
+width a phone gives it — "Mainboard · Closes 31-08-2026 · Imported 27-08-2026 · Perplexity" wants
+340px in 314px — so it wrapped and the row grew a fourth line. Both detail lines are now `nowrap` and
+shrink to fit: one proportional step down, floor 9.5px, and below that a fraction of a pixel off the
+tracking rather than going smaller. Rows that already fit are untouched, which is most of them, so
+short rows are not punished to rescue the long ones. Verified down to a 360px screen with the worst
+row it can hold — a 33-character name, a four-figure band and the longest tool name — and the fit is
+redone when the phone is rotated.
+
+## What changed in v4.6 build 2026.08.28.2
+
+**The company row says the same thing on all three tabs.** The Report and Score Card pickers were
+built with two lines and lost the price band and GMP line the Analyse picker has always had. All
+three now share one row builder, so a company reads identically wherever you meet it: status tag and
+name, then board · closes · imported · tool, then **Price Band : ▼₹285 – ▲₹300 · GMP +₹132 · GMP
++44.0%**. The band comes from the payload the analysis was built on; the premium prefers a live entry
+for the same company in the search list, because an imported GMP is what the market said the day the
+research was run and showing that as today's figure would mislead.
 
 ## What changed in v4.6 build 2026.08.28.1
 

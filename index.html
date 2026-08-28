@@ -270,7 +270,8 @@ details .in{padding:0 14px 14px;}
 .pickpanel .pk:last-child{border-bottom:0;}
 .pickpanel .pk:active,.pickpanel .pk.on{background:var(--surf);}
 .pickpanel .pk b{display:block;font-size:14.5px;font-weight:700;line-height:1.3;}
-.pickpanel .pk span{display:block;font-size:11.5px;color:var(--ink3);margin-top:3px;}
+.pickpanel .pk span{display:block;font-size:11.5px;color:var(--ink3);margin-top:3px;
+  white-space:nowrap;overflow:hidden;}
 .pickpanel .pkempty{padding:14px;font-size:13px;color:var(--ink3);}
 /* Three lines per row: name, window, money. The money line carries the GMP, so
    it is set a shade darker than the window line — it is the number being scanned. */
@@ -355,7 +356,7 @@ body.previewing{overflow:hidden;}
 .lg-row i{flex:0 0 auto;}
 .footer{font-size:11.5px;color:var(--ink3);text-align:center;padding:24px 8px;line-height:1.6;}
 </style>
-<script>window.APP_BUILD="2026.08.28.1";</script>
+<script>window.APP_BUILD="2026.08.28.3";</script>
 </head>
 <body>
 
@@ -3561,10 +3562,43 @@ function saveToLibrary(rec){
 function recName(r){
   return str(r.company) || str((r.data && r.data.meta || {}).company) || 'Untitled';
 }
+/* A saved analysis, shaped like a row of the search list, so ipoStatus, ipoSort
+   and pkLine3 can all read it without knowing which of the two it came from.
+
+   The price band and the premium come from the payload the analysis was built
+   on. The premium is the one figure that moves after the import, so a live
+   entry for the same company in the search list wins — an imported GMP is what
+   the market said the day you ran the research, and showing that as today's
+   number would be misleading. The band does not move, so the payload's is kept
+   whichever way round. */
 function recIpo(r){
-  var m = (r.data && r.data.meta) || {};
-  return { company: recName(r), open_date: m.open_date, close_date: m.close_date,
-           type: m.ipo_type };
+  var d = (r && r.data) || {}, m = d.meta || {}, ipo = d.ipo || {};
+  var gmp = ipo.gmp || {};
+  var out = { company: recName(r), open_date: m.open_date, close_date: m.close_date,
+              type: m.ipo_type,
+              price_band: ipo.price_band,
+              gmp_rs:  (gmp.value !== undefined ? gmp.value : undefined),
+              gmp_pct: (gmp.pct   !== undefined ? gmp.pct   : undefined) };
+  var live = liveIpo(out.company);
+  if(live){
+    if(!out.price_band && live.price_band) out.price_band = live.price_band;
+    var lg = gmpRs(live), lp = gmpPct(live);
+    if(!isNaN(lg)) out.gmp_rs = lg;
+    if(!isNaN(lp)) out.gmp_pct = lp;
+    if(!out.open_date)  out.open_date  = live.open_date;
+    if(!out.close_date) out.close_date = live.close_date;
+    if(!out.type)       out.type       = live.type;
+  }
+  return out;
+}
+/* The search-list entry for a company, matched on the name as stored. */
+function liveIpo(name){
+  var n = String(name || '').trim().toLowerCase();
+  if(!n || !window.IPO_LIST || !IPO_LIST.length) return null;
+  for(var i = 0; i < IPO_LIST.length; i++){
+    if(String(str(IPO_LIST[i].company) || '').trim().toLowerCase() === n) return IPO_LIST[i];
+  }
+  return null;
 }
 function analysisRows(filter){
   var q = (filter || '').trim().toLowerCase();
@@ -3586,7 +3620,8 @@ function drawAnalysisPanel(hostSel, currentId, filter){
   }
   host.innerHTML = rows.map(function(r){
     var m = (r.data && r.data.meta) || {};
-    var tag = ipoStatus(recIpo(r), today);
+    var x = recIpo(r);
+    var tag = ipoStatus(x, today);
     var chip = tag ? '<i class="pkchip ' + tag.toLowerCase() + '">' + esc(tag) + '</i>' : '';
 
     var l2 = [];
@@ -3595,11 +3630,17 @@ function drawAnalysisPanel(hostSel, currentId, filter){
     l2.push('Imported ' + esc(dmyTs(r.ts)));
     if(r.source) l2.push(esc(str(r.source)));
 
+    /* the same price-band and GMP line the Analyse picker prints */
+    var l3 = pkLine3(x);
+
     var nm = recName(r);
     return '<button type="button" class="pk' + (r.id === currentId ? ' on' : '') + '" role="option"'
       + ' data-rec="' + esc(r.id) + '"><b>' + chip + esc(nm) + '</b>'
-      + '<span>' + l2.join(' · ') + '</span></button>';
+      + '<span>' + l2.join(' · ') + '</span>'
+      + (l3.length ? '<span class="pkl3">' + l3.join(' · ') + '</span>' : '')
+      + '</button>';
   }).join('');
+  pkFit(host);
 }
 /* A stored timestamp as DD-MM-YYYY, to match every other date in the app. */
 function dmyTs(ts){
@@ -4237,6 +4278,13 @@ function mergeIpoList(list){
    a week ago called an IPO "Upcoming"; it has since opened and closed, and a
    stale tag on a stored entry is worse than no tag at all. Dates are ISO in
    storage, so a plain string compare orders them correctly. */
+/* A rotated phone changes how much room a row has, so the fit is redone. */
+window.addEventListener('resize', function(){
+  ['#ipoPanel', '#repPanel', '#scPanel'].forEach(function(sel){
+    try{ pkFit(sel); }catch(e){}
+  });
+});
+
 function todayISO(){
   var d = new Date(), p2 = function(v){ return (v<10?'0':'')+v; };
   return d.getFullYear()+'-'+p2(d.getMonth()+1)+'-'+p2(d.getDate());
@@ -4341,36 +4389,9 @@ function drawPicker(filter){
     if(x.open_date)  l2.push('Opens '+esc(dmy(x.open_date)));
     if(x.close_date) l2.push('Closes '+esc(dmy(x.close_date)));
 
-    /* line 3 — the price band, labelled, with a coloured arrow and a rupee sign
-       on each end, then the grey market premium in rupees and as a percentage.
-       When no premium is quoted the slot still prints, so an empty GMP reads as
-       "the market has not quoted one" rather than as a broken row. */
-    var l3 = [];
-    var ends = bandEnds(x);
-    if(x.price_band){
-      var band = (!isNaN(ends[0]) && !isNaN(ends[1]) && ends[0] !== ends[1])
-        ? '<span class="bandlo"><span class="ar">&#9660;</span>\u20B9' + fmtIn(ends[0]) + '</span>'
-          + '<span class="pklbl"> &ndash; </span>'
-          + '<span class="bandhi"><span class="ar">&#9650;</span>\u20B9' + fmtIn(ends[1]) + '</span>'
-        : '<span class="bandhi">\u20B9' + esc(str(x.price_band)) + '</span>';
-      l3.push('<span class="pklbl">Price Band :</span> ' + band);
-    }
-    var g = gmpRs(x), gp = gmpPct(x);
-    if(isNaN(g) && isNaN(gp)){
-      l3.push('<span class="gmpna">GMP not quoted</span>');
-    } else {
-      /* green when the premium is positive, red when it is negative, neutral at
-         zero — a nil premium is not bad news, it is no news. */
-      var cls = function(v){ return v > 0 ? 'gmpup' : v < 0 ? 'gmpdn' : 'gmpna'; };
-      if(!isNaN(g)){
-        l3.push('<span class="pklbl">GMP</span> <span class="' + cls(g)
-          + '">' + (g > 0 ? '+' : g < 0 ? '\u2212' : '') + '\u20B9' + fmtIn(Math.abs(g)) + '</span>');
-      }
-      if(!isNaN(gp)){
-        l3.push('<span class="pklbl">GMP</span> <span class="' + cls(gp)
-          + '">' + (gp > 0 ? '+' : gp < 0 ? '\u2212' : '') + Math.abs(gp).toFixed(1) + '%</span>');
-      }
-    }
+    /* line 3 — price band and GMP, built by the shared pkLine3 so the Report and
+       Score Card pickers print exactly the same row. */
+    var l3 = pkLine3(x);
 
     var nm = str(x.company);
     return '<button type="button" class="pk'+(nm.toLowerCase()===cur?' on':'')+'" role="option"'
@@ -4379,6 +4400,93 @@ function drawPicker(filter){
          + (l3.length ? '<span class="pkl3">'+l3.join(' · ')+'</span>' : '')
          + '</button>';
   }).join('');
+  pkFit(host);
+}
+
+/* A company row is three lines and only ever three lines.
+
+   "Mainboard · Closes 31-08-2026 · Imported 27-08-2026 · Perplexity" needs 340px
+   in the 314px a phone gives it, so it wrapped and the row became four lines
+   deep — and a wide band or a long tool name does the same to line 3. Picking a
+   smaller fixed size for everything would punish every short row to rescue the
+   long ones, and shortening the words throws away what they say.
+
+   So each line is measured and, only if it overruns, shrunk to fit: one
+   proportional step down, then a check, with a floor of 9.5px below which the
+   line would stop being readable and is left to clip instead. Rows that already
+   fit are untouched, which is most of them. */
+var PK_MIN_PX = 9.5, PK_BASE_PX = 11.5, PK_MIN_TRACK = -0.35;
+function pkFitLine(el, avail){
+  if(!el) return;
+  el.style.fontSize = ''; el.style.letterSpacing = ''; el.style.textOverflow = '';
+  if(el.scrollWidth <= avail + 0.5) return;
+  var size = Math.max(PK_MIN_PX, PK_BASE_PX * avail / el.scrollWidth);
+  el.style.fontSize = size.toFixed(2) + 'px';
+  /* Rounding and hinting can leave it a hair wide; one more nudge settles it. */
+  if(el.scrollWidth > avail + 0.5 && size > PK_MIN_PX){
+    size = Math.max(PK_MIN_PX, size - 0.5);
+    el.style.fontSize = size.toFixed(2) + 'px';
+  }
+  if(el.scrollWidth <= avail + 0.5) return;
+  /* At the floor on a narrow phone the very longest rows are still a few per
+     cent over — a 33-character name with Perplexity and a four-figure band.
+     Tightening the tracking a fraction of a pixel buys that back without going
+     smaller, and these lines are Latin text and digits where a squeeze this
+     small is invisible. Only if even that fails does the line clip, with an
+     ellipsis, so it is obvious something was cut rather than mis-rendered. */
+  var n = (el.textContent || '').length;
+  if(n > 0){
+    var over = el.scrollWidth - avail;
+    el.style.letterSpacing = Math.max(PK_MIN_TRACK, -over / n).toFixed(3) + 'px';
+  }
+  if(el.scrollWidth > avail + 0.5) el.style.textOverflow = 'ellipsis';
+}
+function pkFit(hostSel){
+  var host = typeof hostSel === 'string' ? $(hostSel) : hostSel;
+  if(!host || host.classList.contains('hidden')) return;   /* nothing to measure */
+  [].forEach.call(host.querySelectorAll('.pk'), function(row){
+    var cs = getComputedStyle(row);
+    var avail = row.clientWidth - parseFloat(cs.paddingLeft || 0) - parseFloat(cs.paddingRight || 0);
+    if(!(avail > 0)) return;
+    [].forEach.call(row.querySelectorAll(':scope > span'), function(sp){ pkFitLine(sp, avail); });
+  });
+}
+
+/* The third line of a company row: the price band, labelled, with a coloured
+   arrow and a rupee sign on each end, then the grey market premium in rupees
+   and as a percentage. When no premium is quoted the slot still prints, so an
+   empty GMP reads as "the market has not quoted one" rather than as a broken
+   row. Shared by all three pickers — Analyse, Report and Score Card — because a
+   company row that says less on one tab than another is just confusing.
+   Returns the pieces, so the caller decides how to join them. */
+function pkLine3(x){
+  var l3 = [];
+  var ends = bandEnds(x);
+  if(x.price_band){
+    var band = (!isNaN(ends[0]) && !isNaN(ends[1]) && ends[0] !== ends[1])
+      ? '<span class="bandlo"><span class="ar">&#9660;</span>\u20B9' + fmtIn(ends[0]) + '</span>'
+        + '<span class="pklbl"> &ndash; </span>'
+        + '<span class="bandhi"><span class="ar">&#9650;</span>\u20B9' + fmtIn(ends[1]) + '</span>'
+      : '<span class="bandhi">\u20B9' + esc(str(x.price_band)) + '</span>';
+    l3.push('<span class="pklbl">Price Band :</span> ' + band);
+  }
+  var g = gmpRs(x), gp = gmpPct(x);
+  if(isNaN(g) && isNaN(gp)){
+    l3.push('<span class="gmpna">GMP not quoted</span>');
+  } else {
+    /* green when the premium is positive, red when it is negative, neutral at
+       zero — a nil premium is not bad news, it is no news. */
+    var cls = function(v){ return v > 0 ? 'gmpup' : v < 0 ? 'gmpdn' : 'gmpna'; };
+    if(!isNaN(g)){
+      l3.push('<span class="pklbl">GMP</span> <span class="' + cls(g)
+        + '">' + (g > 0 ? '+' : g < 0 ? '\u2212' : '') + '\u20B9' + fmtIn(Math.abs(g)) + '</span>');
+    }
+    if(!isNaN(gp)){
+      l3.push('<span class="pklbl">GMP</span> <span class="' + cls(gp)
+        + '">' + (gp > 0 ? '+' : gp < 0 ? '\u2212' : '') + Math.abs(gp).toFixed(1) + '%</span>');
+    }
+  }
+  return l3;
 }
 
 /* Indian grouping, and no trailing .00 on a whole-rupee band. */
@@ -4403,6 +4511,7 @@ function openPicker(){
      does not. */
   drawPicker('');
   $('#ipoPanel').classList.remove('hidden');
+  pkFit('#ipoPanel');
   $('#btnPick').setAttribute('aria-expanded','true');
 }
 function closePicker(){
@@ -4435,6 +4544,7 @@ function openRepPanel(){
   if(!libRead().length) return;
   drawAnalysisPanel('#repPanel', $('#libSel').value, '');
   $('#repPanel').classList.remove('hidden');
+  pkFit('#repPanel');   /* only measurable once it is on screen */
   $('#btnRepPick').setAttribute('aria-expanded','true');
 }
 function closeRepPanel(){
@@ -4465,6 +4575,7 @@ function openScPanel(){
   if(!libRead().length) return;
   drawAnalysisPanel('#scPanel', SC_ID, '');
   $('#scPanel').classList.remove('hidden');
+  pkFit('#scPanel');
   $('#btnScPick').setAttribute('aria-expanded','true');
 }
 function closeScPanel(){
