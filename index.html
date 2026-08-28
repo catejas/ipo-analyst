@@ -260,8 +260,10 @@ details .in{padding:0 14px 14px;}
   color:var(--ink2);font-size:15px;line-height:1;cursor:pointer;display:flex;align-items:center;
   justify-content:center;padding:0;}
 .pickbtn[aria-expanded="true"]{background:var(--grad-gold);border-color:transparent;color:var(--goldink);}
+/* Taller: at 340px only four rows were visible and every list needed
+   scrolling. Three-line rows are ~74px, so this shows seven or eight. */
 .pickpanel{margin-top:8px;border:1px solid var(--line);border-radius:13px;background:var(--surf2);
-  max-height:min(52vh,340px);overflow-y:auto;-webkit-overflow-scrolling:touch;
+  max-height:min(72vh,620px);overflow-y:auto;-webkit-overflow-scrolling:touch;
   box-shadow:var(--shadow);}
 .pickpanel .pk{display:block;width:100%;text-align:left;background:none;border:0;
   border-bottom:1px solid var(--line);color:var(--ink);font:inherit;padding:12px 14px;cursor:pointer;}
@@ -353,7 +355,7 @@ body.previewing{overflow:hidden;}
 .lg-row i{flex:0 0 auto;}
 .footer{font-size:11.5px;color:var(--ink3);text-align:center;padding:24px 8px;line-height:1.6;}
 </style>
-<script>window.APP_BUILD="2026.08.26.2";</script>
+<script>window.APP_BUILD="2026.08.28.1";</script>
 </head>
 <body>
 
@@ -414,14 +416,12 @@ body.previewing{overflow:hidden;}
     </div>
     <div id="searchMsg" class="note" style="margin-top:6px;"></div>
 
-    <label>IPO type</label>
-    <div class="seg" id="segType"></div>
-
-    <label>Investment horizon</label>
-    <div class="seg" id="segHorizon"></div>
-
-    <label>Investor type</label>
-    <div class="seg" id="segInvestor"></div>
+    <!-- IPO type, investment horizon and investor type were three segmented
+         controls here. Each was substituted into the prompt header and then
+         never referenced again anywhere in the framework — nothing downstream
+         branched on any of them — so they looked like settings that shaped the
+         analysis and shaped nothing. The prompt now states the defaults
+         directly: both boards, both horizons, every investor class. -->
 
     <!-- The language belongs to the documents, not to the research. The prompt
          always asks for both editions; which one you generate is chosen on the
@@ -451,8 +451,19 @@ body.previewing{overflow:hidden;}
   <div class="card">
     <h2>Report <span class="tag" id="repTag">empty</span></h2>
     <p class="hint" id="repMeta">Run an analysis to populate this tab.</p>
-    <label style="margin-top:0;">Saved analyses</label>
-    <select id="libSel"><option value="">— none saved —</option></select>
+    <label style="margin-top:0;" for="repPick">Company name</label>
+    <div class="pickwrap">
+      <input type="text" id="repPick" placeholder="No analysis saved yet"
+             autocomplete="off" readonly>
+      <button type="button" class="pickbtn" id="btnRepPick"
+              aria-label="Show saved analyses" aria-expanded="false">&#9662;</button>
+    </div>
+    <div id="repPanel" class="pickpanel hidden" role="listbox" aria-label="Saved analyses"></div>
+    <!-- The native select is kept, hidden. It is the single source of truth for
+         which analysis is current — every existing handler reads #libSel.value —
+         so the picker above sets it and dispatches change rather than the rest
+         of the app having to learn a new mechanism. -->
+    <select id="libSel" hidden><option value="">— none saved —</option></select>
     <div class="grid2" style="margin-top:9px;">
       <button class="btn sm pri" id="btnImport" style="margin:0;">Import Data</button>
       <button class="btn sm" id="btnDelRep" style="margin:0;">Delete</button>
@@ -560,9 +571,16 @@ body.previewing{overflow:hidden;}
   <div class="card">
     <h2>Score Card</h2>
     <div id="scDocs" class="hidden"><div id="scMsg" class="note"></div></div>
-    <label for="scName">Company</label>
-    <input type="text" id="scName" placeholder="Company name" autocomplete="off" readonly>
-    <p class="note" id="scNameNote">Follows the analysis selected on the Report tab.</p>
+    <label for="scName">Company name</label>
+    <div class="pickwrap">
+      <input type="text" id="scName" placeholder="No analysis selected"
+             autocomplete="off" readonly>
+      <button type="button" class="pickbtn" id="btnScPick"
+              aria-label="Show saved analyses" aria-expanded="false">&#9662;</button>
+    </div>
+    <div id="scPanel" class="pickpanel hidden" role="listbox" aria-label="Saved analyses"></div>
+    <p class="note" id="scNameNote">Pick a company to see its score. The worksheet mirrors the
+    imported payload and is not editable here.</p>
     <!-- How many of the 28 line items the last import actually carried. This
          used to sit on the Import Data card, where it was the only thing the
          import reported — and it said nothing about whether the reports would
@@ -2138,11 +2156,11 @@ function goTab(name){
 
 /* ============================== segmented controls ============== */
 var SEGS = {
-  segType:    { name:'type',     opts:['Mainboard','SME','Both'], def:'Both' },
-  segHorizon: { name:'horizon',  opts:['Both','Listing gain','3+ Years'], def:'Both' },
-  segInvestor:{ name:'investor', opts:['Retail','HNI','UHNI'], def:'HNI' },
-  /* No language control here any more. The prompt always asks for both
-     editions; the Report page decides which one you generate. */
+  /* Empty by design. Type, horizon and investor type were removed — see the
+     comment where their markup used to be. Language is not here either: the
+     prompt always asks for both editions and the Report page decides which one
+     you generate. The loop below still runs, so adding a control back is a
+     one-line change. */
 };
 Object.keys(SEGS).forEach(function(id){
   var s = SEGS[id], host = $('#'+id), html='';
@@ -2161,6 +2179,11 @@ function typeText(t){
     ? 'Mainboard or SME — determine which from the RHP/exchange listing yourself and state it'
     : t;
 }
+function investorText(i){
+  return i === 'All'
+    ? 'Retail, HNI and UHNI — cover all three, and say where the answer differs between them'
+    : i;
+}
 function horizonText(h){
   if(h==='Both') return 'BOTH listing gain and long term (analyse both separately)';
   if(h==='Listing gain') return 'LISTING GAIN';
@@ -2176,12 +2199,17 @@ function langText(l){
   if(l==='English') return 'English only';
   return 'Both English and Gujarati';
 }
+/* The three research settings are fixed now. They are still substituted into
+   the prompt, and still recorded in the payload's meta, so anything reading
+   them keeps working — they are simply no longer presented as choices that do
+   not exist. */
+var FIXED = { type:'Both', horizon:'Both', investor:'All' };
 function formVals(){
   return {
     company: $('#company').value.trim(),
-    type: (document.querySelector('input[name=type]:checked')||{}).value || 'Unknown',
-    horizon: (document.querySelector('input[name=horizon]:checked')||{}).value || 'Both',
-    investor: (document.querySelector('input[name=investor]:checked')||{}).value || 'HNI',
+    type: FIXED.type,
+    horizon: FIXED.horizon,
+    investor: FIXED.investor,
     lang: 'Both'   /* both editions are always requested */
   };
 }
@@ -2195,7 +2223,7 @@ function buildPrompt(){
     .split('{{COMPANY}}').join(name)
     .split('{{TYPE}}').join(typeText(v.type))
     .split('{{HORIZON}}').join(horizonText(v.horizon))
-    .split('{{INVESTOR}}').join(v.investor)
+    .split('{{INVESTOR}}').join(investorText(v.investor))
     .split('{{LANGUAGE}}').join(langText(v.lang))
     .split('{{DATE}}').join(date)
     .trim();
@@ -2688,8 +2716,38 @@ var SHEET = [
 ];
 var scoreState = {};
 try{ scoreState = JSON.parse(get(LS.score,'{}')) || {}; }catch(e){ scoreState = {}; }
-$('#scName').value = scoreState.__name || '';
-$('#scName').addEventListener('input', function(){ scoreState.__name=this.value; persistScore(); });
+/* The Score Card used to follow whatever was chosen on the Report tab. It now
+   owns its selection: SC_ID is the record it is showing, remembered across
+   reloads, and it is the ONLY thing the worksheet reads. Nothing selected means
+   every line is zero — not the last company's figures left on screen. */
+var SC_ID = get('ipo.scid', '') || '';
+$('#scName').value = '';
+function scRecord(){
+  if(!SC_ID) return null;
+  return libRead().filter(function(x){ return x.id === SC_ID; })[0] || null;
+}
+function scSelect(id){
+  SC_ID = id || '';
+  if(SC_ID) set('ipo.scid', SC_ID);
+  var r = scRecord();
+  if(!r){
+    SC_ID = '';
+    scoreState = {};
+    $('#scName').value = '';
+    /* Nothing selected is not a state worth storing. Writing empty values here
+       put ipo.scid and ipo.score straight back after Erase all local data —
+       the wipe ran, then the boot re-created the keys it had just removed. */
+    try{ localStorage.removeItem('ipo.scid'); localStorage.removeItem(LS.score); }catch(e){}
+    buildSheet(); drawScImport();
+    drawAnalysisPanel('#scPanel', '');
+    if($('#scVerdict')){ $('#scVerdict').innerHTML=''; $('#scVerdict').classList.add('hidden'); }
+    return 0;
+  }
+  var n = applyToWorksheet(r.data || {}, recName(r));
+  drawAnalysisPanel('#scPanel', SC_ID);
+  showScVerdict(r);
+  return n;
+}
 
 var openGroups = {};
 function buildSheet(){
@@ -3224,7 +3282,9 @@ var GU_PATHS = [
   ['ipo.structure_verdict',        'issue-structure verdict'],
   ['ipo.listing_gain.verdict',     'listing-gain verdict'],
   ['company.industry_note',        'industry note'],
-  ['valuation.note',               'valuation note'],
+  /* `valuation.note` is not a path in the contract — the valuation block sits
+     under financials — so a real gap here was never reported. */
+  ['financials.valuation.note',    'valuation note'],
   ['decision.allocation_note',     'allocation note']
 ];
 function guDig(o, path){
@@ -3234,11 +3294,32 @@ function guDig(o, path){
   return typeof cur === 'string' ? cur : null;
 }
 function guText(d){ return (d && d.gu && d.gu.text) ? d.gu.text : {}; }
+/* Does this string actually reach the reader in Gujarati?
+
+   The check used to ask only whether the PAYLOAD covered it. That was true when
+   the app translated nothing itself, and false now: the app owns a large
+   vocabulary, so "Primarily shareholder exit" prints as મુખ્યત્વે શેરહોલ્ડર
+   એક્ઝિટ with no gu.text entry at all — and the note still reported it as a gap
+   that would print in English. Warning about something that is already correct
+   is worse than not warning, because it sends the reader chasing a translation
+   the document does not need.
+
+   So the last resort is to ask the renderer. If the sweep returns Gujarati, the
+   string is covered however that happened. */
+function guAppTranslates(en){
+  try{
+    if(!window.IPODocs || !IPODocs.guSweep) return false;
+    var out = IPODocs.guSweep(String(en));
+    if(out === en) return false;
+    return /[\u0A80-\u0AFF]/.test(out) && !/[A-Za-z]{4,}/.test(out);
+  }catch(e){ return false; }
+}
 function guCovered(d, path){
   var en = guDig(d, path);
   if(!en) return true;
   if(guDig(d.gu||{}, path)) return true;
-  return !!guText(d)[en];
+  if(guText(d)[en]) return true;
+  return guAppTranslates(en);
 }
 /* Free-text arrays the reports print verbatim: every element needs cover too. */
 function guArrayGaps(d){
@@ -3247,7 +3328,8 @@ function guArrayGaps(d){
     (list||[]).forEach(function(x){
       keys.forEach(function(k){
         var v = x && x[k];
-        if(typeof v === 'string' && v.split(/\s+/).length > 3 && !t[v]) out.push(label);
+        if(typeof v === 'string' && v.split(/\s+/).length > 3 && !t[v] && !guAppTranslates(v))
+          out.push(label);
       });
     });
   }
@@ -3264,7 +3346,7 @@ function guGaps(d){
   GU_PATHS.forEach(function(pr){ if(!guCovered(d, pr[0])) out.push(pr[1]); });
   var basis = d.score_basis||{}, gb = (d.gu.score_basis)||{}, t = guText(d), missBasis = 0;
   Object.keys(basis).forEach(function(k){
-    if(basis[k] && !gb[k] && !t[basis[k]]) missBasis++; });
+    if(basis[k] && !gb[k] && !t[basis[k]] && !guAppTranslates(basis[k])) missBasis++; });
   if(missBasis) out.push(missBasis+' of the 28 score-basis lines');
   return out.concat(guArrayGaps(d));
 }
@@ -3469,27 +3551,96 @@ function saveToLibrary(rec){
   var lib = libRead().filter(function(x){ return x.id !== rec.id; });
   lib.unshift(rec); libWrite(lib); drawLibrary(rec.id);
 }
+/* ---------- the saved-analysis picker, shared by Report and Score Card ------
+   Same panel, same rows and the same live status tag as the Analyse page, so
+   one company reads identically wherever it appears. Only the middle line
+   differs: on Analyse it is the subscription window, here it is the board, the
+   closing date, the date the analysis was imported and the tool that produced
+   it. The status tag is still computed from TODAY, never from what the payload
+   said when it was written. */
+function recName(r){
+  return str(r.company) || str((r.data && r.data.meta || {}).company) || 'Untitled';
+}
+function recIpo(r){
+  var m = (r.data && r.data.meta) || {};
+  return { company: recName(r), open_date: m.open_date, close_date: m.close_date,
+           type: m.ipo_type };
+}
+function analysisRows(filter){
+  var q = (filter || '').trim().toLowerCase();
+  var lib = libRead().slice();
+  if(q) lib = lib.filter(function(r){ return recName(r).toLowerCase().indexOf(q) >= 0; });
+  /* Same ordering as the Analyse list: OPEN, then UPCOMING, then CLOSED; the
+     nearest deadline first, and the most recently closed first among CLOSED. */
+  lib.sort(function(a, b){ return ipoSort(recIpo(a), recIpo(b)); });
+  return lib;
+}
+function drawAnalysisPanel(hostSel, currentId, filter){
+  var host = $(hostSel);
+  if(!host) return;
+  var rows = analysisRows(filter), today = todayISO();
+  if(!rows.length){
+    host.innerHTML = '<div class="pkempty">No analysis saved yet — import one with '
+      + '<b>Import Data</b>.</div>';
+    return;
+  }
+  host.innerHTML = rows.map(function(r){
+    var m = (r.data && r.data.meta) || {};
+    var tag = ipoStatus(recIpo(r), today);
+    var chip = tag ? '<i class="pkchip ' + tag.toLowerCase() + '">' + esc(tag) + '</i>' : '';
+
+    var l2 = [];
+    if(m.ipo_type) l2.push(esc(str(m.ipo_type)));
+    if(m.close_date) l2.push('Closes ' + esc(dmy(m.close_date)));
+    l2.push('Imported ' + esc(dmyTs(r.ts)));
+    if(r.source) l2.push(esc(str(r.source)));
+
+    var nm = recName(r);
+    return '<button type="button" class="pk' + (r.id === currentId ? ' on' : '') + '" role="option"'
+      + ' data-rec="' + esc(r.id) + '"><b>' + chip + esc(nm) + '</b>'
+      + '<span>' + l2.join(' · ') + '</span></button>';
+  }).join('');
+}
+/* A stored timestamp as DD-MM-YYYY, to match every other date in the app. */
+function dmyTs(ts){
+  var d = new Date(Number(ts) || 0);
+  if(isNaN(d.getTime()) || !ts) return '—';
+  var p2 = function(v){ return (v < 10 ? '0' : '') + v; };
+  return p2(d.getDate()) + '-' + p2(d.getMonth() + 1) + '-' + d.getFullYear();
+}
+
 function drawLibrary(selectId){
   var lib = libRead(), sel = $('#libSel');
   sel.innerHTML = '<option value="">— none saved —</option>' + lib.map(function(r){
-    var d = new Date(r.ts).toLocaleDateString('en-IN',{day:'2-digit',month:'short',year:'2-digit'});
-    var nm = str(r.company) || str((r.data&&r.data.meta||{}).company) || 'Untitled';
-    return '<option value="'+r.id+'">'+esc(nm)+' · '+d+' · '+esc(r.source)+'</option>';
+    return '<option value="' + r.id + '">' + esc(recName(r)) + '</option>';
   }).join('');
   if(selectId){ sel.value = selectId; showRecord(selectId); }
+  syncRepPick();
+  drawAnalysisPanel('#repPanel', sel.value);
+  drawAnalysisPanel('#scPanel', SC_ID);
+}
+function syncRepPick(){
+  var el = $('#repPick'); if(!el) return;
+  var id = $('#libSel').value;
+  var r = libRead().filter(function(x){ return x.id === id; })[0];
+  el.value = r ? recName(r) : '';
+  var btn = $('#btnRepPick');
+  if(btn) btn.classList.toggle('hidden', !libRead().length);
 }
 function A_REC(v){ var t = str(v); return t || '—'; }
 
 /* The verdict card lives on the Score Card now; #repCard no longer exists. */
 function hideVerdict(){
-  var h = $('#scVerdict');
-  if(h){ h.innerHTML = ''; h.classList.add('hidden'); }
-  if($('#scName')) $('#scName').value = '';
+  /* Only the Report tab's own state. The Score Card's name and verdict follow
+     SC_ID and are cleared by scSelect(''), not from here. */
 }
 
-function showRecord(id){
-  var r = libRead().filter(function(x){ return x.id===id; })[0];
-  if(!r){ hideVerdict(); return; }
+/* The verdict card belongs to the SCORE CARD's selection, not the Report's.
+   It used to be drawn from inside showRecord, which is why the two tabs moved
+   together; it is its own function now and the Score Card calls it. */
+function showScVerdict(r){
+  if(!r){ var h0 = $('#scVerdict');
+          if(h0){ h0.innerHTML=''; h0.classList.add('hidden'); } return; }
   var d = r.data || {}, sc = d.scores || {};
   /* Scores are sums of one-decimal values, so raw floats leak 72.30000000000004. */
   var fx = function(v){
@@ -3532,11 +3683,15 @@ function showRecord(id){
     + '</div>';
   var host = $('#scVerdict');
   if(host){ host.innerHTML = card; host.classList.remove('hidden'); }
+}
 
-
-  /* item 4: the Score Card names the company the Report tab has selected */
-  var coName = coNameOf(d, r);
-  if($('#scName')) $('#scName').value = coName;
+function showRecord(id){
+  var r = libRead().filter(function(x){ return x.id===id; })[0];
+  if(!r){ hideVerdict(); return; }
+  var d = r.data || {};
+  /* The Score Card is NOT touched from here any more. It has its own selection
+     and its own worksheet; binding the two tabs together is what made the score
+     follow a company you had not asked for. */
   /* The documents used to be hidden unless BOTH meta and verdict survived, with
      nothing on screen to say why. A part-recovered analysis can still produce
      real files, so show the tools and be explicit about what is thin. */
@@ -3568,14 +3723,23 @@ function showRecord(id){
   $('#out').classList.toggle('gu', /[઀-૿]/.test(r.text||''));
   $('#repTag').textContent = 'imported';
   $('#repMeta').textContent = coNameOf(d, r)+' · via '+r.source;
-  applyToWorksheet(d, str(r.company) || coNameOf(d, r));
+  /* applyToWorksheet used to run here. The Score Card now loads its own
+     selection, so importing on the Report tab no longer silently rewrites the
+     worksheet under a company you were looking at. */
 }
 
 /* the reverse-use step: an outside tool's scores drive the worksheet */
 function applyToWorksheet(d, company){
-  if(!d || !d.score_lines) return 0;
   var n = 0;
   scoreState = {};
+  if(!d || !d.score_lines){
+    /* Nothing to show. Every line reads zero rather than leaving the previous
+       company's figures on screen under a new name. */
+    scoreState.__name = company || '';
+    $('#scName').value = scoreState.__name;
+    persistScore(); buildSheet(); drawScImport();
+    return 0;
+  }
   Object.keys(d.score_lines).forEach(function(k){
     var pos = KEYMAP[k]; if(!pos) return;
     var v = parseFloat(d.score_lines[k]); if(isNaN(v)) return;
@@ -3918,7 +4082,11 @@ $('#btnSaveImport').addEventListener('click', function(){
   var rec = { id:'r'+Date.now(), ts:Date.now(), source:src, company:coName,
               data:d, text:pendingImport.raw };
   saveToLibrary(rec);
-  var n = applyToWorksheet(d, rec.company);
+  /* An import is the one moment where the Score Card SHOULD move on its own:
+     you have just brought this company in, so it is what you want to see. It is
+     a real selection, stored like any other, so it survives a reload — after
+     which the tab is independent again and only its own picker moves it. */
+  var n = scSelect(rec.id);
   $('#importCard').classList.add('hidden'); $('#importText').value='';
   $('#reviewBox').classList.add('hidden'); $('#btnSaveImport').classList.add('hidden');
   pendingImport = null;
@@ -3959,7 +4127,10 @@ $('#btnDelRep').addEventListener('click', function(){
   libWrite(libRead().filter(function(x){ return x.id!==id; }));
   hideVerdict(); $('#out').textContent=''; drawLibrary();
 });
-drawLibrary();
+/* The first draw is deferred to the end of the script. The saved-analysis panel
+   sorts with ipoSort, and STATUS_RANK is assigned further down the file — a var
+   declaration hoists, its value does not, so booting here threw before any row
+   was drawn and both panels came up empty. */
 
 
 /* ============================== IPO search ====================== */
@@ -4255,6 +4426,72 @@ $('#ipoPanel').addEventListener('click', function(ev){
   syncSearchButton();
   $('#company').blur();
 });
+/* ---------- the same panel on the Report and Score Card tabs --------------
+   Two independent selections. The Report picker sets #libSel, which every
+   existing handler already reads; the Score Card picker sets SC_ID, which only
+   the worksheet reads. Choosing on one tab no longer moves the other. */
+function repPanelOpen(){ return !$('#repPanel').classList.contains('hidden'); }
+function openRepPanel(){
+  if(!libRead().length) return;
+  drawAnalysisPanel('#repPanel', $('#libSel').value, '');
+  $('#repPanel').classList.remove('hidden');
+  $('#btnRepPick').setAttribute('aria-expanded','true');
+}
+function closeRepPanel(){
+  $('#repPanel').classList.add('hidden');
+  $('#btnRepPick').setAttribute('aria-expanded','false');
+}
+$('#btnRepPick').addEventListener('click', function(ev){
+  ev.preventDefault(); ev.stopPropagation();
+  if(repPanelOpen()) closeRepPanel(); else openRepPanel();
+});
+$('#repPick').addEventListener('click', function(ev){
+  ev.preventDefault(); ev.stopPropagation();
+  if(repPanelOpen()) closeRepPanel(); else openRepPanel();
+});
+$('#repPanel').addEventListener('click', function(ev){
+  var b = ev.target.closest && ev.target.closest('[data-rec]');
+  if(!b) return;
+  var sel = $('#libSel');
+  sel.value = b.dataset.rec;
+  closeRepPanel();
+  syncRepPick();
+  drawAnalysisPanel('#repPanel', sel.value);
+  sel.dispatchEvent(new Event('change', { bubbles:true }));
+});
+
+function scPanelOpen(){ return !$('#scPanel').classList.contains('hidden'); }
+function openScPanel(){
+  if(!libRead().length) return;
+  drawAnalysisPanel('#scPanel', SC_ID, '');
+  $('#scPanel').classList.remove('hidden');
+  $('#btnScPick').setAttribute('aria-expanded','true');
+}
+function closeScPanel(){
+  $('#scPanel').classList.add('hidden');
+  $('#btnScPick').setAttribute('aria-expanded','false');
+}
+$('#btnScPick').addEventListener('click', function(ev){
+  ev.preventDefault(); ev.stopPropagation();
+  if(scPanelOpen()) closeScPanel(); else openScPanel();
+});
+$('#scName').addEventListener('click', function(ev){
+  ev.preventDefault(); ev.stopPropagation();
+  if(scPanelOpen()) closeScPanel(); else openScPanel();
+});
+$('#scPanel').addEventListener('click', function(ev){
+  var b = ev.target.closest && ev.target.closest('[data-rec]');
+  if(!b) return;
+  closeScPanel();
+  scSelect(b.dataset.rec);
+});
+document.addEventListener('click', function(ev){
+  if(repPanelOpen() && !ev.target.closest('#repPanel') && !ev.target.closest('#btnRepPick')
+     && !ev.target.closest('#repPick')) closeRepPanel();
+  if(scPanelOpen() && !ev.target.closest('#scPanel') && !ev.target.closest('#btnScPick')
+     && !ev.target.closest('#scName')) closeScPanel();
+});
+
 $('#company').addEventListener('focus', function(){ if(IPO_LIST.length) openPicker(); });
 $('#company').addEventListener('input', function(){
   /* Suggest as you type: if anything in the repository matches, show it without
@@ -4348,10 +4585,9 @@ function armResearch(box){
 /* Copy the IPO-list question and point at the tool row. */
 function armIpoList(box){
   copyText(IPO_SEARCH_PROMPT).then(function(){
-    if(box) box.innerHTML = '<b>Question copied.</b> Now tap <b>Claude</b>, <b>ChatGPT</b>, '
-      + '<b>Gemini</b> or <b>Perplexity</b> below — the app opens if you have it installed, '
-      + 'otherwise the website. Paste, send, then bring the reply back with '
-      + '<b>Import Search Data</b>. (Add an API key under Setup to have the app do this itself.)';
+    /* The tool row below carries its own one-line instruction; repeating it in
+       full here pushed the rest of the form off the screen for no gain. */
+    if(box) box.innerHTML = '';
     setPending('search');
     var row = $('#toolRow');
     if(row) row.scrollIntoView({ behavior:'smooth', block:'center' });
@@ -4518,6 +4754,13 @@ if('serviceWorker' in navigator){
     });
   });
 }
+
+/* ---------- first draw, once every helper above exists ---------- */
+drawLibrary();
+/* The Score Card restores its OWN selection: it is not driven by whatever the
+   Report tab happens to be showing. */
+try{ scSelect(SC_ID); }catch(e){}
+
 </script>
 <script src="vendor/html2canvas.min.js"></script>
 <script src="vendor/jspdf.umd.min.js"></script>

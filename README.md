@@ -1,8 +1,41 @@
-# IPO Analyst — standalone web app  ·  v4.6  ·  build 2026.08.26.2
+# IPO Analyst — standalone web app  ·  v4.6  ·  build 2026.08.28.1
 
 A single-page web app that turns the institutional IPO research protocol into something you can
 run from an icon on your phone. It works on Android and iPhone/iPad, installs to the home screen,
 runs full-screen with no address bar, and works offline for everything except the AI call itself.
+
+## What changed in v4.6 build 2026.08.28.1
+
+**The Find-IPOs instruction paragraph is gone.** The "Question copied. Now tap…" block used to sit
+under the button explaining what to do next, on a screen where you have already done it. Nothing
+replaces it.
+
+**IPO type, investor horizon and investor type are no longer questions the app asks.** The three
+segmented controls are off the page. Every research request now covers both Mainboard and SME (the
+model determines which from the RHP), both listing gain and the long term, and Retail, HNI and UHNI
+alike — the prompt still states all of that, and the payload still records it, so nothing downstream
+changed except that you stop answering three questions whose answer was always "all of it".
+
+**The company picker is taller** — up to 72% of the screen rather than a fixed 340px — so a useful
+number of companies is visible without scrolling inside a list inside a page.
+
+**The Report and Score Card tabs have the same picker as Analyse.** It is headed *Company name*, and
+the second line reads board · closing date · import date · AI tool, both dates in DD-MM-YYYY. The
+OPEN / UPCOMING / CLOSED tag is live — computed from today, not from what the payload claimed when
+it was imported — and the list is ordered open issues first, closed last.
+
+**The Score Card is its own tab now.** It has its own selection, remembered across reloads and moved
+only by its own picker: choosing a company on the Report tab no longer drags the worksheet with it,
+and the worksheet is read-only. With nothing selected every line reads zero rather than leaving the
+previous company's figures on screen under a blank name. A fresh import is the one exception — it
+selects the company you just brought in, because that is the one you want to see.
+
+**The Gujarati gap note stopped crying wolf.** It asked only whether the *payload* supplied a
+translation, so any string the app translates itself — the issue-structure verdict, the listing-gain
+component notes, the score bases — was reported as a gap that would print in English when it prints
+in Gujarati perfectly well. The check now asks the renderer as a last resort. The valuation-note path
+was also wrong (`valuation.note`, which is not in the contract, instead of `financials.valuation.note`),
+so a real gap there was never reported at all.
 
 ## What changed in v4.6 build 2026.08.26.2
 
