@@ -575,6 +575,16 @@ still carries the scoring.
   "ipo": {
     "price_band": "271-285", "issue_price": 285, "face_value": 10,
     "lot_size": 52, "min_investment": 14820,
+    "allotment_date": "2026-08-17",
+    "_allotment_note": "ISO. Under the T+3 timetable allotment is the day after the issue closes and listing two days after that. Give the dates the RHP or the registrar states. If the RHP does not state them the app derives them from the closing date and prints them marked 'expected' — so omit the field rather than guessing, because a guessed date printed as a fact is worse than a derived one printed as an estimate.",
+    "applications": [
+      { "label": "Retail", "band": "r", "lots": 1,  "shares": 52,   "amount": 14820 },
+      { "label": "Retail", "band": "r", "lots": 13, "shares": 676,  "amount": 192660 },
+      { "label": "sHNI",   "band": "s", "lots": 14, "shares": 728,  "amount": 207480 },
+      { "label": "sHNI",   "band": "s", "lots": 67, "shares": 3484, "amount": 992940 },
+      { "label": "bHNI",   "band": "b", "lots": 68, "shares": 3536, "amount": 1007760 }
+    ],
+    "_applications_note": "The application lot ladder as the RHP or the exchange prints it: Retail min and max, sHNI min and max, bHNI min. `band` is r, s or b and only colours the row. The boundaries are SEBI's — Retail up to Rs 2,00,000, sHNI from there to Rs 10,00,000, bHNI above it — so every row follows from the lot and the price. Give it if the RHP states it; the app derives the same ladder when you omit it, so do not invent rows that disagree with the arithmetic.",
     "issue_size_cr": 301.62, "fresh_cr": 93.0, "ofs_cr": 208.62,
     "market_cap_cr": 1205.62,
     "subscription": { "overall": 21.5, "qib": 2.29, "nii": 35.05, "retail": 17.87 },

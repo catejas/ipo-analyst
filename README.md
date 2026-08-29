@@ -1,8 +1,52 @@
-# IPO Analyst — standalone web app  ·  v4.6  ·  build 2026.08.28.3
+# IPO Analyst — standalone web app  ·  v4.6  ·  build 2026.08.29.2
 
 A single-page web app that turns the institutional IPO research protocol into something you can
 run from an icon on your phone. It works on Android and iPhone/iPad, installs to the home screen,
 runs full-screen with no address bar, and works offline for everything except the AI call itself.
+
+## What changed in v4.6 build 2026.08.29.2
+
+**The IPO Snapshot is a designed section, not a list.** Section 02 of the company, executive and
+institutional reports was an eight-row parameter/detail table — the slowest way to read eight
+numbers. It is now a tile band for the figures you look at first, the fresh-versus-offer-for-sale
+split as **one bar in two colours sized to their actual percentages**, a date rail running Opens →
+Closes → Allotment → Listing, and the **Application Lot Size** table beside it with Retail, sHNI and
+bHNI colour-keyed. Market cap, promoter holding, face value and **Exchange** sit under the rail, and
+the two columns are flex boxes so they finish level with each other however many rows each has.
+
+**Allotment and listing dates.** The payload can now state `ipo.allotment_date`, and
+`ipo.applications` can carry the lot ladder as the RHP prints it. Neither is required: SEBI fixes the
+application boundaries — Retail to ₹2,00,000, sHNI to ₹10,00,000, bHNI above — so the whole ladder
+follows from the lot and the price, and under the T+3 timetable allotment is the day after the issue
+closes and listing two days after that. Anything the payload states wins over what is derived. This
+means analyses imported before this build print a full section rather than an empty one.
+
+**IPO at a Glance, on the Investment Summary.** The same design in short form: the tile row, the date
+rail with market cap and promoter holding beneath it, and the minimum application for each of the
+three investor classes. The price-band tile now carries the lot and what one lot costs instead of
+repeating "issue at ₹X", which the band already implies.
+
+**Companies you have already researched are marked in the Analyse picker.** An indigo rail, a faint
+tint and a **REPORT** chip on any company the Report tab can already show. The check is offline and
+live — it compares against the saved library on the device, so it is right with no network and
+updates the moment an analysis is imported or deleted. Indigo because the row's other three colours
+are spoken for: green OPEN, blue UPCOMING, red CLOSED. The chip leads beside the status tag rather
+than trailing the name, and the name line shrinks before it wraps, so a marked row is still three
+lines.
+
+**Section 02 of the institutional report is split in two.** The packer moves a block whole and only
+divides one when it is the last thing on a page, so a single tall snapshot that did not fit was
+carried forward entire — which in Gujarati, a fifth taller for the same text, left most of a page
+blank behind it. Split at its natural seam it is 02 IPO snapshot and 03 Key dates and application
+size; in English both still sit on the same page.
+
+## What changed in v4.6 build 2026.08.29.1
+
+**Recent is a picker, not a list.** Twelve companies printed down the Analyse page was the tallest
+block on it, for a control used once in a session. It is now a read-only box with a chevron and a
+**Load** button beside it: tapping opens the same rows in the same panel style as every other picker,
+choosing one loads it straight away, and Load repeats the last choice after you have typed over the
+field. With nothing remembered the box says so and Load is disabled.
 
 ## What changed in v4.6 build 2026.08.28.3
 

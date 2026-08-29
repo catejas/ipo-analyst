@@ -1743,6 +1743,23 @@ var T = {
   market_cap:     ['Market capitalisation','બજાર મૂડી'],
   promoter_hold:  ['Promoter holding','પ્રમોટર હિસ્સો'],
   listing:        ['Listing','લિસ્ટિંગ'],
+  allotment:      ['Allotment','ફાળવણી'],
+  key_dates:      ['Key dates','મુખ્ય તારીખો'],
+  key_dates_lot:  ['Key dates and application size','મુખ્ય તારીખો અને અરજી માપ'],
+  opens:          ['Opens','ખૂલે છે'],
+  closes:         ['Closes','બંધ થાય છે'],
+  fresh_vs_ofs:   ['Fresh issue vs offer for sale','નવો ઇશ્યૂ vs ઓફર ફોર સેલ'],
+  app_lot:        ['Application Lot Size','અરજી લોટ સાઇઝ'],
+  min_app:        ['Minimum application','લઘુત્તમ અરજી'],
+  application:    ['Application','અરજી'],
+  lots:           ['Lots','લોટ'],
+  shares:         ['Shares','શેર'],
+  amount:         ['Amount','રકમ'],
+  cls_:           ['Class','વર્ગ'],
+  a_min:          ['min','લઘુ.'],
+  a_max:          ['max','મહત્તમ'],
+  expected:       ['expected','અપેક્ષિત'],
+  face_value:     ['Face value','દર્શની કિંમત'],
   post_issue:     ['post issue','ઇશ્યૂ પછી'],
   issue_at:       ['issue at','ઇશ્યૂ ભાવ'],
   fresh:          ['fresh','નવો'],
@@ -2251,6 +2268,61 @@ body.gu .kv .k{ letter-spacing:.02em; font-size:6.6pt; }
 .kv .v{ font-size:12.5pt; font-weight:700; letter-spacing:-.02em; line-height:1.1; margin-top:.5mm;
         font-family:"Helvetica Neue",Helvetica,Arial,sans-serif; }
 .kv .s{ font-size:6.2pt; color:var(--ink3); margin-top:.5mm; }
+/* ---- IPO snapshot, redesigned ----------------------------------------
+   A sub-heading, the fresh/OFS split as one two-colour bar, a date rail and a
+   compact table. Everything here is print-safe: flat fills and borders only,
+   nothing html2canvas cannot rasterise. */
+.ssub{ font-size:5.9pt; font-weight:800; letter-spacing:.12em; text-transform:uppercase;
+       color:var(--ink3); margin:0 0 1.4mm; }
+body.gu .ssub{ letter-spacing:.02em; font-size:6.6pt; }
+.fsplit{ display:flex; height:5mm; border-radius:1mm; overflow:hidden; border:.6pt solid var(--rule); }
+.fsplit i{ display:block; font-style:normal; font-size:6.2pt; font-weight:800; color:#fff;
+           line-height:5mm; text-align:center; white-space:nowrap; overflow:hidden;
+           font-family:"Helvetica Neue",Helvetica,Arial,sans-serif; }
+.fsplit i.a{ background:var(--navy2); }
+.fsplit i.b{ background:var(--teal); }
+.drail{ display:flex; margin:1mm 0 2mm; }
+.drail .stp{ flex:1 1 0; text-align:center; position:relative; }
+.drail .stp .dot{ width:2.2mm; height:2.2mm; border-radius:50%; background:var(--navy);
+                  margin:0 auto 1.2mm; position:relative; z-index:1; }
+.drail .stp.dim .dot{ background:var(--ink4); }
+.drail .stp:before,.drail .stp:after{ content:""; position:absolute; top:.95mm; height:.4mm;
+                  background:var(--rule); }
+.drail .stp:before{ left:0; right:50%; }
+.drail .stp:after{ left:50%; right:0; }
+.drail .stp:first-child:before,.drail .stp:last-child:after{ display:none; }
+.drail .stp .lb{ font-size:5.6pt; font-weight:800; letter-spacing:.08em; text-transform:uppercase;
+                 color:var(--ink3); }
+body.gu .drail .stp .lb{ letter-spacing:.02em; font-size:6.2pt; }
+.drail .stp .dt{ font-size:7.6pt; font-weight:700; color:var(--ink); margin-top:.4mm;
+                 font-family:"Helvetica Neue",Helvetica,Arial,sans-serif; }
+.drail .stp .dt small{ display:block; font-size:5.4pt; font-weight:600; color:var(--ink4);
+                       letter-spacing:.04em; text-transform:uppercase; }
+.mini{ width:100%; border-collapse:collapse; font-size:7.2pt; }
+.mini th{ font-size:5.8pt; font-weight:800; letter-spacing:.1em; text-transform:uppercase;
+          color:var(--ink3); background:var(--panel); border-bottom:.6pt solid var(--rule);
+          padding:1.2mm 1.6mm; text-align:left; }
+body.gu .mini th{ letter-spacing:.02em; font-size:6.4pt; }
+.mini td{ padding:1.2mm 1.6mm; border-bottom:.4pt solid var(--rule2); vertical-align:middle; }
+.mini tr:last-child td{ border-bottom:0; }
+.mini .k{ color:var(--ink2); }
+.mini .n{ text-align:right; font-variant-numeric:tabular-nums; white-space:nowrap;
+          font-family:"Helvetica Neue",Helvetica,Arial,sans-serif; }
+/* A column of the snapshot, and a table inside it that takes up the slack, so
+   the two columns finish level with each other. */
+.snapgrid{ align-items:stretch; }
+.snapcol{ display:flex; flex-direction:column; min-width:0; }
+/* flex alone. An explicit full height here resolved against a container that
+   was itself sizing to content, which inflated the block by a few millimetres
+   — enough, in Gujarati, to push the whole section onto another page. */
+.snapcol .mini.grow{ flex:1 1 auto; }
+.snapcol .mini.grow td{ vertical-align:middle; }
+.lotb{ display:inline-block; font-size:5.8pt; font-weight:800; letter-spacing:.06em;
+       padding:.3mm 1.4mm; border-radius:2mm; margin-right:1.2mm;
+       font-family:"Helvetica Neue",Helvetica,Arial,sans-serif; }
+.lotb.r{ background:#E7F0FB; color:#1B4370; }
+.lotb.s{ background:#FCF1DA; color:#8A6208; }
+.lotb.b{ background:#EFEBFB; color:#453796; }
 .tn-good{ color:var(--good); } .tn-bad{ color:var(--bad); } .tn-warn{ color:var(--amber); }
 .pill{ display:inline-block; font-size:5.9pt; font-weight:800; letter-spacing:.07em;
        text-transform:uppercase; color:#fff; padding:.5mm 1.8mm; border-radius:2.5mm; white-space:nowrap;
@@ -2514,10 +2586,260 @@ function bItems(b,lang){ return lang==='gu'? b[5] : b[4]; }
 function blockScore(p,b){ var t=0; b[3].forEach(function(k){ t += Number((p.score_lines||{})[k])||0; }); return t; }
 
 /* ============================ COVER ============================ */
+/* ======================= IPO SNAPSHOT (redesigned) =======================
+
+   One builder, three documents. The company, executive and institutional
+   reports print the same section 02, and the Investment Summary prints a
+   shorter form of it, because a reader who has seen one should not have to
+   relearn the layout in the next.
+
+   Two things are worked out here rather than demanded of the payload, so that
+   analyses imported before this build still print a full section:
+
+   - The application lot table. SEBI fixes the boundaries — Retail up to
+     ₹2,00,000, sHNI from there to ₹10,00,000, bHNI above it — so given the lot
+     and the price every row follows by arithmetic. A payload that supplies
+     `ipo.applications` wins; otherwise it is derived.
+   - The allotment date. Under the T+3 timetable allotment falls the day after
+     the issue closes and listing two days after that. A derived date is
+     labelled `expected` on its face; a date the payload states is not.
+*/
+function moneyIn(v){
+  /* Indian grouping, whole rupees — 10,14,832 rather than 1,014,832. */
+  if(v == null || isNaN(v)) return '—';
+  var x = Math.round(Number(v)), sign = x < 0 ? '-' : '';
+  x = String(Math.abs(x));
+  var last3 = x.slice(-3), rest = x.slice(0, -3);
+  if(rest) rest = rest.replace(/\B(?=(\d{2})+(?!\d))/g, ',') + ',';
+  return sign + '₹' + rest + last3;
+}
+function lotPrice(ipo){
+  var px = Number(ipo.issue_price);
+  if(!isNaN(px) && px > 0) return px;
+  /* No cut-off yet: the upper end of the band is what an application is made
+     at, so it is the honest number to size a lot with. */
+  var m = String(S(ipo.price_band) || '').match(/(\d[\d,]*(?:\.\d+)?)\s*(?:-|–|—|to)\s*(\d[\d,]*(?:\.\d+)?)/i);
+  if(m) return parseFloat(m[2].replace(/,/g, ''));
+  var one = String(S(ipo.price_band) || '').match(/(\d[\d,]*(?:\.\d+)?)/);
+  return one ? parseFloat(one[1].replace(/,/g, '')) : NaN;
+}
+var RETAIL_CAP = 200000, SHNI_CAP = 1000000;
+function lotRows(ipo){
+  ipo = ipo || {};
+  var given = arr(ipo.applications);
+  if(given.length){
+    return given.map(function(r){
+      return { label: S(r.label) || S(r.application) || '', band: String(S(r.band) || S(r.label) || ''),
+               lots: Number(r.lots), shares: Number(r.shares), amount: Number(r.amount) };
+    }).filter(function(r){ return r.label; });
+  }
+  var lot = Number(ipo.lot_size), px = lotPrice(ipo);
+  if(!(lot > 0) || !(px > 0)) return [];
+  var per = lot * px;
+  var rMax = Math.floor(RETAIL_CAP / per);
+  if(rMax < 1) rMax = 1;                     /* one lot can exceed ₹2L on a big issue */
+  var sMax = Math.floor(SHNI_CAP / per);
+  var out = [];
+  var row = function(label, band, lots){
+    out.push({ label: label, band: band, lots: lots, shares: lots * lot, amount: lots * per });
+  };
+  row('Retail', 'r', 1);
+  if(rMax > 1) row('Retail', 'r', rMax);
+  if(sMax > rMax){
+    row('sHNI', 's', rMax + 1);
+    if(sMax > rMax + 1) row('sHNI', 's', sMax);
+    row('bHNI', 'b', sMax + 1);
+  }
+  /* min then max within each class, which is the order the exchanges print. */
+  return out;
+}
+function lotIsMax(rows, i){
+  var r = rows[i], nx = rows[i + 1];
+  return !!(nx && nx.band === r.band) ? false : (i > 0 && rows[i - 1].band === r.band);
+}
+function addDays(iso, d){
+  var t = String(iso || '').slice(0, 10);
+  if(!/^\d{4}-\d{2}-\d{2}$/.test(t)) return '';
+  var dt = new Date(t + 'T12:00:00');
+  if(isNaN(dt.getTime())) return '';
+  dt.setDate(dt.getDate() + d);
+  var p2 = function(v){ return (v < 10 ? '0' : '') + v; };
+  return dt.getFullYear() + '-' + p2(dt.getMonth() + 1) + '-' + p2(dt.getDate());
+}
+function keyDates(p){
+  var m = p.meta || {}, ipo = p.ipo || {};
+  var close = S(m.close_date) || S(ipo.close_date);
+  var allot = S(ipo.allotment_date) || S(m.allotment_date);
+  var list  = S(m.listing_date) || S(ipo.listing_date);
+  return {
+    open:  S(m.open_date) || S(ipo.open_date),
+    close: close,
+    allot: allot || addDays(close, 1),
+    allotDerived: !allot,
+    listing: list || addDays(close, 3),
+    listingDerived: !list
+  };
+}
+function dateRail(p, lang){
+  var k = keyDates(p);
+  var steps = [
+    ['opens', k.open, false],
+    ['closes', k.close, false],
+    ['allotment', k.allot, k.allotDerived],
+    ['listing', k.listing, k.listingDerived]
+  ].filter(function(x){ return x[1]; });
+  if(steps.length < 2) return '';
+  /* No "expected" marker under a derived date: it unbalanced the rail, putting
+     one step a line lower than the other three. The derivation itself stays —
+     allotment is the day after close and listing two days after that — and the
+     payload's own dates always win when the model supplies them. */
+  return '<div class="drail">' + steps.map(function(x, i){
+    return '<div class="stp' + (i >= 2 ? ' dim' : '') + '"><div class="dot"></div>'
+      + '<div class="lb">' + e(L(lang, x[0])) + '</div>'
+      + '<div class="dt en">' + e(dmy(x[1])) + '</div></div>';
+  }).join('') + '</div>';
+}
+function freshSplit(ipo, lang){
+  var fresh = Number(ipo.fresh_cr), ofs = Number(ipo.ofs_cr);
+  if(isNaN(fresh)) fresh = 0;
+  if(isNaN(ofs)) ofs = 0;
+  var tot = fresh + ofs;
+  if(!(tot > 0)) return '';
+  var fp = fresh / tot * 100, op = 100 - fp;
+  /* Two colours whenever there are two parts, each sized to its own share —
+     a single bar cannot show a split. A label is printed only where there is
+     room for it, so a 3% sliver stays a sliver rather than overflowing. */
+  var seg = function(cls, label, share){
+    if(share <= 0) return '';
+    return '<i class="' + cls + '" style="flex:0 0 ' + share.toFixed(2) + '%">'
+      + (share >= 18 ? e(label) : '') + '</i>';
+  };
+  return '<div class="ssub">' + e(L(lang, 'fresh_vs_ofs')) + '</div>'
+    + '<div class="fsplit">'
+    + seg('a', L(lang, 'fresh') + ' ' + cr(fresh) + ' · ' + fp.toFixed(0) + '%', fp)
+    + seg('b', 'OFS ' + cr(ofs) + ' · ' + op.toFixed(0) + '%', op)
+    + '</div>';
+}
+function lotTable(p, lang, compact){
+  var ipo = p.ipo || {}, rows = lotRows(ipo);
+  if(!rows.length) return '';
+  if(compact){
+    /* One line per class — what a Retail, an sHNI and a bHNI applicant must
+       each put in. The maxima belong in the long reports. */
+    var seen = {}, mins = [];
+    rows.forEach(function(r){ if(!seen[r.band]){ seen[r.band] = 1; mins.push(r); } });
+    rows = mins;
+  }
+  var head = '<tr><th>' + e(L(lang, compact ? 'cls_' : 'application')) + '</th>'
+    + '<th class="n">' + e(L(lang, 'lots')) + '</th>'
+    + '<th class="n">' + e(L(lang, 'shares')) + '</th>'
+    + '<th class="n">' + e(L(lang, 'amount')) + '</th></tr>';
+  var body = rows.map(function(r, i){
+    /* Not held back from the sweep. "Retail" is an ordinary word and prints as
+       રિટેલ; sHNI and bHNI are abbreviations, which the framework keeps in
+       English everywhere else too (QIB, NII, HNI). Forcing all three to English
+       would have been a local exception to a rule the rest of the document
+       follows. */
+    var tag = '<span class="lotb ' + (r.band || 'r') + '">' + e(r.label) + '</span>';
+    var qual = compact ? '' : ' <span class="mut">' + e(L(lang, lotIsMax(rows, i) ? 'a_max' : 'a_min')) + '</span>';
+    return '<tr><td>' + tag + qual + '</td>'
+      + '<td class="n">' + n(r.lots, 0) + '</td>'
+      + '<td class="n">' + n(r.shares, 0) + '</td>'
+      + '<td class="n">' + moneyIn(r.amount) + '</td></tr>';
+  }).join('');
+  return '<div class="ssub">' + e(L(lang, compact ? 'min_app' : 'app_lot')) + '</div>'
+    + '<table class="mini grow"><thead>' + head + '</thead><tbody>' + body + '</tbody></table>';
+}
+/* The rows that are facts rather than headlines, printed under the date rail.
+   Exchange sits below face value, by request. */
+function snapFacts(p, lang){
+  var ipo = p.ipo || {}, m = p.meta || {}, pe = p.people || {};
+  var rows = [
+    [L(lang, 'market_cap'), cr(ipo.market_cap_cr)],
+    [L(lang, 'promoter_hold'), pe.promoter_holding_pre != null
+        ? pct(pe.promoter_holding_pre) + ' → ' + pct(pe.promoter_holding_post) : null],
+    [L(lang, 'face_value'), ipo.face_value != null ? '₹' + n(ipo.face_value, 0) : null],
+    [L(lang, 'exchanges'), S(m.exchanges) || S(m.exchange) || null]
+  ].filter(function(r){ return r[1] && r[1] !== '—'; });
+  if(!rows.length) return '';
+  return '<table class="mini grow" style="margin-top:1.5mm">' + rows.map(function(r){
+    return '<tr><td class="k">' + e(r[0]) + '</td><td class="n en">' + r[1] + '</td></tr>';
+  }).join('') + '</table>';
+}
+function snapTiles(p, lang){
+  var ipo = p.ipo || {}, m = p.meta || {}, sub = ipo.subscription || {}, g = ipo.gmp || {};
+  var t = function(k, v, sml, cls){
+    return '<div class="tile"' + (cls ? ' style="border-top-color:var(--teal)"' : '') + '>'
+      + '<div class="k">' + e(k) + '</div>'
+      + '<div class="v en"' + (cls ? ' style="color:var(--teal)"' : '') + '>' + v + '</div>'
+      + '<div class="s en">' + sml + '</div></div>';
+  };
+  return '<div class="tiles">'
+    + t(L(lang, 'price_band'), '₹' + e(S(ipo.price_band) || '—'),
+        L(lang, 'issue_at') + ' ₹' + n(ipo.issue_price))
+    + t(L(lang, 'issue_size'), cr(ipo.issue_size_cr),
+        e(A(lang, S(m.ipo_type) || 'Mainboard')) + ' · ' + e(S(m.exchanges) || S(m.exchange) || '—'))
+    + t(L(lang, 'subscription'), sub.overall != null ? n(sub.overall, 1) + '×' : '—',
+        'QIB ' + n(sub.qib, 2) + '× · Retail ' + n(sub.retail, 2) + '×')
+    + t(L(lang, 'gmp'), g.value != null ? (g.value > 0 ? '+' : '') + '₹' + n(g.value) : '—',
+        pct(g.pct) + ' · ' + L(lang, 'unofficial'), 1)
+    + '</div>';
+}
+/* The whole section. `compact` is the Investment Summary's shorter form. */
+/* The Investment Summary's price-band tile used to repeat "issue at ₹X", which
+   the band already implies. It carries the lot and what one lot costs instead —
+   the first number a retail reader actually needs. */
+function vLotSub(p, lang){
+  var ipo = p.ipo || {}, rows = lotRows(ipo);
+  var first = rows[0];
+  if(!first) return L(lang, 'issue_at') + ' ₹' + n(ipo.issue_price);
+  return L(lang, 'lot') + ' ' + n(first.shares, 0) + ' · ' + moneyIn(first.amount);
+}
+/* Market cap and promoter holding, under the date rail, by request. */
+function vGlanceFacts(p, lang){
+  var ipo = p.ipo || {}, pe = p.people || {};
+  var rows = [
+    [L(lang, 'market_cap'), cr(ipo.market_cap_cr)],
+    [L(lang, 'promoter_hold'), pe.promoter_holding_pre != null
+        ? pct(pe.promoter_holding_pre) + ' → ' + pct(pe.promoter_holding_post) : null]
+  ].filter(function(r){ return r[1] && r[1] !== '—'; });
+  if(!rows.length) return '';
+  return '<table class="mini grow" style="margin-top:1mm">' + rows.map(function(r){
+    return '<tr><td class="k">' + e(r[0]) + '</td><td class="n en">' + r[1] + '</td></tr>';
+  }).join('') + '</table>';
+}
+/* `compact` is the Investment Summary's shorter form; `part` is 'head' (tiles
+   and the split bar) or 'tail' (dates, facts and the lot ladder) for a document
+   that may need to break the section across two pages. */
+function snapshotV2(p, lang, compact, part){
+  var ipo = p.ipo || {};
+  var note = (S(ipo.structure_verdict) || S(ipo.structure_note))
+    ? '<div class="note' + (/exit/i.test(S(ipo.structure_verdict)) ? ' bad' : '') + '" style="margin-top:2.5mm"><b>'
+      + e(A(lang, tr(p, lang, ipo.structure_verdict))) + '</b> '
+      + e(pick(p, lang, 'ipo.structure_note', ipo.structure_note)) + '</div>'
+    : '';
+  /* Both columns are flex boxes and both tables grow, so the fact table on the
+     left and the lot table on the right finish on the same line however many
+     rows each happens to have. Left to themselves they ended at different
+     heights and the section read as two loose panels. */
+  var left = '<div class="snapcol"><div class="ssub">' + e(L(lang, 'key_dates')) + '</div>'
+    + dateRail(p, lang) + snapFacts(p, lang) + '</div>';
+  var right = '<div class="snapcol">' + lotTable(p, lang, compact) + '</div>';
+  var head = snapTiles(p, lang)
+    + (compact ? '' : '<div style="margin-top:2.5mm">' + freshSplit(ipo, lang) + '</div>');
+  var tail = '<div class="grid2 snapgrid"' + (part === 'tail' ? '' : ' style="margin-top:2.5mm"') + '>'
+    + left + right + '</div>' + (compact ? '' : note);
+  if(part === 'head') return head;
+  if(part === 'tail') return tail;
+  return head + tail;
+}
+
 function cover(p, lang, docTitle, pages){
   var v = p.verdict||{}, m = p.meta||{}, ipo = p.ipo||{};
   var sc = v.scores||{}, bands = v.score_bands||{};
-  var snap = [
+  /* The old `snap` array is gone with the table it fed; snapshotV2 reads the
+     payload directly. */
+  var snapUnused = [
     [L(lang,'issue_period'), e(dmy(m.open_date)||'—')+' — '+e(dmy(m.close_date)||'—')],
     [L(lang,'price_band'), '₹'+e(ipo.price_band||'—')+' · '+L(lang,'issue_at')+' ₹'+n(ipo.issue_price)],
     [L(lang,'issue_size'), cr(ipo.issue_size_cr)+' · '+L(lang,'fresh')+' '+cr(ipo.fresh_cr)+' · OFS '+cr(ipo.ofs_cr)],
@@ -2556,9 +2878,13 @@ function cover(p, lang, docTitle, pages){
     + sec('01', L(lang,'thesis'))
     + '<div class="lead">'+arr(pick(p,lang,'verdict.thesis', arr(v.thesis))).map(function(t){
         return '<p style="margin-bottom:1.6mm">'+e(t)+'</p>'; }).join('')+'</div>'
+    /* Section 02 used to be a two-column parameter/detail table, eight rows
+       deep, which is the slowest way to read eight numbers. It is the tile
+       band, the fresh/OFS split, the date rail and the application lot table
+       now — the same section 02 the institutional report prints, so a reader
+       moving between the documents meets one layout. */
     + sec('02', L(lang,'snapshot'))
-    + tbl([L(lang,'parameter'), L(lang,'detail')], snap.map(function(r){
-        return [ '<span style="color:var(--ink3)">'+e(r[0])+'</span>', '<span class="en">'+r[1]+'</span>' ]; }))
+    + snapshotV2(p, lang)
     + '<div class="grow"></div>';
   return page(p, 1, pages, L(lang,'pg_verdict'), inner, lang, docTitle);
 }
@@ -3133,6 +3459,26 @@ function swotOf(p, lang){
    Type is deliberately large: messaging apps downscale images hard, so
    a 15px caption becomes unreadable after WhatsApp recompresses it. */
 var VCSS = `
+/* The glance block borrows the report's snapshot parts, and those are sized in
+   millimetres for A4 at 8.5pt. This page is 1240px wide at 19px, roughly twice
+   the scale, so every borrowed piece is restated here in px. Without this the
+   dates and the lot table come out as a footnote beside tiles twice their
+   size. */
+.vglance{ display:grid; grid-template-columns:1fr 1fr; gap:30px; margin-top:14px;
+          align-items:stretch; }
+.vglance .ssub{ font-size:14px; letter-spacing:.1em; margin:0 0 8px; }
+body.gu .vglance .ssub{ font-size:15px; letter-spacing:.02em; }
+.vglance .drail{ margin:6px 0 12px; }
+.vglance .drail .stp .dot{ width:12px; height:12px; margin:0 auto 7px; }
+.vglance .drail .stp:before,.vglance .drail .stp:after{ top:5px; height:2px; }
+.vglance .drail .stp .lb{ font-size:13px; letter-spacing:.06em; }
+.vglance .drail .stp .dt{ font-size:17px; margin-top:3px; }
+.vglance .drail .stp .dt small{ font-size:12px; }
+.vglance .mini{ font-size:16px; }
+.vglance .mini th{ font-size:13px; letter-spacing:.08em; padding:7px 9px; }
+.vglance .mini td{ padding:7px 9px; }
+.vglance .lotb{ font-size:13px; padding:2px 8px; border-radius:9px; margin-right:7px; }
+
 .vpage{ width:1240px; height:1754px; background:#fff; padding:50px 54px 56px; position:relative;
         display:flex; flex-direction:column; page-break-after:always; font-size:19px; line-height:1.5; }
 .vpage:last-child{ page-break-after:auto; }
@@ -3260,7 +3606,7 @@ function buildVisual(p, lang){
     + '<div class="vsec">'+e(L(lang,'ipo_basics'))+'</div>'
     + '<div class="vinfo">'
       + '<div class="c"><div class="k">'+e(L(lang,'price_band'))+'</div><div class="v en">₹'+e(ipo.price_band||'—')
-        + '</div><div class="s en">'+L(lang,'issue_at')+' ₹'+n(ipo.issue_price)+'</div></div>'
+        + '</div><div class="s en">'+vLotSub(p, lang)+'</div></div>'
       + '<div class="c"><div class="k">'+e(L(lang,'issue_size'))+'</div><div class="v en">'+cr(ipo.issue_size_cr)
         + '</div><div class="s en">'+L(lang,'fresh')+' '+cr(ipo.fresh_cr)+' · OFS '+cr(ipo.ofs_cr)+'</div></div>'
       + '<div class="c"><div class="k">'+e(L(lang,'subscription'))+'</div><div class="v en">'
@@ -3269,6 +3615,15 @@ function buildVisual(p, lang){
       + '<div class="c" style="border-color:var(--teal)"><div class="k">'+e(L(lang,'gmp'))+'</div><div class="v en" style="color:var(--teal)">'
         + (ipo.gmp&&ipo.gmp.value!=null? '₹'+n(ipo.gmp.value):'—')+'</div><div class="s en">'
         + pct((ipo.gmp||{}).pct)+' · '+L(lang,'unoff_unver')+'</div></div></div>'
+    /* Key dates on the left with market cap and promoter holding beneath them,
+       the minimum application per investor class on the right. Allotment and
+       listing belong on the one-pager: they are what a reader does next. The
+       maxima and the full lot ladder stay in the long reports. */
+    + '<div class="vglance">'
+      + '<div><div class="ssub">'+e(L(lang,'key_dates'))+'</div>'+dateRail(p, lang)
+        + vGlanceFacts(p, lang)+'</div>'
+      + '<div>'+lotTable(p, lang, 1)+'</div>'
+    + '</div>'
     + '<div class="vobj"><div class="k">'+e(L(lang,'objective'))+'</div><div class="b"><span class="en">'
       + e(objText||'—')+'</span>'+(topObject?' — '+e(tr(p,lang,topObject.verdict)):'')+'</div></div>'
     /* Business overview — institutional point 8, so the reader knows what the
@@ -3941,7 +4296,7 @@ function buildInstitutional(p, lang){
    keys used by the section builders, so renaming a heading never breaks this. */
 var IR_GROUPS = [
   ['irg_recommendation', ['verdict_h']],
-  ['irg_ipo',            ['ipo_snapshot','ir_issue_kpi','ir_objects','ir_shareholding',
+  ['irg_ipo',            ['ipo_snapshot','ipo_dates','ir_issue_kpi','ir_objects','ir_shareholding',
                           'ir_anchors','capital_allocation']],
   ['irg_company',        ['what_it_does','ir_group','ir_products','ir_segments','ir_metrics',
                           'ir_industry','ir_moat','dp_competition','ir_concentration',
@@ -3997,10 +4352,17 @@ function irSections(lang, gate){
 
   /* 02 IPO snapshot with the fresh/OFS split */
   var fresh = Number(ipo.fresh_cr)||0, ofs = Number(ipo.ofs_cr)||0, tot = fresh+ofs;
-  push('ipo_snapshot', L(lang,'ipo_snapshot'),
-      /* Figures and commentary only, as in the company report's own snapshot.
-         The fresh-versus-OFS split is a section of its own further down, where
-         it sits beside the outflow that mirrors it. */
+  /* Two blocks, not one. The packer moves a block whole and only divides one
+     when it is the last thing on the page, so a single tall snapshot that did
+     not fit was carried forward entire — which in Gujarati, where the same
+     text runs about a fifth longer, left two thirds of a page blank behind it.
+     Split at the natural seam, the figures stay put and the dates and the lot
+     ladder travel on their own if they have to. In English both still sit
+     together on one page. */
+  push('ipo_snapshot', L(lang,'ipo_snapshot'), snapshotV2(p, lang, 0, 'head'));
+  push('ipo_dates', L(lang,'key_dates_lot'), snapshotV2(p, lang, 0, 'tail'));
+
+  var instSnapUnused = function(){ return (
       kv([
         [L(lang,'issue_period'), '<span class="en">'+e(dmy(m.open_date)||'—')+' — '+e(dmy(m.close_date)||'—')+'</span>'],
         [L(lang,'price_band'), '<span class="en">₹'+e(S(ipo.price_band)||'—')+' · '+L(lang,'issue_at')+' ₹'+n(ipo.issue_price)+'</span>'],
@@ -4017,7 +4379,7 @@ function irSections(lang, gate){
       ])
     + (S(ipo.structure_verdict) || S(ipo.structure_note)
       ? '<div class="note'+(/exit/i.test(S(ipo.structure_verdict))?' bad':'')+'"><b>'
-        + e(A(lang, tr(p,lang,ipo.structure_verdict)))+'</b> '+e(pick(p,lang,'ipo.structure_note', ipo.structure_note))+'</div>' : ''));
+        + e(A(lang, tr(p,lang,ipo.structure_verdict)))+'</b> '+e(pick(p,lang,'ipo.structure_note', ipo.structure_note))+'</div>' : '')); };
 
   /* 03 business */
   push('what_it_does', L(lang,'what_it_does'),
@@ -4950,5 +5312,8 @@ global.IPODocs = { buildReport:buildReport, buildExec:buildExec, buildVisual:bui
                             columns:chartColumns, columnsLine:chartColumnsLine,
                             waterfall:chartWaterfall, heat:chartHeat },
                    buildScorecard:buildScorecard, BLOCKS:BLOCKS, S:S,
-                   guSweep:guSweep, translitGu:translitGu, guWords:guWords };
+                   guSweep:guSweep, translitGu:translitGu, guWords:guWords,
+                   /* exposed for the suites: the lot ladder and the date
+                      arithmetic are the two pieces worth testing on their own */
+                   _lotRows:lotRows, _keyDates:keyDates };
 })(window);

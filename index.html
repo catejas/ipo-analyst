@@ -23,6 +23,7 @@
   --gold:#F2B233; --gold2:#E08A1E; --goldink:#231704;
   --blue:#2E6BB8; --orange:#E08A1E; --aqua:#12A085; --yellow:#F2B233;
   --green:#18A05B; --red:#EF6A6A; --violet:#7C8CF0;
+  --indigo:#7C8CF0; --indigo-ink:#0B1226; --indigo-t:#17203F; --indigo-t2:#1D2850;
   --r:16px; --r2:12px;
   --shadow:0 1px 2px rgba(0,0,0,.28), 0 8px 24px rgba(0,0,0,.22);
   --grad-gold:linear-gradient(135deg,#F5C255,#E08A1E);
@@ -36,6 +37,7 @@
     --gold:#E9A21B; --gold2:#C97C10; --goldink:#2B1C02;
     --blue:#1E4E8C; --orange:#C97C10; --aqua:#0E7C66; --yellow:#B37A05;
     --green:#0A7A42; --red:#CF3B3A; --violet:#4A3AA7;
+    --indigo:#6A5AE0; --indigo-ink:#FFFFFF; --indigo-t:#F3F1FD; --indigo-t2:#E8E4FB;
     --shadow:0 1px 2px rgba(11,31,59,.06), 0 8px 22px rgba(11,31,59,.07);
     --grad-head:linear-gradient(160deg,#FFFFFF 0%,#F4F7FC 100%);
   }
@@ -253,6 +255,8 @@ details .in{padding:0 14px 14px;}
 /* Company picker. A <datalist> renders on phones as a one-line strip above the
    keyboard, and once a value is chosen it will not reopen — so this is a real
    vertical list that can always be reopened. */
+.pickline{display:flex;gap:8px;align-items:stretch;}
+.pickline .pickwrap{flex:1 1 auto;min-width:0;}
 .pickwrap{position:relative;display:flex;}
 .pickwrap input{width:100%;padding-right:46px;}
 .pickbtn{position:absolute;right:6px;top:50%;transform:translateY(-50%);
@@ -269,6 +273,17 @@ details .in{padding:0 14px 14px;}
   border-bottom:1px solid var(--line);color:var(--ink);font:inherit;padding:12px 14px;cursor:pointer;}
 .pickpanel .pk:last-child{border-bottom:0;}
 .pickpanel .pk:active,.pickpanel .pk.on{background:var(--surf);}
+/* A company whose report is already downloaded. Indigo, because the three
+   colours a row already uses are spoken for — green OPEN, blue UPCOMING, red
+   CLOSED — and a fourth signal in any of those hues would be read as a status.
+   The rail carries the meaning; the tint is faint enough to survive being
+   printed next to a white row. */
+.pickpanel .pk{border-left:3px solid transparent;}
+.pickpanel .pk.hasrep{border-left-color:var(--indigo);background:var(--indigo-t);}
+.pickpanel .pk.hasrep.on{background:var(--indigo-t2);}
+.pkrep{display:inline-block;font-size:8.5px;font-weight:800;letter-spacing:.3px;
+  padding:1px 5px;border-radius:6px;margin-right:6px;vertical-align:1px;
+  background:var(--indigo);color:var(--indigo-ink);}
 .pickpanel .pk b{display:block;font-size:14.5px;font-weight:700;line-height:1.3;}
 .pickpanel .pk span{display:block;font-size:11.5px;color:var(--ink3);margin-top:3px;
   white-space:nowrap;overflow:hidden;}
@@ -356,7 +371,7 @@ body.previewing{overflow:hidden;}
 .lg-row i{flex:0 0 auto;}
 .footer{font-size:11.5px;color:var(--ink3);text-align:center;padding:24px 8px;line-height:1.6;}
 </style>
-<script>window.APP_BUILD="2026.08.28.3";</script>
+<script>window.APP_BUILD="2026.08.29.2";</script>
 </head>
 <body>
 
@@ -443,7 +458,19 @@ body.previewing{overflow:hidden;}
   <div class="card">
     <h2>Recent</h2>
     <p class="hint">Saved on this device only.</p>
-    <div id="recent"></div>
+    <!-- The list used to be printed on the page, twelve rows deep. It is a
+         picker now: one line of screen until you ask for it. -->
+    <label style="margin-top:0;" for="rcPick">Company name</label>
+    <div class="pickline">
+      <div class="pickwrap">
+        <input type="text" id="rcPick" placeholder="Nothing yet"
+               autocomplete="off" readonly>
+        <button type="button" class="pickbtn" id="btnRcPick"
+                aria-label="Show recent companies" aria-expanded="false">&#9662;</button>
+      </div>
+      <button class="btn sm" id="btnRcLoad" style="margin:0;flex:0 0 84px;">Load</button>
+    </div>
+    <div id="rcPanel" class="pickpanel hidden" role="listbox" aria-label="Recent companies"></div>
   </div>
 </section>
 
@@ -1274,6 +1301,16 @@ still carries the scoring.
   "ipo": {
     "price_band": "271-285", "issue_price": 285, "face_value": 10,
     "lot_size": 52, "min_investment": 14820,
+    "allotment_date": "2026-08-17",
+    "_allotment_note": "ISO. Under the T+3 timetable allotment is the day after the issue closes and listing two days after that. Give the dates the RHP or the registrar states. If the RHP does not state them the app derives them from the closing date and prints them marked 'expected' — so omit the field rather than guessing, because a guessed date printed as a fact is worse than a derived one printed as an estimate.",
+    "applications": [
+      { "label": "Retail", "band": "r", "lots": 1,  "shares": 52,   "amount": 14820 },
+      { "label": "Retail", "band": "r", "lots": 13, "shares": 676,  "amount": 192660 },
+      { "label": "sHNI",   "band": "s", "lots": 14, "shares": 728,  "amount": 207480 },
+      { "label": "sHNI",   "band": "s", "lots": 67, "shares": 3484, "amount": 992940 },
+      { "label": "bHNI",   "band": "b", "lots": 68, "shares": 3536, "amount": 1007760 }
+    ],
+    "_applications_note": "The application lot ladder as the RHP or the exchange prints it: Retail min and max, sHNI min and max, bHNI min. `band` is r, s or b and only colours the row. The boundaries are SEBI's — Retail up to Rs 2,00,000, sHNI from there to Rs 10,00,000, bHNI above it — so every row follows from the lot and the price. Give it if the RHP states it; the app derives the same ladder when you omit it, so do not invent rows that disagree with the arithmetic.",
     "issue_size_cr": 301.62, "fresh_cr": 93.0, "ofs_cr": 208.62,
     "market_cap_cr": 1205.62,
     "subscription": { "overall": 21.5, "qib": 2.29, "nii": 35.05, "retail": 17.87 },
@@ -2439,27 +2476,78 @@ function saveRecent(){
   set(LS.recent, JSON.stringify(list.slice(0,12)));
   drawRecent();
 }
-function drawRecent(){
+/* RC_I is the row the Load button will act on: the one shown in the box, not
+   whatever the finger last brushed past. Choosing in the panel sets it and
+   loads immediately — the button is for loading the same company again after
+   you have typed over the field. */
+var RC_I = -1;
+function recentList(){
   var list=[]; try{ list = JSON.parse(get(LS.recent,'[]')); }catch(e){}
-  if(!list.length){ $('#recent').innerHTML = '<p class="note" style="margin:0;">Nothing yet.</p>'; return; }
-  $('#recent').innerHTML = list.map(function(x,i){
-    var d = new Date(x.ts).toLocaleDateString('en-IN',{day:'2-digit',month:'short'});
-    return '<div class="wrow"><div class="nm">'+esc(x.company)
-      +'<small>'+esc(x.type)+' &middot; '+esc(x.horizon)+' &middot; EN + ગુ &middot; '+d+'</small></div>'
-      +'<button class="btn sm" style="flex:0 0 auto;width:auto;padding:7px 12px;margin:0;" data-re="'+i+'">Load</button></div>';
-  }).join('');
-  $$('[data-re]').forEach(function(b){
-    b.addEventListener('click', function(){
-      var x = list[+b.dataset.re];
-      $('#company').value = x.company;
-      ['type','horizon','investor'].forEach(function(k){
-        var el = document.querySelector('input[name='+k+'][value="'+x[k]+'"]');
-        if(el) el.checked=true;
-      });
-      refresh(); window.scrollTo(0,0);
-    });
-  });
+  return Array.isArray(list) ? list : [];
 }
+function drawRecent(){
+  var list = recentList(), host = $('#rcPanel');
+  if(RC_I >= list.length) RC_I = -1;
+  $('#rcPick').value = (RC_I >= 0 && list[RC_I]) ? str(list[RC_I].company) : '';
+  $('#rcPick').placeholder = list.length ? 'Tap to choose' : 'Nothing yet';
+  $('#btnRcLoad').disabled = !(RC_I >= 0 && list[RC_I]);
+  if(!host) return;
+  if(!list.length){
+    host.innerHTML = '<div class="pkempty">Nothing yet — run an analysis and it '
+      + 'will be remembered here.</div>';
+    return;
+  }
+  host.innerHTML = list.map(function(x, i){
+    var d = new Date(x.ts).toLocaleDateString('en-IN', { day:'2-digit', month:'short' });
+    return '<button type="button" class="pk' + (i === RC_I ? ' on' : '') + '" role="option"'
+      + ' data-re="' + i + '"><b>' + esc(x.company) + '</b>'
+      + '<span>' + esc(x.type) + ' &middot; ' + esc(x.horizon) + ' &middot; EN + ગુ &middot; ' + d
+      + '</span></button>';
+  }).join('');
+  pkFit(host);
+}
+function rcLoad(i){
+  var list = recentList(), x = list[i];
+  if(!x) return;
+  RC_I = i;
+  $('#company').value = str(x.company);
+  ['type','horizon','investor'].forEach(function(k){
+    var el = document.querySelector('input[name=' + k + '][value="' + x[k] + '"]');
+    if(el) el.checked = true;
+  });
+  drawRecent();
+  refresh();
+  window.scrollTo(0, 0);
+}
+function rcPanelOpen(){ return !$('#rcPanel').classList.contains('hidden'); }
+function openRcPanel(){
+  if(!recentList().length) return;
+  drawRecent();
+  $('#rcPanel').classList.remove('hidden');
+  pkFit('#rcPanel');
+  $('#btnRcPick').setAttribute('aria-expanded','true');
+}
+function closeRcPanel(){
+  $('#rcPanel').classList.add('hidden');
+  $('#btnRcPick').setAttribute('aria-expanded','false');
+}
+function rcToggle(ev){
+  ev.preventDefault(); ev.stopPropagation();
+  if(rcPanelOpen()) closeRcPanel(); else openRcPanel();
+}
+$('#btnRcPick').addEventListener('click', rcToggle);
+$('#rcPick').addEventListener('click', rcToggle);
+$('#rcPanel').addEventListener('click', function(ev){
+  var b = ev.target.closest && ev.target.closest('[data-re]');
+  if(!b) return;
+  closeRcPanel();
+  rcLoad(+b.dataset.re);
+});
+$('#btnRcLoad').addEventListener('click', function(){ rcLoad(RC_I); });
+document.addEventListener('click', function(ev){
+  if(rcPanelOpen() && !ev.target.closest('#rcPanel') && !ev.target.closest('#btnRcPick')
+     && !ev.target.closest('#rcPick')) closeRcPanel();
+});
 /* An AI may return an object where a string was asked for. Coerce sensibly
    instead of letting "[object Object]" reach the screen. */
 function str(v){
@@ -4368,6 +4456,36 @@ function pickerRows(filter){
   return starts.sort(ipoSort).concat(contains.sort(ipoSort));
 }
 
+/* The set of companies the Report tab can already show, by name, lower-cased.
+   Built from the saved library — no network, no clock, nothing but what is on
+   this device — so the highlight is right offline and right the moment an
+   import lands. Rebuilt per draw rather than cached, because the library
+   changes under it whenever an analysis is imported or deleted. */
+function reportedSet(){
+  var out = {};
+  libRead().forEach(function(r){
+    var nm = String(recName(r) || '').trim().toLowerCase();
+    if(nm) out[nm] = 1;
+    /* An IPO list says "Tempsens Instruments (India) Limited" and a payload's
+       short_name says "Tempsens Instruments". Index both so the match holds. */
+    var sn = String(str(((r.data || {}).meta || {}).short_name) || '').trim().toLowerCase();
+    if(sn) out[sn] = 1;
+  });
+  return out;
+}
+function hasReport(name, set){
+  var nm = String(name || '').trim().toLowerCase();
+  if(!nm) return false;
+  if(set[nm]) return true;
+  /* Fall back to a containment match so "… Limited" and "… Ltd" still meet. */
+  var bare = nm.replace(/\s*(limited|ltd\.?|private|pvt\.?)\s*$/g, '').trim();
+  if(bare && set[bare]) return true;
+  for(var k in set){
+    var kb = k.replace(/\s*(limited|ltd\.?|private|pvt\.?)\s*$/g, '').trim();
+    if(kb && bare && kb === bare) return true;
+  }
+  return false;
+}
 function drawPicker(filter){
   var rows = pickerRows(filter), host = $('#ipoPanel');
   if(!rows.length){
@@ -4378,6 +4496,7 @@ function drawPicker(filter){
   }
   var cur = $('#company').value.trim().toLowerCase();
   var today = todayISO();
+  var REP = reportedSet();
   host.innerHTML = rows.map(function(x){
     /* line 1 — status tag + name */
     var tag = ipoStatus(x, today);
@@ -4394,8 +4513,14 @@ function drawPicker(filter){
     var l3 = pkLine3(x);
 
     var nm = str(x.company);
-    return '<button type="button" class="pk'+(nm.toLowerCase()===cur?' on':'')+'" role="option"'
-         + ' data-pick="'+esc(nm)+'"><b>'+chip+esc(nm)+'</b>'
+    var got = hasReport(nm, REP);
+    return '<button type="button" class="pk'+(nm.toLowerCase()===cur?' on':'')
+         + (got?' hasrep':'')+'" role="option"'
+         /* The chip leads, beside the status tag. Trailing the name it landed
+            on a line of its own whenever the name filled the row, which turned
+            a three-line row into four. */
+         + ' data-pick="'+esc(nm)+'"><b>'+chip
+         + (got?'<i class="pkrep">REPORT</i>':'')+esc(nm)+'</b>'
          + '<span>'+l2.join(' · ')+'</span>'
          + (l3.length ? '<span class="pkl3">'+l3.join(' · ')+'</span>' : '')
          + '</button>';
@@ -4441,6 +4566,26 @@ function pkFitLine(el, avail){
   }
   if(el.scrollWidth > avail + 0.5) el.style.textOverflow = 'ellipsis';
 }
+/* The name line, which carries the status tag and now the REPORT chip too. It
+   is allowed to wrap to a second line — a long company name has to go
+   somewhere — but it is shrunk first, so a row only grows when the name really
+   cannot be made to fit. Bigger type and a bigger floor than the detail lines,
+   because this is the line the eye lands on. */
+var PK_NAME_PX = 14.5, PK_NAME_MIN = 11.5;
+function pkFitName(el, avail){
+  if(!el) return;
+  el.style.fontSize = ''; el.style.letterSpacing = '';
+  var one = el.scrollHeight;                       /* height at full size */
+  var line = parseFloat(getComputedStyle(el).lineHeight) || PK_NAME_PX * 1.3;
+  if(one <= line * 1.4) return;                    /* already one line */
+  for(var size = PK_NAME_PX - 0.5; size >= PK_NAME_MIN; size -= 0.5){
+    el.style.fontSize = size.toFixed(1) + 'px';
+    line = parseFloat(getComputedStyle(el).lineHeight) || size * 1.3;
+    if(el.scrollHeight <= line * 1.4) return;      /* it fits on one line now */
+  }
+  /* Genuinely too long. Leave it at the floor and let it wrap — truncating a
+     company name is worse than a taller row. */
+}
 function pkFit(hostSel){
   var host = typeof hostSel === 'string' ? $(hostSel) : hostSel;
   if(!host || host.classList.contains('hidden')) return;   /* nothing to measure */
@@ -4448,6 +4593,7 @@ function pkFit(hostSel){
     var cs = getComputedStyle(row);
     var avail = row.clientWidth - parseFloat(cs.paddingLeft || 0) - parseFloat(cs.paddingRight || 0);
     if(!(avail > 0)) return;
+    pkFitName(row.querySelector(':scope > b'), avail);
     [].forEach.call(row.querySelectorAll(':scope > span'), function(sp){ pkFitLine(sp, avail); });
   });
 }
