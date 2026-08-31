@@ -1,8 +1,63 @@
-# IPO Analyst — standalone web app  ·  v4.6  ·  build 2026.08.29.2
+# IPO Analyst — standalone web app  ·  v4.6  ·  build 2026.08.30.1
 
 A single-page web app that turns the institutional IPO research protocol into something you can
 run from an icon on your phone. It works on Android and iPhone/iPad, installs to the home screen,
 runs full-screen with no address bar, and works offline for everything except the AI call itself.
+
+## What changed in v4.6 build 2026.08.30.1
+
+**Sourcing, repointed.** Three assistants were tested against a live RHP and all three hit the same
+wall: a fetched prospectus returns roughly its first twenty pages and nothing after, so the
+litigation chapter and the restated notes never arrive. The framework no longer pretends otherwise.
+It now names the extraction layer that has already read the RHP — merchantbanker.in, Chittorgarh,
+IPOJI, InvestorGain, IPOWatch, and the media write-ups published at issue time — and tells the model
+to work it in order. Contingent liabilities with figures, litigation matter by matter, customer and
+supplier concentration, capacity utilisation: all of it is published, and we were not asking for it.
+
+**Every figure now says where it came from.** `sources.tags` marks a block F (filing or RHP), A
+(aggregator), M (media) or E (own estimate); the reports print the letter beside the figure with a
+key at the foot. `sources.blocks` fills a provenance table — one row per block, naming the site. And
+every cover carries a stamp: *Sources: exchange filings + aggregators · RHP not read*, driven by
+`sources.rhp_read`, which the framework tells the model to set true **only** if it read the
+prospectus body. A scraped number and a filed number no longer look identical on the page.
+
+**New in the long reports.** Industry market size, growth and the issuer's share, with the
+commissioned study named. The anchor lock-in calendar — the 30-day and 90-day expiry dates,
+computed from the listing date. A listing-gain base rate: what comparable recent issues at a similar
+subscription and premium actually did. The drift in the grey-market premium since it was first
+quoted. A fair-value range with its method, beside the scenarios rather than instead of them. And
+**What moved the score** — the five lines that carried the total and the five that dragged it, with
+the basis for each; the full 31-line basis stays in the Score Card, which is the audit document.
+
+**The Company report gained** a Sources and confidence section (it had no provenance at all), key
+catalysts with dates, and what would change our mind — both of which the payload already carried and
+only the institutional report printed.
+
+**The Executive Summary got shorter, not longer.** Allocation and "Allocation and price levels" were
+two headings a page apart about one decision; they are one section now. The key-ratio grid is four
+tiles rather than eight, since the three-year financials above and the valuation below restate most
+of them. Catalysts appear as two dated lines, not a section.
+
+**The Investment Summary is still two pages in both languages** — the provenance rides in the
+masthead's existing third line, the fair-value range in the recommendation banner's white space, and
+the dated catalyst strip sits on page 2, which had the room.
+
+**The app remembers the premium and scores its own calls.** The first grey-market premium ever
+recorded for an issue is now kept, write-once, and folded into the payload at render time so the
+report can show the drift. And once an issue has listed, the Report tab asks what it actually did:
+enter the listing percentage and the app marks the call right or wrong and keeps your hit rate. A
+listing-gain score above 60 is a positive call, below 40 a negative one, and the band between counts
+as no call — scoring the middle either way would flatter the record.
+
+**Gujarati: nineteen paths were never being asked for.** The sweep deliberately refuses to
+machine-translate a sentence, so any prose the payload does not translate prints in English. Nineteen
+fields reached the page without the framework ever requesting a translation — including the bull
+case, the bear case, what would change our mind, and the key questions for management. All are now in
+the contract, the longest are in the import gap note, and a new suite walks the rendered Gujarati
+documents and fails if any prose field the documents print is missing from the contract. Separately,
+the price-levels column was marked English-by-design when it is a sentence with a figure in it
+("Up to 300 (issue price)"), and a unit glued to a number — "180.6cr" — no longer half-translates
+into "430.6કરોડ".
 
 ## What changed in v4.6 build 2026.08.29.2
 

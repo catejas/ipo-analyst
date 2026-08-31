@@ -589,6 +589,8 @@ still carries the scoring.
     "market_cap_cr": 1205.62,
     "subscription": { "overall": 21.5, "qib": 2.29, "nii": 35.05, "retail": 17.87 },
     "gmp": { "value": 80, "pct": 28.1, "implied_listing": 365, "trend": "rising",
+             "first_seen_value": null, "first_seen_date": "YYYY-MM-DD",
+             "_gmp_trend_note": "first_seen_* is the earliest premium you can find quoted for this issue, with its date. The app compares it with the current figure and prints the drift. A premium falling through the subscription window says more than its level.",
              "note": "max 120 chars, must state it is unofficial and unregulated" },
     "objects": [ { "use": "max 46 chars", "amount_cr": 56.24, "verdict": "max 90 chars" } ],
     "selling_shareholders": [ { "name": "max 40 chars", "type": "Promoter | Investor | Founder",
@@ -621,7 +623,14 @@ still carries the scoring.
                   "growth_note": "max 200 chars",
                   "drivers": ["max 90 chars each, 3 to 5 items"],
                   "pricing_power": "Strong | Moderate | Limited | Weak",
-                  "market_share_note": "max 160 chars" },
+                  "market_share_note": "max 160 chars",
+                  "market_size_cr": null,
+                  "market_size_year": "FY26",
+                  "market_cagr_pct": null,
+                  "market_cagr_window": "max 18 chars — e.g. FY26-FY30E",
+                  "issuer_share_pct": null,
+                  "market_study": "max 40 chars — who produced the figures, e.g. CRISIL, Redseer, F&S",
+                  "_market_note": "Every RHP commissions an industry study and the figures are quoted in the IPO write-ups on aggregator and media sites even when the prospectus itself is unreadable. Take them from there and tag the block M or A. Leave the numbers null rather than guessing a market size — a fabricated TAM is the single most common failure in IPO research." },
     "moat": { "rating": "Strong | Moderate | Weak | None",
               "sources": [ { "source": "max 30 chars", "verdict": "Real | Partial | Weak | None",
                              "evidence": "max 130 chars" } ],
@@ -657,6 +666,10 @@ still carries the scoring.
                        "items": [ { "label": "max 24 chars", "value": "max 30 chars",
                                     "tone": "good | warn | bad" } ] },
     "valuation": { "verdict": "Deeply Undervalued | Undervalued | Fair | Expensive | Very Expensive",
+      "fair_value": { "low": null, "high": null,
+                      "method": "max 60 chars — e.g. 28-32x FY26 EPS, blended with peer EV/EBITDA",
+                      "note": "max 120 chars — what the range assumes",
+                      "_fv_note": "A range, never a point. Both ends in rupees per share, on the same basis as the issue price. Omit the whole object rather than inventing a range for a company you cannot value — a loss-making issue with no comparable peer has no honest fair value, and saying so is the finding." },
       "multiples": [ { "label": "max 22 chars", "value": "max 14 chars",
                        "basis": "max 90 chars",
                        "label_tag": "Official | Derived | Estimated" } ],
@@ -722,7 +735,22 @@ still carries the scoring.
   "sources": { "primary": ["max 90 chars each"], "secondary": ["max 90 chars each"],
     "conflicts": [ { "point": "max 34 chars", "a": "max 44 chars", "b": "max 44 chars",
                      "decision": "max 60 chars" } ],
-    "missing": ["max 110 chars each — anything you could not obtain"] }
+    "missing": ["max 110 chars each — anything you could not obtain"],
+
+    "rhp_read": false,
+    "rhp_url": "the RHP PDF link if you found one, else omit",
+    "_rhp_note": "Set rhp_read TRUE only if you actually read the prospectus body — the litigation chapter, the restated notes — not merely its cover or table of contents. Nearly every assistant can fetch the first 20 pages of an RHP and no further, so the honest answer is usually false. The report prints this on its cover; claiming true when you read only the opening pages puts a stamp of authority on secondary data.",
+
+    "tags": { "financials.rows": "F", "deep.contingent": "A", "deep.litigation": "A",
+              "company.industry.market_size_cr": "M" },
+    "_tags_note": "Where each block of data came from. Key is a payload path, value is ONE letter: F = an exchange or regulatory filing, or the RHP itself; A = an IPO data aggregator; M = a news or media report; E = your own estimate or derivation. Tag the blocks you actually sourced — you do not need to tag every leaf. The report prints the letter beside the figure, so a reader can tell a filed number from a scraped one.",
+
+    "blocks": [ { "block": "max 30 chars — e.g. Contingent liabilities",
+                  "source": "max 46 chars — the site or filing",
+                  "kind": "F | A | M | E",
+                  "url": "the page you took it from, if there is one" } ],
+    "_blocks_note": "The provenance table the institutional and company reports print. One row per data block you sourced from outside the exchange filings — 5 to 12 rows. This is what makes the analysis auditable."
+  }
 }
 ```
 
@@ -897,6 +925,14 @@ If you genuinely cannot source a section, send the key with an empty array and s
       "assumptions": [ { "driver": "max 34 chars", "value": "max 18 chars", "comment": "max 70 chars" } ],
       "verdict": "max 140 chars — is that assumption reasonable?"
     },
+    "base_rate": {
+      "note": "max 220 chars — how the comparables were chosen, and the caveat that a base rate is not a forecast",
+      "rows": [ { "company": "max 30 chars", "board": "Mainboard | SME",
+                  "close_date": "YYYY-MM-DD", "subscription": 0.0,
+                  "gmp_pct": 0.0, "listed_pct": 0.0 } ],
+      "verdict": "max 140 chars — what the comparable set actually did, and where this issue sits in it",
+      "_base_rate_note": "4 to 8 issues that closed in the last 6 to 12 months on the same board, at a broadly similar subscription and grey-market premium, with what they ACTUALLY did on listing day. This turns the listing-gain score from an opinion into a distribution. `listed_pct` is the close of the first day against the issue price. If you cannot find comparable issues, send an empty rows array and say so in note — a fabricated base rate is worse than none, because it looks like evidence."
+    },
     "sensitivity": {
       "note": "max 220 chars",
       "row_label": "Growth %", "col_label": "Exit multiple",
@@ -940,6 +976,7 @@ If you genuinely cannot source a section, send the key with an empty array and s
 | `deep.competition.matrix.rows` | the subject plus 3–5 real competitors |
 | `deep.reverse_dcf.assumptions` | 4–6 |
 | `deep.sensitivity.rows` | 3–5 rows against 3 columns |
+| `deep.base_rate.rows` | 4–8 comparable recent issues |
 | `deep.management_quality.items` | 4–6 |
 
 **The Gujarati for the `deep` key** goes in the `gu` key's `gu.text` sweep like everything else — key by the exact
@@ -1079,9 +1116,40 @@ is not printed as a single line in the RHP, not because it is unavailable. **Der
   FY24 and FY25 columns are dashes while FY26 has a number means you computed one year and stopped.
   Fill the series or say in `note` which year the input is missing for and why.
 
+### Where to look when the prospectus itself will not open
+
+Assume you will **not** be able to read the body of the RHP. This has been tested across assistants:
+a fetched RHP PDF returns roughly its first twenty pages — cover, capital structure, the opening risk
+factors — and nothing after. The litigation chapter, the restated notes and the related-party
+schedules sit hundreds of pages further in and will not arrive. Do not report this as a limitation
+and stop; the figures you need have already been extracted and published elsewhere.
+
+**Work the extraction layer, in this order.**
+
+1. **IPO analysis sites that read the RHP for you.** `merchantbanker.in`, `chittorgarh.com`,
+   `ipoji.com`, `investorgain.com`, `ipowatch.in`. Between them these carry contingent liabilities
+   with figures, outstanding litigation matter by matter, customer and supplier concentration
+   percentages, capacity utilisation, promoter holding and the lot ladder.
+2. **Media write-ups published at issue time.** When an RHP lands, the financial press summarises its
+   risk section — "flags Rs 229 crore contingent liabilities, sourcing reliance, other key risks in
+   RHP" is a typical headline. This is where the commissioned industry study's market-size figures
+   usually surface too.
+3. **Exchange and regulatory filings**, which are short enough to read in full: the anchor allocation
+   letter on BSE or NSE, subscription data, and the addendum or corrigendum pages on the company's
+   own investor page.
+4. **The first twenty pages of the RHP**, which you generally *can* read: issue structure, capital
+   structure, objects, the opening risk factors and the table of contents. Use them, and use the
+   contents page to know what exists even where you cannot reach it.
+
+**Record where each block came from.** Fill `sources.blocks` with one row per block you sourced this
+way, and `sources.tags` with the one-letter kind. Set `sources.rhp_read` to **false** unless you
+genuinely read the prospectus body. The report prints all of this, so a reader can tell a filed
+figure from a scraped one.
+
 **Banned phrasing.** "Not disclosed in the secondary sources reviewed", "should be sourced directly
-from the RHP", and anything of that shape means the work was not done. The RHP *is* your source. If
-you genuinely cannot open it, say which document you could not reach and why, in one clause.
+from the RHP", and anything of that shape means the work was not done — the extraction layer above
+is your source, and it is nearly always sufficient. If a figure genuinely is not published anywhere,
+name the two sites you checked, in one clause.
 
 **Only after you have tried to derive it** may a field be null, and then `tag` must say
 `Not disclosed` and `note` must say in one short phrase where you looked. A null with no
@@ -1316,6 +1384,26 @@ document**. Walk this list before you close the reply:
 | `deep.balance_sheet.*` notes, `deep.working_capital.note`, `deep.quarterly.note` | the remaining deep notes |
 | `deep.reverse_dcf.note`, `.assumptions[].comment`, `.verdict` | the valuation working |
 | `deep.sensitivity.note`, `.row_label`, `.col_label` | the grid axes, which are prose |
+| `deep.base_rate.note` and `.verdict` | how the comparable set was chosen and what it did |
+| `financials.valuation.fair_value.method` and `.note` | how the range was arrived at |
+| `sources.blocks[].block` | the name of each data block in the provenance table |
+| `deep.bull_case_detail` and `deep.bear_case_detail` | the two cases in full — the longest prose in the report |
+| `deep.what_would_change_our_mind` | every line of it |
+| `deep.key_questions_for_management` | every question |
+| `deep.litigation.verdict` | the conclusion under the matters table |
+| `deep.reverse_dcf.verdict` | what the price already assumes |
+| `deep.management_quality.note` | the assessment above the traits |
+| `deep.capital_allocation.note` | what management did with the money |
+| `deep.competition.note` | the note under the competition matrix |
+| `deep.regulatory.note` | the note above the rules |
+| `deep.group_structure.note` and `.related_party_note` | what the group is and what flows through it |
+| `deep.issue_structure.promoter_cost_of_acquisition.note` | what the promoters paid |
+| `deep.issue_structure.recent_bonus_or_placement` | any bonus or placement before the issue |
+| `company.industry.market_share_note` | the issuer's claimed share |
+| `financials.note` and `financials.cash_flow.funding_note` | the notes under the statements |
+| `financials.valuation.anchors.peg_note` | why the two PEGs differ |
+| `sources.conflicts[].decision` | how each conflict was resolved |
+| `decision.levels[].price` | "Up to 300 (issue price)" — a sentence with a figure in it, not a bare number |
 | `decision.monitoring[].desired` and `.warning` | "Above 20% for two quarters", "Falling below 1.0x" |
 | `financials.valuation.multiples[].basis` | "Market cap at the upper band divided by FY26 PAT" |
 | `financials.cash_flow.note`, `.divergence.note`, `.funding_note` | the cash-flow verdict |

@@ -36,7 +36,26 @@ function fileBase(p, kind, lang){
         : (kind==='score'||kind==='scorepng') ? 'IPO_Score_Card' : 'IPO_Investment_Summary';
   return nm + '_' + k + '_' + lang.toUpperCase();
 }
+/* A1 — the app knows the earliest premium it ever recorded for this issue; the
+   payload usually does not. Fold it in just before rendering, so the report can
+   print the drift without the model having to supply a figure it cannot know.
+   The payload's own value always wins: it may have found an older quote. */
+function withLocalGmp(p){
+  try{
+    if(!p || !p.ipo) return p;
+    var g = p.ipo.gmp;
+    if(!g || typeof g !== 'object') return p;
+    if(g.first_seen_value != null) return p;
+    if(typeof window.gmpFirstSeen !== 'function') return p;
+    var seen = window.gmpFirstSeen((p.meta || {}).company);
+    if(!seen || seen.value == null) return p;
+    g.first_seen_value = seen.value;
+    if(seen.date) g.first_seen_date = seen.date;
+  }catch(e){}
+  return p;
+}
 function buildHTML(p, kind, lang){
+  p = withLocalGmp(p);
   if(kind === 'inst')   return IPODocs.buildInstitutional(p, lang);
   if(kind === 'report') return IPODocs.buildReport(p, lang);
   if(kind === 'exec')   return IPODocs.buildExec(p, lang);

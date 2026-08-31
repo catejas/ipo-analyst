@@ -1503,10 +1503,20 @@ function guSegment(text){
       if(GU_PROSE_MARKERS[tok.toLowerCase()]) prosey++;
       if(guKeepToken(tok)){ hit = tok; known++; }
       else {
-        var one = guTerm(tok);
-        if(one !== null){ hit = one; known++; }
-        else if(guProperish(tok)){ hit = tok; guessed++; }
-        else { hit = tok; unknown++; }
+        /* A unit glued straight onto a figure — "180.6cr", "35x", "12mm" — is
+           part of the number, not a word beside it. Translating it in place
+           produced "430.6કરોડ": half Latin, half Gujarati, inside one token,
+           and inconsistent with the "180.6cr" three words earlier that a
+           different segment had left alone. Glued units stay English; a
+           free-standing "crore" still translates. */
+        var prev = out.slice(-1);
+        if(/[0-9.]/.test(prev) && tok.length <= 5){ hit = tok; known++; }
+        else {
+          var one = guTerm(tok);
+          if(one !== null){ hit = one; known++; }
+          else if(guProperish(tok)){ hit = tok; guessed++; }
+          else { hit = tok; unknown++; }
+        }
       }
     }
     out += hit;
@@ -1746,6 +1756,53 @@ var T = {
   allotment:      ['Allotment','ફાળવણી'],
   key_dates:      ['Key dates','મુખ્ય તારીખો'],
   key_dates_lot:  ['Key dates and application size','મુખ્ય તારીખો અને અરજી માપ'],
+
+  /* ---- provenance, X2 / X3 / I1 / C1 ---- */
+  prov_stamp:     ['Sources','સ્રોતો'],
+  prov_filings:   ['exchange filings','એક્સચેન્જ ફાઇલિંગ'],
+  prov_aggr:      ['aggregators','એગ્રિગેટર'],
+  prov_media:     ['media','મીડિયા'],
+  prov_est:       ['own estimate','પોતાનો અંદાજ'],
+  prov_rhp_yes:   ['RHP read','RHP વાંચ્યો'],
+  prov_rhp_no:    ['RHP not read','RHP વાંચ્યો નથી'],
+  prov_key:       ['Source key','સ્રોત સંકેત'],
+  prov_table:     ['Data provenance','ડેટા સ્રોત'],
+  prov_block:     ['Data block','ડેટા વિભાગ'],
+  prov_source:    ['Source','સ્રોત'],
+  prov_kind:      ['Kind','પ્રકાર'],
+  c_sources:      ['Sources and confidence','સ્રોત અને વિશ્વસનીયતા'],
+
+  /* ---- industry market size, I2 / C2 ---- */
+  mkt_size:       ['Market size','બજાર કદ'],
+  mkt_growth:     ['Market growth','બજાર વૃદ્ધિ'],
+  mkt_share:      ['Issuer share','ઇશ્યુઅરનો હિસ્સો'],
+  mkt_study:      ['Study','અભ્યાસ'],
+
+  /* ---- anchor lock-in, I3 / C5 ---- */
+  lockin_cal:     ['Lock-in expiry','લોક-ઇન સમાપ્તિ'],
+  lockin_30:      ['50% at 30 days','30 દિવસે 50%'],
+  lockin_90:      ['balance at 90 days','90 દિવસે બાકીના'],
+
+  /* ---- base rate, I4 ---- */
+  base_rate:      ['Recent comparable issues','તાજેતરના તુલનાત્મક ઇશ્યૂ'],
+  br_sub:         ['Subscription','સબ્સ્ક્રિપ્શન'],
+  br_gmp:         ['GMP at close','બંધ સમયે GMP'],
+  br_listed:      ['Listed at','લિસ્ટિંગ પર'],
+
+  /* ---- gmp drift, I5 ---- */
+  gmp_drift:      ['Premium since first quoted','પ્રથમ ભાવથી પ્રીમિયમ ફેરફાર'],
+
+  /* ---- fair value, I6 / C6 / E2 / V3 ---- */
+  fv_range:       ['Fair value range','વાજબી મૂલ્ય શ્રેણી'],
+  fv_method:      ['Method','પદ્ધતિ'],
+
+  /* ---- catalysts on the shorter documents, C3 / E3 / V2 ---- */
+  cat_dated:      ['What happens next','આગળ શું થાય છે'],
+  movers_up:      ['What carried the score','સ્કોરને શું ઊંચકે છે'],
+  movers_dn:      ['What held it back','સ્કોરને શું રોકે છે'],
+  company_h:      ['Company','કંપની'],
+  moved_score:    ['What moved the score','સ્કોરને શું બદલ્યું'],
+  ir_movers:      ['What moved the score','સ્કોરને શું બદલ્યું'],
   opens:          ['Opens','ખૂલે છે'],
   closes:         ['Closes','બંધ થાય છે'],
   fresh_vs_ofs:   ['Fresh issue vs offer for sale','નવો ઇશ્યૂ vs ઓફર ફોર સેલ'],
@@ -2308,6 +2365,39 @@ body.gu .mini th{ letter-spacing:.02em; font-size:6.4pt; }
 .mini .k{ color:var(--ink2); }
 .mini .n{ text-align:right; font-variant-numeric:tabular-nums; white-space:nowrap;
           font-family:"Helvetica Neue",Helvetica,Arial,sans-serif; }
+/* ---- provenance and fair value ---------------------------------------- */
+.srctag{ font-size:5.2pt; font-weight:800; color:var(--ink4); vertical-align:super;
+         letter-spacing:.02em; margin-left:.3mm;
+         font-family:"Helvetica Neue",Helvetica,Arial,sans-serif; }
+.srckey{ font-size:6.4pt; color:var(--ink3); margin-top:2mm; }
+.srckey b{ color:var(--ink2); }
+.srckey i{ font-style:normal; font-weight:800; color:var(--ink2); }
+.srcpill{ display:inline-block; font-size:5.8pt; font-weight:800; padding:.2mm 1.3mm;
+          border-radius:1mm; background:var(--panel); border:.4pt solid var(--rule);
+          font-family:"Helvetica Neue",Helvetica,Arial,sans-serif; }
+.provline{ font-size:6.8pt; color:var(--ink3); margin-top:2mm; }
+.provline b{ color:var(--ink2); font-weight:800; }
+.provline i{ font-style:normal; font-weight:800; }
+.provline .pv-yes{ color:var(--good); }
+.provline .pv-no{ color:var(--ink3); }
+.fvbox{ border:.6pt solid var(--rule); border-left:2pt solid var(--navy); border-radius:1mm;
+        background:var(--panel2); padding:2mm 2.6mm; margin:2mm 0; }
+.fvbox .k{ font-size:5.9pt; font-weight:800; letter-spacing:.11em; text-transform:uppercase;
+           color:var(--ink3); }
+body.gu .fvbox .k{ letter-spacing:.02em; font-size:6.6pt; }
+.fvbox .v{ font-size:13pt; font-weight:700; letter-spacing:-.02em; margin-top:.5mm; color:var(--navy);
+           font-family:"Helvetica Neue",Helvetica,Arial,sans-serif; }
+.fvbox .g{ display:inline-block; font-size:7.4pt; font-weight:700; margin-left:2mm; }
+.fvbox .g.up{ color:var(--good); } .fvbox .g.dn{ color:var(--bad); }
+.fvbox .m{ font-size:6.6pt; color:var(--ink3); margin-top:.6mm; }
+.mvrow{ display:block; border-bottom:.4pt solid var(--rule2); padding:1.4mm 0; }
+.mvrow:last-child{ border-bottom:0; }
+.mvrow .l{ font-size:7.6pt; font-weight:700; }
+.mvrow .v{ float:right; font-size:7.6pt; font-weight:700;
+           font-family:"Helvetica Neue",Helvetica,Arial,sans-serif; }
+.mvrow .v em{ font-style:normal; color:var(--ink4); font-size:6.4pt; }
+.mvrow .b{ display:block; clear:both; font-size:6.8pt; color:var(--ink3); line-height:1.4;
+           margin-top:.3mm; }
 /* A column of the snapshot, and a table inside it that takes up the slack, so
    the two columns finish level with each other. */
 .snapgrid{ align-items:stretch; }
@@ -2586,6 +2676,253 @@ function bItems(b,lang){ return lang==='gu'? b[5] : b[4]; }
 function blockScore(p,b){ var t=0; b[3].forEach(function(k){ t += Number((p.score_lines||{})[k])||0; }); return t; }
 
 /* ============================ COVER ============================ */
+/* ===================== PROVENANCE, X2 / X3 / I1 / C1 =====================
+
+   A figure taken from an exchange filing and a figure scraped off an aggregator
+   used to look identical on the page. They are not the same thing, and the
+   reader is the one carrying the risk of the difference.
+
+   `sources.tags` maps a payload path to one letter — F filing, A aggregator,
+   M media, E estimate. `srcTag()` prints it as a superscript; `srcKey()` prints
+   the four-line legend once per document; `provStamp()` is the cover line.
+
+   Nothing here invents a tag. An untagged figure prints exactly as it does
+   today, because a made-up provenance is worse than none. */
+var SRC_KINDS = { F:'prov_filings', A:'prov_aggr', M:'prov_media', E:'prov_est' };
+function srcTags(p){
+  var t = (p.sources || {}).tags;
+  return (t && typeof t === 'object') ? t : {};
+}
+/* The tag for a path, falling back to the nearest tagged ancestor: a tag on
+   `deep.litigation` covers `deep.litigation.matters[0].amount_cr` without the
+   model having to enumerate every leaf. */
+function srcOf(p, path){
+  var tags = srcTags(p), k = String(path || '');
+  if(!k) return '';
+  while(k){
+    var v = tags[k];
+    if(typeof v === 'string' && SRC_KINDS[v.toUpperCase()]) return v.toUpperCase();
+    var cut = k.lastIndexOf('.');
+    if(cut < 0) return '';
+    k = k.slice(0, cut);
+  }
+  return '';
+}
+function srcTag(p, path){
+  var k = srcOf(p, path);
+  return k ? '<sup class="srctag">' + k + '</sup>' : '';
+}
+function srcKey(p, lang){
+  var tags = srcTags(p);
+  var used = {};
+  Object.keys(tags).forEach(function(k){
+    var v = String(tags[k] || '').toUpperCase();
+    if(SRC_KINDS[v]) used[v] = 1;
+  });
+  var ks = Object.keys(used);
+  if(!ks.length) return '';
+  return '<div class="srckey"><b>' + e(L(lang, 'prov_key')) + '</b> '
+    + ks.map(function(k){
+        return '<span><i>' + k + '</i> ' + e(L(lang, SRC_KINDS[k])) + '</span>';
+      }).join(' &nbsp;·&nbsp; ') + '</div>';
+}
+/* The cover line. Deliberately blunt about the prospectus: an analysis built on
+   secondary sources is a perfectly good analysis, but the reader should not
+   have to guess which one they are holding. */
+function provStamp(p, lang){
+  var src = p.sources || {};
+  var read = src.rhp_read === true;
+  var bits = [];
+  if(arr(src.primary).length) bits.push(L(lang, 'prov_filings'));
+  if(arr(src.secondary).length || arr(src.blocks).length) bits.push(L(lang, 'prov_aggr'));
+  if(!bits.length) bits.push(L(lang, 'prov_filings'));
+  return '<div class="provline"><b>' + e(L(lang, 'prov_stamp')) + '</b> ' + e(bits.join(' + '))
+    + ' &nbsp;·&nbsp; <i class="' + (read ? 'pv-yes' : 'pv-no') + '">'
+    + e(L(lang, read ? 'prov_rhp_yes' : 'prov_rhp_no')) + '</i></div>';
+}
+/* The provenance table — one row per block the model actually sourced. */
+function provTable(p, lang){
+  var rows = arr((p.sources || {}).blocks);
+  if(!rows.length) return '';
+  return tbl([L(lang, 'prov_block'), L(lang, 'prov_source'), L(lang, 'prov_kind')],
+    rows.map(function(r){
+      var k = String(S(r.kind) || '').toUpperCase();
+      return { cells:[ e(tr(p, lang, r.block)),
+                       '<span class="en">' + e(S(r.source) || '—') + '</span>',
+                       SRC_KINDS[k] ? '<span class="srcpill">' + k + '</span> '
+                          + '<span class="mut">' + e(L(lang, SRC_KINDS[k])) + '</span>' : '—' ] };
+    }));
+}
+
+/* ===================== FAIR VALUE, I6 / C6 / E2 / V3 =====================
+   A range with its method, printed beside the scenarios rather than instead of
+   them. Omitted entirely when the payload gives no range — an issue nobody can
+   value honestly should say nothing here, not print a dash. */
+function fairValue(p){
+  var fv = ((p.financials || {}).valuation || {}).fair_value || {};
+  var lo = Number(fv.low), hi = Number(fv.high);
+  if(isNaN(lo) || isNaN(hi) || !(lo > 0) || !(hi > 0)) return null;
+  if(hi < lo){ var t = lo; lo = hi; hi = t; }
+  return { low: lo, high: hi, method: S(fv.method), note: S(fv.note) };
+}
+function fvLine(p, lang, cls){
+  var fv = fairValue(p);
+  if(!fv) return '';
+  var ipo = p.ipo || {}, px = Number(ipo.issue_price);
+  var gap = (!isNaN(px) && px > 0)
+    ? ((fv.low + fv.high) / 2 - px) / px * 100 : NaN;
+  return '<div class="fvbox' + (cls ? ' ' + cls : '') + '">'
+    + '<div class="k">' + e(L(lang, 'fv_range')) + '</div>'
+    + '<div class="v en">₹' + n(fv.low, 0) + ' – ₹' + n(fv.high, 0) + '</div>'
+    + (isNaN(gap) ? '' : '<div class="g ' + (gap >= 0 ? 'up' : 'dn') + ' en">'
+        + (gap >= 0 ? '+' : '−') + Math.abs(gap).toFixed(0) + '% '
+        + e(L(lang, 'vs_issue')) + '</div>')
+    + (fv.method ? '<div class="m">' + e(L(lang, 'fv_method')) + ': '
+        + e(tr(p, lang, fv.method)) + '</div>' : '')
+    + '</div>';
+}
+
+/* ===================== INDUSTRY MARKET SIZE, I2 / C2 =====================
+   The commissioned study's headline figures. Every RHP carries one and the IPO
+   write-ups quote it, so this is reachable even when the prospectus body is
+   not. Prints nothing when the payload has no numbers — an invented market size
+   is the most common failure in IPO research and the easiest to hide. */
+function mktSize(p, lang, ind){
+  ind = ind || (p.company || {}).industry || {};
+  var sz = Number(ind.market_size_cr), cg = Number(ind.market_cagr_pct),
+      sh = Number(ind.issuer_share_pct), st = S(ind.market_study);
+  var tiles = [];
+  if(!isNaN(sz) && sz > 0) tiles.push([L(lang,'mkt_size'), cr(sz), S(ind.market_size_year) || '']);
+  if(!isNaN(cg))           tiles.push([L(lang,'mkt_growth'), pct(cg, 1), S(ind.market_cagr_window) || '']);
+  if(!isNaN(sh))           tiles.push([L(lang,'mkt_share'), pct(sh, 1), '']);
+  if(!tiles.length) return '';
+  return '<div class="grid3" style="margin-bottom:2.5mm">'
+    + tiles.map(function(t){
+        return '<div class="kv"><div class="k">' + e(t[0]) + srcTag(p, 'company.industry')
+          + '</div><div class="v en">' + t[1] + '</div>'
+          + (t[2] ? '<div class="s en">' + e(t[2]) + '</div>' : '') + '</div>';
+      }).join('') + '</div>'
+    + (st ? '<div class="mut" style="margin:-1mm 0 2mm;font-size:6.6pt">'
+        + e(L(lang,'mkt_study')) + ': <span class="en">' + e(st) + '</span></div>' : '');
+}
+
+/* ===================== LISTING BASE RATE, I4 =====================
+   What comparable issues actually did, rather than what this one might do. */
+function baseRate(p, lang){
+  var br = (p.deep || {}).base_rate || {};
+  var rows = arr(br.rows);
+  if(!rows.length) return '';
+  return '<div class="ssub" style="margin-top:2.5mm">' + e(L(lang,'base_rate'))
+    + srcTag(p, 'deep.base_rate') + '</div>'
+    + tbl([L(lang,'company_h'), L(lang,'br_sub'), L(lang,'br_gmp'), L(lang,'br_listed')],
+        rows.map(function(r){
+          var lp = Number(r.listed_pct);
+          return { cells:['<span class="en">' + e(S(r.company)) + '</span>',
+                          r.subscription == null ? '—' : n(r.subscription, 1) + '×',
+                          r.gmp_pct == null ? '—' : pct(r.gmp_pct, 0),
+                          isNaN(lp) ? '—' : '<b class="' + (lp >= 0 ? 'tn-good' : 'tn-bad')
+                            + ' en">' + (lp >= 0 ? '+' : '−') + Math.abs(lp).toFixed(0) + '%</b>'] };
+        }), { num:[1,2,3] })
+    + (S(br.verdict) ? '<div class="note">' + e(pick(p, lang, 'deep.base_rate.verdict', br.verdict)) + '</div>' : '');
+}
+
+/* ===================== WHAT MOVED THE SCORE, I7 / C7 =====================
+   The written basis for all 31 line items lives in the Score Card, which is the
+   audit document and keeps them. What the long reports lacked is the opposite
+   cut: which five lines carried the score and which five dragged it. That is
+   the part a reader would actually argue with. */
+function scoreMovers(p, lang, howMany){
+  var sl = p.score_lines || {}, sb = p.score_basis || {};
+  var gsb = (lang === 'gu' && p.gu && p.gu.score_basis) ? p.gu.score_basis : {};
+  var rows = [];
+  BLOCKS.forEach(function(b){
+    var items = bItems(b, lang);
+    b[3].forEach(function(k, i){
+      var mx = Number(b[6][i]) || 0, v = Number(sl[k]);
+      if(!mx || isNaN(v)) return;
+      rows.push({ label: items[i], v: v, mx: mx, pc: v / mx * 100,
+                  basis: gsb[k] ? safeTr(S(sb[k]), S(gsb[k])) : (tr(p, lang, sb[k]) || '') });
+    });
+  });
+  if(rows.length < 6) return '';
+  rows.sort(function(a, b){ return b.pc - a.pc; });
+  var take = Math.max(3, Math.min(howMany || 5, Math.floor(rows.length / 3)));
+  var top = rows.slice(0, take), bot = rows.slice(-take).reverse();
+  var side = function(title, list, good){
+    return '<div><div class="ssub">' + e(title) + '</div>'
+      + list.map(function(r){
+          return '<div class="mvrow"><span class="v en ' + (good ? 'tn-good' : 'tn-bad') + '">'
+            + r.v.toFixed(1) + '<em>/' + r.mx + '</em></span>'
+            + '<span class="l">' + e(r.label) + '</span>'
+            + (r.basis ? '<span class="b">' + e(r.basis) + '</span>' : '') + '</div>';
+        }).join('') + '</div>';
+  };
+  return '<div class="grid2" style="margin-top:2mm">'
+    + side(L(lang, 'movers_up'), top, 1) + side(L(lang, 'movers_dn'), bot, 0) + '</div>';
+}
+
+/* ============ THE INVESTMENT SUMMARY'S OWN PIECES, V1 / V2 / V3 ============
+   This document is two pages in both languages and has to stay two pages, so
+   each piece is built to cost nothing: the provenance rides in the masthead's
+   existing third line, the fair value in the banner heading's white space, and
+   the catalyst strip goes on page 2, which has the room. */
+function vProv(p, lang){
+  var read = (p.sources || {}).rhp_read === true;
+  return '<span style="font-size:14px;color:#6B7480">'
+    + e(L(lang, read ? 'prov_rhp_yes' : 'prov_rhp_no')) + '</span><br>';
+}
+function vHeroFv(p, lang){
+  var fv = fairValue(p);
+  if(!fv) return '';
+  return '<span class="vherofv en">' + e(L(lang, 'fv_range')) + ' ₹'
+    + n(fv.low, 0) + '–' + n(fv.high, 0) + '</span>';
+}
+function vCatStrip(p, lang){
+  var k = keyDates(p), lk = lockinDates(p);
+  var chips = [];
+  if(k.allot)   chips.push([L(lang, 'allotment'),  dmy(k.allot)]);
+  if(k.listing) chips.push([L(lang, 'listing'),    dmy(k.listing)]);
+  if(lk)        chips.push([L(lang, 'lockin_cal'), dmy(lk.d30)]);
+  if(chips.length < 2) return '';
+  return '<div class="vcat"><span class="k">' + e(L(lang, 'cat_dated')) + '</span>'
+    + chips.map(function(c){
+        return '<span class="c"><i>' + e(c[0]) + '</i> <b class="en">' + e(c[1]) + '</b></span>';
+      }).join('') + '</div>';
+}
+
+/* ===================== ANCHOR LOCK-IN, I3 / C5 =====================
+   SEBI releases half the anchor allocation 30 days after listing and the rest
+   at 90. Both are known the moment the listing date is, and both are supply
+   events worth having in the diary. Computed, never asked of the model. */
+function lockinDates(p){
+  var k = keyDates(p);
+  if(!k.listing) return null;
+  var d30 = addDays(k.listing, 30), d90 = addDays(k.listing, 90);
+  if(!d30 || !d90) return null;
+  return { d30: d30, d90: d90 };
+}
+function lockinLine(p, lang){
+  var lk = lockinDates(p);
+  if(!lk) return '';
+  return '<div class="mut" style="margin-top:1.5mm"><b>' + e(L(lang, 'lockin_cal')) + '.</b> '
+    + e(L(lang, 'lockin_30')) + ' <span class="en">' + e(dmy(lk.d30)) + '</span> &nbsp;·&nbsp; '
+    + e(L(lang, 'lockin_90')) + ' <span class="en">' + e(dmy(lk.d90)) + '</span></div>';
+}
+
+/* ===================== GMP DRIFT, I5 =====================
+   The level of a premium is a number; its direction is information. */
+function gmpDrift(p, lang){
+  var g = (p.ipo || {}).gmp || {};
+  var now = Number(g.value), was = Number(g.first_seen_value);
+  if(isNaN(now) || isNaN(was)) return '';
+  var d = now - was;
+  var cls = d > 0 ? 'tn-good' : d < 0 ? 'tn-bad' : 'mut';
+  return '<div class="mut" style="margin-top:1.5mm"><b>' + e(L(lang, 'gmp_drift')) + '.</b> '
+    + '<span class="en">₹' + n(was, 0) + (S(g.first_seen_date) ? ' (' + e(dmy(g.first_seen_date)) + ')' : '')
+    + ' → ₹' + n(now, 0) + '</span> '
+    + '<b class="' + cls + ' en">' + (d > 0 ? '+' : d < 0 ? '−' : '') + '₹' + n(Math.abs(d), 0) + '</b></div>';
+}
+
 /* ======================= IPO SNAPSHOT (redesigned) =======================
 
    One builder, three documents. The company, executive and institutional
@@ -2857,7 +3194,14 @@ function cover(p, lang, docTitle, pages){
     + '<div class="eyebrow en">'+EN(e(docTitle))+' &nbsp;·&nbsp; '+e(A(lang,m.ipo_type||'Mainboard'))+' &nbsp;·&nbsp; '+e(L(lang,'india'))+'</div>'
     + '<h1 class="en" style="margin-top:2mm">'+EN(e(m.company||''))+'</h1>'
     + '<div class="mut" style="margin-top:1mm;font-size:8pt">'+sectorHtml(p,lang)
-      + (m.sector?' &nbsp;·&nbsp; ':'')+e(dmy(m.analysis_datetime))+'</div>'
+      + (m.sector?' &nbsp;·&nbsp; ':'')+e(dmy(m.analysis_datetime))
+      /* X3 / E1 — what this analysis was built on, before anything built on it.
+         The Executive Summary is a fixed four pages, so there it rides on the
+         line that already exists; the longer reports give it its own. */
+      + (pages <= 4 ? ' &nbsp;·&nbsp; ' + e(L(lang,'prov_stamp')) + ' '
+          + e(L(lang, (p.sources||{}).rhp_read === true ? 'prov_rhp_yes' : 'prov_rhp_no')) : '')
+      + '</div>'
+    + (pages <= 4 ? '' : provStamp(p, lang))
     + '<div style="height:2.5mm;background:var(--teal);width:26mm;border-radius:1mm;margin:4mm 0 5mm"></div>'
     + '<div class="vb"><div class="h">'+e(L(lang,'verdict_h'))+'</div><div class="c">'
       + '<div class="v">'+e(pick(p,lang,'verdict.headline', v.headline))+'</div>'
@@ -3047,6 +3391,7 @@ function buildReport(p, lang){
     + '<div class="mut" style="margin-top:1.5mm">'+e(L(lang,'anchor_total'))+' <span class="en">'
       + cr((ipo.anchors||{}).total_cr)+'</span> · '+e(L(lang,'lockin'))+' '+e((ipo.anchors||{}).lockin||'—')+'. '
       + e(tr(p,lang,(ipo.anchors||{}).note||''))+' '+e(L(lang,'anchor_caveat'))+'</div>'
+    + lockinLine(p, lang)
     + '<div class="grow"></div>', lang);
 
   /* The signals that do not need the prospectus — credit, litigation exposure,
@@ -3122,6 +3467,7 @@ function buildReport(p, lang){
         + ragHex(ind.pricing_power,'quality')+'">'+e(A(lang,ind.pricing_power)||'—')+'</div></div>'
       + '<div class="kv"><div class="k">'+e(L(lang,'moat_rating'))+'</div><div class="v" style="font-size:9.5pt;color:'
         + ragHex(moat.rating,'quality')+'">'+e(A(lang,moat.rating)||'—')+'</div></div></div>'
+    + mktSize(p, lang, ind)
     + '<div class="lead">'+e(pick(p,lang,'company.industry_growth_note', ind.growth_note))+'</div>'
     + '<div class="eyebrow" style="margin-top:3mm">'+e(L(lang,'drivers'))+'</div>'
     + '<ul class="blist" style="margin-top:1mm">'+arr(pick(p,lang,'company.drivers', arr(ind.drivers))).map(function(x){
@@ -3217,6 +3563,7 @@ function buildReport(p, lang){
     + '<div class="grow"></div>', lang);
 
   out += page(p, 9, TOT, L(lang,'pg_valuation'), grpHead(lang,'irg_valuation') + sec('21', L(lang,'valuation_at'))
+    + fvLine(p, lang)
     + (peerCh ? '<div class="mut" style="margin-bottom:1mm">'+e(L(lang,'pe_compare'))+'</div>'+peerCh : '')
     + '<div class="eyebrow" style="margin-bottom:1.5mm">'+e(L(lang,'verdict'))+': <span style="color:'
       + ragHex(val.verdict)+'">'+e(A(lang,val.verdict)||'—')+'</span></div>'
@@ -3265,12 +3612,16 @@ function buildReport(p, lang){
         return { cells:[e(tr(p,lang,x.metric)), '<b class="en">'+e(tr(p,lang,x.current))+'</b>',
                  '<span class="mut">'+e(tr(p,lang,x.desired))+'</span>',
                  '<span class="mut">'+e(tr(p,lang,x.warning))+'</span>'] }; }), { num:[1] })
+    /* C8 — section 28 used to run the price-levels table beside a note
+       restating the allocation band, which the cover and the verdict have both
+       already given. The band is now a single line above the table and the
+       duplicated note is gone. */
     + sec('28', L(lang,'alloc_levels'))
-    + '<div class="grid2"><div>'
-      + tbl([L(lang,'action'),L(lang,'price'),L(lang,'rationale')], levelsOf(p,lang,d).map(function(x){
-          return { cells:[e(tr(p,lang,x.action)), '<b class="en">'+e(x.price)+'</b>', '<span class="mut">'+e(tr(p,lang,x.rationale))+'</span>'] }; }), { num:[1] })
-      + '</div><div class="note"><b>'+e(L(lang,'sugg_alloc'))+': '+e((p.verdict||{}).allocation_band||'—')+'</b>'
-      + e(pick(p,lang,'decision.allocation_note', d.allocation_note))+'</div></div>'
+    + '<div class="note" style="margin-bottom:2mm"><b>'+e(L(lang,'sugg_alloc'))+': '
+      + e((p.verdict||{}).allocation_band||'—')+'</b> '
+      + e(pick(p,lang,'decision.allocation_note', d.allocation_note))+'</div>'
+    + tbl([L(lang,'action'),L(lang,'price'),L(lang,'rationale')], levelsOf(p,lang,d).map(function(x){
+        return { cells:[e(tr(p,lang,x.action)), '<b>'+e(tr(p,lang,x.price))+'</b>', '<span class="mut">'+e(tr(p,lang,x.rationale))+'</span>'] }; }), { num:[1] })
     + (d.watch_number ? '<div class="note good" style="margin-top:3mm"><b>'+e(L(lang,'watch_one'))+' — '
         + e(pick(p,lang,'decision.watch_number.title', d.watch_number.title))+'</b>'
         + e(pick(p,lang,'decision.watch_number.body', d.watch_number.body))+'</div>' : '')
@@ -3283,6 +3634,27 @@ function buildReport(p, lang){
                          '<span class="mut">'+e(A(lang,x.status))+'</span>'] }; }), { num:[2] })
           + (S(klit.verdict)? '<div class="note" style="margin-top:2mm">'+e(tr(p,lang,klit.verdict))+'</div>' : '')
       : '')
+    /* C3 — what happens next, with dates. The payload already carries
+       decision.catalysts for the institutional report; this document simply
+       never printed them. */
+    + (arr(d.catalysts).length ? sec('30', L(lang,'cat_dated'))
+        + tbl([L(lang,'catalyst'), L(lang,'mechanism'), L(lang,'priority')],
+            arr(d.catalysts).map(function(x){
+              return { cells:['<b>'+e(tr(p,lang,x.catalyst))+'</b>',
+                       '<span class="mut">'+e(tr(p,lang,x.mechanism))+'</span>',
+                       '<span class="pill '+sevClass(x.priority)+'">'+e(A(lang,x.priority))+'</span>'] }; }))
+        + lockinLine(p, lang)
+      : '')
+    /* C4 — the falsification test, from deep.what_would_change_our_mind. */
+    + (arr((p.deep||{}).what_would_change_our_mind).length
+        ? sec('31', L(lang,'dp_change_mind'))
+          /* `ul` is local to the institutional builder; the markup is inlined
+             here rather than hoisting a helper for one caller. */
+          + '<ul class="ir-ul">'
+          + arr((p.deep||{}).what_would_change_our_mind).map(function(x){
+              return '<li>' + e(tr(p,lang,x)) + '</li>'; }).join('')
+          + '</ul>'
+      : '')
     + '<div class="grow"></div>'
     + '<div class="mut" style="border-top:.6pt solid var(--rule);padding-top:2mm">'
       + '<b>'+e(L(lang,'sources'))+'.</b> '+e(L(lang,'primary'))+': <span class="en">'
@@ -3292,8 +3664,14 @@ function buildReport(p, lang){
           + arr(p.sources.missing).map(function(x){ return e(tr(p,lang,x)); }).join(' · ') : '') + '.</div>', lang);
 
 
-  out += page(p, 11, TOT, L(lang,'pg_scorecard'), sec('30', L(lang,'score_100'))
+  out += page(p, 11, TOT, L(lang,'pg_scorecard'), sec('32', L(lang,'score_100'))
     + scoreSection(p, lang)
+    /* C7 — the ten lines that decided the number, with their basis. */
+    + (scoreMovers(p, lang, 5) ? sec('33', L(lang,'moved_score')) + scoreMovers(p, lang, 5) : '')
+    /* C1 — this report had no provenance at all. */
+    + (provTable(p, lang) || srcKey(p, lang)
+        ? sec('34', L(lang,'c_sources')) + provStamp(p, lang) + provTable(p, lang) + srcKey(p, lang)
+        : '')
     + '<div class="grow"></div>', lang);
 
   return shell(S(m.company)+' — IPO Company Research Report', lang==='gu'?'gu':'', out)
@@ -3313,11 +3691,14 @@ function buildExec(p, lang){
         return { __cls:r.highlight?'hi':'', cells:[e(tr(p,lang,r.label))]
           .concat(arr(r.values).map(function(v){ return typeof v==='number'? n(v,Math.abs(v)<100?2:0):e(v); }))
           .concat(['<span class="mut">'+e(tr(p,lang,r.trend))+'</span>']) }; }), { num:[1,2,3] })
+    /* E5 — eight ratio tiles sat between the three-year financials above and
+       the valuation section below, both of which restate most of them. Four. */
     + sec('04', L(lang,'key_ratios'))
-    + '<div class="grid4">'+arr(f.ratios).slice(0,8).map(function(r){
+    + '<div class="grid4">'+arr(f.ratios).slice(0,4).map(function(r){
         return '<div class="kv"><div class="k">'+e(tr(p,lang,r.label))+'</div><div class="v en '+toneClass(r.tone)+'">'
           +e(r.value)+'</div></div>'; }).join('')+'</div>'
     + sec('05', L(lang,'valuation_at'))
+    + fvLine(p, lang)
     + tbl([L(lang,'multiple'),L(lang,'value'),L(lang,'basis')], arr((f.valuation||{}).multiples).slice(0,7).map(function(x){
         return { cells:['<span class="en">'+e(tr(p,lang,x.label))+'</span>', '<b class="en">'+e(x.value)+'</b>',
                  '<span class="mut">'+e(tr(p,lang,x.basis))+'</span>'] }; }), { num:[1] })
@@ -3348,13 +3729,26 @@ function buildExec(p, lang){
   out += page(p, 4, TOT, L(lang,'pg_decision'), sec('10', L(lang,'recommendation'))
     + '<div class="vb"><div class="h">'+e(A(lang,(p.verdict||{}).recommendation||''))+'</div><div class="c">'
       + '<div class="lead">'+e(pick(p,lang,'verdict.one_liner',(p.verdict||{}).one_liner))+'</div></div></div>'
+    /* E4 — Allocation and "Allocation and price levels" were two headings a
+       page apart about one decision, in a four-page document. One section now:
+       the band, then the levels that implement it. */
     + sec('11', L(lang,'allocation'))
     + '<div class="note"><b>'+e((p.verdict||{}).allocation_band||'—')+'</b>'
       + e(pick(p,lang,'decision.allocation_note', d.allocation_note))+'</div>'
-    + sec('12', L(lang,'alloc_levels'))
     + tbl([L(lang,'action'),L(lang,'price'),L(lang,'rationale')], levelsOf(p,lang,d).map(function(x){
-        return { cells:[e(tr(p,lang,x.action)),'<b class="en">'+e(x.price)+'</b>','<span class="mut">'+e(tr(p,lang,x.rationale))+'</span>'] }; }), { num:[1] })
-    + sec('13', L(lang,'monitoring'))
+        return { cells:[e(tr(p,lang,x.action)),'<b>'+e(tr(p,lang,x.price))+'</b>','<span class="mut">'+e(tr(p,lang,x.rationale))+'</span>'] }; }), { num:[1] })
+    /* E3 — what happens next, as dated lines rather than a section. On four
+       pages a reader wants the dates, not a discussion. */
+    + (arr(d.catalysts).length || lockinDates(p)
+        ? '<div class="ssub" style="margin-top:3mm">'+e(L(lang,'cat_dated'))+'</div>'
+          + '<ul class="ir-ul">'
+          + arr(d.catalysts).slice(0,2).map(function(x){
+              return '<li><b>'+e(tr(p,lang,x.catalyst))+'</b> — '
+                + e(tr(p,lang,x.mechanism))+'</li>'; }).join('')
+          + '</ul>'
+          + lockinLine(p, lang)
+        : '')
+    + sec('12', L(lang,'monitoring'))
     + tbl([L(lang,'metric'),L(lang,'current'),L(lang,'desired'),L(lang,'warning')], arr(d.monitoring).slice(0,6).map(function(x){
         return { cells:[e(tr(p,lang,x.metric)),'<b class="en">'+e(tr(p,lang,x.current))+'</b>',
                  '<span class="mut">'+e(tr(p,lang,x.desired))+'</span>',
@@ -3364,6 +3758,8 @@ function buildExec(p, lang){
         + e(pick(p,lang,'decision.watch_number.body', d.watch_number.body))+'</div>' : '')
     + '<div class="grow"></div>', lang);
 
+  /* E6 — the superscripts print (they come from the cover stamp and the tiles);
+     the four-line legend is left to the longer reports, which have the room. */
   return shell(S(m.company)+' — Executive Summary', lang==='gu'?'gu':'', out);
 }
 
@@ -3464,6 +3860,16 @@ var VCSS = `
    the scale, so every borrowed piece is restated here in px. Without this the
    dates and the lot table come out as a footnote beside tiles twice their
    size. */
+.vherofv{ float:right; font-size:15px; font-weight:800; letter-spacing:.02em;
+          text-transform:none; color:#12161C; opacity:.72; }
+.vcat{ display:flex; align-items:center; flex-wrap:wrap; gap:12px; margin-top:14px;
+       border:1px solid #E1E8F2; border-radius:8px; padding:10px 14px; background:#FAFCFF; }
+.vcat .k{ font-size:14px; font-weight:800; letter-spacing:.1em; text-transform:uppercase;
+          color:#6B7480; }
+body.gu .vcat .k{ letter-spacing:.02em; font-size:15px; }
+.vcat .c{ display:flex; align-items:baseline; gap:7px; }
+.vcat .c i{ font-style:normal; font-size:14px; color:#6B7480; }
+.vcat .c b{ font-size:17px; color:#12161C; }
 .vglance{ display:grid; grid-template-columns:1fr 1fr; gap:30px; margin-top:14px;
           align-items:stretch; }
 .vglance .ssub{ font-size:14px; letter-spacing:.1em; margin:0 0 8px; }
@@ -3478,6 +3884,19 @@ body.gu .vglance .ssub{ font-size:15px; letter-spacing:.02em; }
 .vglance .mini th{ font-size:13px; letter-spacing:.08em; padding:7px 9px; }
 .vglance .mini td{ padding:7px 9px; }
 .vglance .lotb{ font-size:13px; padding:2px 8px; border-radius:9px; margin-right:7px; }
+/* The report stylesheet sizes these in points for A4, and its Gujarati
+   overrides — body.gu .ssub, body.gu .mini th, body.gu .drail .stp .lb — carry
+   an element selector, so they outrank the .vglance rules above and were
+   rendering this block at 8.3px on a page whose English twin reads at 13px.
+   Restated here at the same specificity, one notch larger, because Gujarati
+   needs the extra room at any given size. */
+body.gu .vglance .ssub{ font-size:15px; letter-spacing:.02em; }
+body.gu .vglance .drail .stp .lb{ font-size:14px; letter-spacing:.02em; }
+body.gu .vglance .drail .stp .dt{ font-size:17px; }
+body.gu .vglance .drail .stp .dt small{ font-size:12px; }
+body.gu .vglance .mini{ font-size:16px; }
+body.gu .vglance .mini th{ font-size:14px; letter-spacing:.02em; }
+body.gu .vglance .lotb{ font-size:13px; }
 
 .vpage{ width:1240px; height:1754px; background:#fff; padding:50px 54px 56px; position:relative;
         display:flex; flex-direction:column; page-break-after:always; font-size:19px; line-height:1.5; }
@@ -3501,8 +3920,13 @@ body.gu .vpage{ font-size:19px; line-height:1.72; }
    the bars start at a different x in each card and the pair reads as two
    unrelated tables sitting next to each other. */
 .vbar.sm{ margin:7px 0; gap:10px; min-height:26px; }
-.vbar.sm .l{ flex:0 0 172px; font-size:17px; line-height:1.25;
+/* "Management & Governance" needed 213px in 172 and was cut by the ellipsis —
+   a truncated label is missing information, not a tidy one. The column is wider
+   and the type a notch smaller, which fits the longest block name in both
+   languages with room to spare. */
+.vbar.sm .l{ flex:0 0 202px; font-size:15px; line-height:1.25;
              overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+body.gu .vbar.sm .l{ font-size:14px; }
 .vbar.sm .t{ flex:1 1 auto; height:15px; }
 .vbar.sm .v{ flex:0 0 76px; font-size:18px; min-width:0; text-align:right; }
 .vbar.sm .v .of{ color:var(--ink4); font-size:14px; }
@@ -3596,9 +4020,15 @@ function buildVisual(p, lang){
 
   var c = p.company||{}, peers = f.peers||{};
   var p1 = '<div class="vpage">'
+    /* V1 — one small line beside the date. No space cost: the masthead's right
+       column already runs three lines. */
     + vmast(sectorText(p,lang)+' · '+A(lang,S(m.ipo_type||'Mainboard'))+' IPO',
-        'IPO Company Research<br><b style="color:#12161C">'+e(dmy(m.analysis_datetime))+'</b><br>Page 1 of 2')
-    + '<div class="vhero"><div class="h">'+e(L(lang,'verdict_h'))+'</div><div class="c">'
+        'IPO Company Research<br><b style="color:#12161C">'+e(dmy(m.analysis_datetime))+'</b><br>'
+        + vProv(p, lang) + 'Page 1 of 2')
+    /* V3 — the range rides in the banner's own white space, so nothing on a
+       full page 1 is displaced. */
+    + '<div class="vhero"><div class="h">'+e(L(lang,'verdict_h'))+ vHeroFv(p, lang)
+      + '</div><div class="c">'
       + '<div class="v">'+e(pick(p,lang,'verdict.headline', v.headline))+'</div>'
       + '<p>'+e(pick(p,lang,'verdict.one_liner', v.one_liner))+'</p></div></div>'
     /* The five score tiles that used to sit here are gone. They repeated the
@@ -3689,6 +4119,9 @@ function buildVisual(p, lang){
             + (sv==='CRITICAL'?'var(--crit)':sv==='HIGH'?'var(--bad)':sv==='MEDIUM'?'var(--amber)':'#7C838C')
             + '">'+e(A(lang,x.severity))+'</span></td></tr>'; }).join('')
       + '</tbody></table>'
+    /* V2 — three dated chips. Page 2 has the room and this is the page you
+       would send to somebody. */
+    + vCatStrip(p, lang)
     /* Two score cards side by side, sharing one heading. The 100-point score is
        on the left because it is the headline number; the listing-gain build-up
        sits beside it, stripped of its Basis column and given the same 5-colour
@@ -4307,7 +4740,7 @@ var IR_GROUPS = [
                           'dp_sensitivity','ir_lg']],
   ['irg_risks',          ['red_flags','ir_catalysts','ir_fail','ir_monitor','regulatory',
                           'ir_litigation','dp_change_mind','dp_questions','ir_alloc','ir_score',
-                          'ir_sources']]
+                          'ir_movers','ir_sources']]
 ];
 
 function irSections(lang, gate){
@@ -4404,7 +4837,7 @@ function irSections(lang, gate){
         + e(S(x.value))+'</div></div>'; }).join('')+'</div>' : '');
 
   /* 06 industry — drivers are plain strings */
-  push('ir_industry', L(lang,'ir_industry'),
+  push('ir_industry', L(lang,'ir_industry'), mktSize(p, lang) +
       (S(ind.classification) ? '<div class="pill" style="background:var(--navy2)">'
         + e(A(lang,ind.classification))+'</div>' : '')
     + note(pick(p,lang,'company.industry_growth_note', ind.growth_note))
@@ -4540,6 +4973,7 @@ function irSections(lang, gate){
       kv([[L(lang,'total'), an.total_cr!=null?'<span class="en">'+cr(an.total_cr)+'</span>':null],
           ['MF share', an.mf_share_pct!=null?'<span class="en">'+pct(an.mf_share_pct)+'</span>':null],
           ['Lock-in', S(an.lockin)?e(S(an.lockin)):null]])
+    + lockinLine(p, lang)
     + T2([L(lang,'anchor'), L(lang,'type'), L(lang,'rs_crore')],
         arr(an.top||an.names).map(function(x){
           if(typeof x === 'string') return { cells:['<span class="en">'+e(x)+'</span>','','']};
@@ -4593,7 +5027,8 @@ function irSections(lang, gate){
 
   /* 17 valuation — multiples[] */
   push('ir_val', L(lang,'ir_val') + '',
-      note(pick(p,lang,'financials.valuation_note', val.note))
+      fvLine(p, lang)
+    + note(pick(p,lang,'financials.valuation_note', val.note))
     + T2([L(lang,'multiple'), L(lang,'value'), L(lang,'basis')],
         arr(val.multiples).map(function(x){
           return { cells:['<span class="en">'+e(tr(p,lang,x.label))+'</span>',
@@ -4666,7 +5101,11 @@ function irSections(lang, gate){
                    '<span class="mut">'+e(tr(p,lang,x.note))+'</span>'] }; })
         .concat(arr(lg.components).length ? [{ __cls:'tot', cells:[L(lang,'lg_score'),'100','<b>'+n(lg.score,0)+'</b>',''] }] : []),
         { num:[1,2] })
-    + note(tr(p,lang,lg.verdict)));
+    + note(tr(p,lang,lg.verdict))
+    /* I5 — the direction of the premium, and I4 — what comparable issues at a
+       similar premium actually did. A score becomes a distribution. */
+    + gmpDrift(p, lang)
+    + baseRate(p, lang));
 
   /* 21 SWOT analysis / red flags */
   push('swot_analysis', L(lang,'str_weak'), swotGrid(p, lang, 6));
@@ -4709,7 +5148,7 @@ function irSections(lang, gate){
   push('ir_alloc', L(lang,'ir_alloc'),
       note(pick(p,lang,'decision.allocation_note', d.allocation_note))
     + T2([L(lang,'action'), L(lang,'price'), L(lang,'rationale')], levelsOf(p,lang,d).map(function(x){
-        return { cells:[e(tr(p,lang,x.action)), '<b class="en">'+e(S(x.price))+'</b>',
+        return { cells:[e(tr(p,lang,x.action)), '<b>'+e(tr(p,lang,S(x.price)))+'</b>',
                  '<span class="mut">'+e(tr(p,lang,x.rationale))+'</span>'] }; })));
 
   /* ---------------- deep research ---------------- */
@@ -5027,9 +5466,18 @@ function irSections(lang, gate){
      per-block basis tables it used to print are replaced by the compact
      grid, which carries the marks inline. */
   push('ir_score', L(lang,'ir_score'), scoreSection(p, lang), '', 1);
+  /* I7 — the five lines that carried the score and the five that dragged it,
+     with the basis for each. The full 31-line basis stays in the Score Card,
+     which is the audit document; this is the part worth arguing with. */
+  push('ir_movers', L(lang,'moved_score'), scoreMovers(p, lang, 5));
 
   push('ir_sources', L(lang,'ir_sources'),
-      (arr(src.primary).length ? '<div class="note"><b>'+e(L(lang,'primary'))+'</b> '
+      /* I1 — the prose paragraph is still here, but the provenance table leads:
+         which block came from where, and whether it was filed or scraped. */
+      (provTable(p, lang)
+        ? '<div class="ssub">' + e(L(lang,'prov_table')) + '</div>' + provTable(p, lang) : '')
+    + srcKey(p, lang)
+    + (arr(src.primary).length ? '<div class="note"><b>'+e(L(lang,'primary'))+'</b> '
         + arr(src.primary).map(function(x){ return '<span class="en">'+e(S(x))+'</span>'; }).join(' · ')+'</div>' : '')
     + (arr(src.secondary).length ? '<div class="note"><b>'+e(L(lang,'secondary'))+'</b> '
         + arr(src.secondary).map(function(x){ return '<span class="en">'+e(S(x))+'</span>'; }).join(' · ')+'</div>' : '')
@@ -5085,6 +5533,9 @@ function irSections(lang, gate){
     + '<h1 class="en" style="margin-top:1.5mm;font-size:19pt">'+EN(e(m.company||''))+'</h1>'
     + '<div class="mut" style="margin-top:1mm;font-size:8pt">'+sectorHtml(p,lang)
       + (m.sector?' &nbsp;·&nbsp; ':'')+e(dmy(m.analysis_datetime))+'</div>'
+    /* X3 — what this analysis was built on, on the cover of the deep document
+       as well. This report has its own cover rather than the shared one. */
+    + provStamp(p, lang)
     + '<div style="height:2.5mm;background:var(--gold);width:26mm;border-radius:1mm;margin:3mm 0 4mm"></div>'
     + '<div class="tiles">'
       + [['ipo_quality','/100'],['long_term','/100'],['listing_gain','/100']].map(function(t){
