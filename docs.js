@@ -1,7 +1,7 @@
 /* ============================================================================
    docs.js — generate, download and share the documents the app renders
    locally from an imported payload. PDF uses the browser's own vector print
-   path where possible; PNG uses html2canvas at 3x for 450 DPI at A4.
+   path where possible; PNG uses html2canvas at 4x for 600 DPI at A4.
    ========================================================================== */
 (function(){
 'use strict';
@@ -330,14 +330,14 @@ function htmlToPdfBlob(html, sel){
   });
 }
 
-/* ---------- PNG at 450 DPI ---------- */
+/* ---------- PNG at 600 DPI ---------- */
 function htmlToPngBlobs(html, sel){
   return stage(html).then(function(f){
     var pages = Array.prototype.slice.call(f.contentDocument.querySelectorAll(sel));
     var outs = [], chain = Promise.resolve();
     pages.forEach(function(el, i){
       chain = chain.then(function(){
-        msg('Rendering image '+(i+1)+' of '+pages.length+' at 450 DPI…');
+        msg('Rendering image '+(i+1)+' of '+pages.length+' at 600 DPI…');
         return shootPage(el, PNG_SCALE)
           .then(function(cv){
             return new Promise(function(r){ cv.toBlob(function(b){ outs.push(b); r(); }, 'image/png'); });

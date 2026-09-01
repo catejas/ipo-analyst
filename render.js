@@ -280,6 +280,69 @@ var TERM_GU = {
    has nothing to translate a sentence with, and a transliterated English
    sentence is unreadable in a way the English itself is not. */
 var COMMON_GU = {
+  /* ---- the power, cable and EPC vocabulary these reports are full of ----
+     A word left in English inside a Gujarati sentence is the most visible kind
+     of half-translation, and it was happening to ordinary words rather than to
+     names: "Industrial capex revival" came out as "Industrial મૂડી ખર્ચ
+     પુનરુત્થાન". Where Gujarati has the word, the Gujarati word is used;
+     where the trade itself writes the English term in Gujarati script — a
+     substation, a conductor — that spelling is used instead of inventing one. */
+  'industrial':'ઔદ્યોગિક',
+  'industrials':'ઔદ્યોગિક',
+  'utility':'વીજ ઉપયોગિતા',
+  'utilities':'વીજ ઉપયોગિતાઓ',
+  'substation':'સબસ્ટેશન',
+  'substations':'સબસ્ટેશન',
+  'conductor':'કંડક્ટર',
+  'conductors':'કંડક્ટર',
+  'transmission':'ટ્રાન્સમિશન',
+  'railway':'રેલવે',
+  'railways':'રેલવે',
+  'electrification':'વિદ્યુતીકરણ',
+  'signalling':'સિગ્નલિંગ',
+  'solar':'સોલાર',
+  'water':'પાણી',
+  'renewable':'નવીનીકરણીય',
+  'evacuation':'નિકાસ',
+  'corridor':'કોરિડોર',
+  'corridors':'કોરિડોર',
+  'overhead':'ઓવરહેડ',
+  'turnkey':'ટર્નકી',
+  'milestone':'માઇલસ્ટોન',
+  'tender':'ટેન્ડર',
+  'tenders':'ટેન્ડર',
+  'temperature':'તાપમાન',
+  'specialised':'વિશિષ્ટ',
+  'specialized':'વિશિષ્ટ',
+  'panel':'પેનલ',
+  'panels':'પેનલ',
+  'dealer':'ડીલર',
+  'dealers':'ડીલરો',
+  'electrician':'ઇલેક્ટ્રિશિયન',
+  'electricians':'ઇલેક્ટ્રિશિયનો',
+  'agency':'એજન્સી',
+  'agencies':'એજન્સીઓ',
+  'government':'સરકારી',
+  'repayment':'ચુકવણી',
+  'prepayment':'આગોતરી ચુકવણી',
+  /* the -ing and -ed words that name a thing rather than an action; without
+     an entry each of these printed in English inside a Gujarati line */
+  'holding':'હિસ્સો',
+  'listings':'લિસ્ટિંગ',
+  'offering':'ઓફર',
+  'building':'બિલ્ડિંગ',
+  'buildings':'બિલ્ડિંગો',
+  'accounting':'હિસાબી',
+  'outstanding':'બાકી',
+  'underwriting':'અન્ડરરાઇટિંગ',
+  'funding':'ભંડોળ',
+  'warehousing':'વેરહાઉસિંગ',
+  'related':'સંબંધિત',
+  'diluted':'ડાયલ્યુટેડ',
+  'secured':'સુરક્ષિત',
+  'unsecured':'અસુરક્ષિત',
+  'registered':'નોંધાયેલ',
+  'meeting':'બેઠક',
   'accredited':'માન્યતાપ્રાપ્ત',
   'captive':'સ્વયં-માલિકીનું',
   'certification':'પ્રમાણપત્ર',
@@ -1291,6 +1354,19 @@ var GU_PROSE_MARKERS = (function(){
   ).split(' ').forEach(function(w){ o[w] = 1; });
   return o;
 })();
+/* Words that end like a participle but name a thing, so they do not make a
+   phrase into prose. */
+var GU_ING_NOUNS = (function(){
+  var o = {};
+  ('rating ratings holding holdings listing listings heading headings meeting '
+ + 'earnings borrowings proceedings offering offerings building buildings '
+ + 'engineering manufacturing accounting banking marketing outstanding '
+ + 'signalling underwriting funding branding packaging warehousing '
+ + 'limited unlisted listed related restated diluted consolidated audited '
+ + 'sanctioned secured unsecured registered'
+  ).split(' ').forEach(function(w){ o[w] = 1; });
+  return o;
+})();
 var GU_HALANT = '્', GU_ANUSVARA = 'ં';
 /* A nasal is written as the anusvara dot only before a homorganic stop --
    Mumbai, Chandra, Pande. Before a fricative or a liquid it stays a full
@@ -1501,6 +1577,14 @@ function guSegment(text){
     if(hit !== null){ known++; }
     if(hit === null){
       if(GU_PROSE_MARKERS[tok.toLowerCase()]) prosey++;
+      /* A participle is a verb doing the work of a clause — "Utilities
+         UPGRADING existing corridors" — and Gujarati puts the verb where
+         English does not. Word-for-word substitution across one produces
+         Gujarati vocabulary in English order, so it counts as prose and
+         the phrase is handed back whole. Nouns that merely end in -ing
+         (a heading, a rating, a listing) are exempt: they are things. */
+      else if(/[a-z]{4,}(ing|ed)$/.test(tok) && !GU_ING_NOUNS[tok.toLowerCase()])
+        prosey++;
       if(guKeepToken(tok)){ hit = tok; known++; }
       else {
         /* A unit glued straight onto a figure — "180.6cr", "35x", "12mm" — is
@@ -2324,6 +2408,18 @@ body.gu .tile .k{ letter-spacing:.03em; font-size:6.6pt; }
 .bar .bv{ flex:0 0 16mm; text-align:right; font-weight:700; font-variant-numeric:tabular-nums;
           font-family:"Helvetica Neue",Helvetica,Arial,sans-serif; }
 .bar .tick{ position:absolute; top:0; bottom:0; width:.5pt; background:#fff; opacity:.9; }
+/* The total-score gauge is a bar row: same three columns, so its track starts
+   and finishes on the same two lines as every category bar under it. It is
+   taller, and it carries the five bands behind the fill. */
+.gaugebar{ margin:0 0 2.5mm; }
+.gaugebar .bt{ height:4.6mm; background:transparent; overflow:visible; }
+.gaugebar .gb{ position:absolute; top:0; bottom:0; opacity:.30; }
+.gaugebar .gb:first-child{ border-radius:.8mm 0 0 .8mm; }
+.gaugebar .bf{ position:absolute; top:0; bottom:0; left:0; border-radius:.8mm 0 0 .8mm; }
+.gaugebar .gmark{ position:absolute; top:-1.6mm; width:0; height:0; margin-left:-1.1mm;
+                  border-left:1.1mm solid transparent; border-right:1.1mm solid transparent;
+                  border-top:1.4mm solid var(--ink); }
+.gaugebar .bv{ font-weight:800; }
 .grid2{ display:grid; grid-template-columns:1fr 1fr; gap:5mm; }
 /* SWOT is a 2x2: the second row needs a rule above it or the four quadrants
    read as one long double column instead of a matrix. */
@@ -2864,12 +2960,20 @@ function fvLine(p, lang, cls){
    is the most common failure in IPO research and the easiest to hide. */
 function mktSize(p, lang, ind){
   ind = ind || (p.company || {}).industry || {};
-  var sz = Number(ind.market_size_cr), cg = Number(ind.market_cagr_pct),
-      sh = Number(ind.issuer_share_pct), st = S(ind.market_study);
+  /* Number(null) is 0, not NaN, so a market size the research could not find
+     printed as "Market growth 0.0%" — a figure, and a wrong one. A tile appears
+     only when its value actually arrived. */
+  var num = function(v){
+    if(v == null || v === '') return null;
+    var x = Number(v);
+    return isNaN(x) ? null : x;
+  };
+  var sz = num(ind.market_size_cr), cg = num(ind.market_cagr_pct),
+      sh = num(ind.issuer_share_pct), st = S(ind.market_study);
   var tiles = [];
-  if(!isNaN(sz) && sz > 0) tiles.push([L(lang,'mkt_size'), cr(sz), S(ind.market_size_year) || '']);
-  if(!isNaN(cg))           tiles.push([L(lang,'mkt_growth'), pct(cg, 1), S(ind.market_cagr_window) || '']);
-  if(!isNaN(sh))           tiles.push([L(lang,'mkt_share'), pct(sh, 1), '']);
+  if(sz != null && sz > 0) tiles.push([L(lang,'mkt_size'), cr(sz), S(ind.market_size_year) || '']);
+  if(cg != null)           tiles.push([L(lang,'mkt_growth'), pct(cg, 1), S(ind.market_cagr_window) || '']);
+  if(sh != null)           tiles.push([L(lang,'mkt_share'), pct(sh, 1), '']);
   if(!tiles.length) return '';
   return '<div class="grid3" style="margin-bottom:2.5mm">'
     + tiles.map(function(t){
@@ -3876,7 +3980,9 @@ function buildExec(p, lang){
     /* The peer bar chart is dropped here, not in the long reports: it repeats
        the P/E column beside it and costs a third of a page this document does
        not have. */
-    + tbl(arr((f.peers||{}).columns), arr((f.peers||{}).rows).map(function(r){
+    /* Six rows: the subject and five peers. The long reports carry the whole
+       set; this document has six pages for everything. */
+    + tbl(arr((f.peers||{}).columns), arr((f.peers||{}).rows).slice(0,6).map(function(r){
         return { __cls:r.is_subject?'hi':'', cells:arr(r.cells).map(function(x){ return '<span class="en">'+e(x)+'</span>'; }) };
       }), { num:[1,2,3,4,5,6,7,8] })
     + peerBasis(p, lang);
@@ -4051,8 +4157,9 @@ var VCSS = `
    rather than by an accident per rule. */
 .vpage{ --vt-sec:17px;   /* section heading, and the verdict banner's own */
         --vt-key:14px;   /* the small caps label above or beside a figure */
-        --vt-val:18px;   /* body text and every figure in a table          */
+        --vt-val:17px;   /* body text and every figure in a table          */
         --vt-sub:15px;   /* the muted line under a figure                  */
+        --vt-lead:19px; /* the two lead paragraphs, and nothing else      */
         --vt-big:24px; } /* the four headline tiles                        */
 body.gu .vpage{ --vt-key:15px; }
 
@@ -4071,7 +4178,7 @@ body.gu .vcat .k{ letter-spacing:.02em; }
           align-items:baseline; padding:5px 0; border-top:1px solid #EDF1F7; }
 .vcat .rows .r:first-child{ border-top:0; padding-top:2px; }
 .vcat .r b{ font-size:var(--vt-val); color:#12161C; }
-.vcat .r span{ font-size:var(--vt-sub); color:#4A5462; line-height:1.45; }
+.vcat .r span{ font-size:var(--vt-val); color:#4A5462; line-height:1.45; }
 /* The severity pill is the reports' own pill, restated at this page's scale —
    the shared rule is pt-sized for A4 and comes out as a speck here. */
 .vcat .r i{ font-style:normal; font-size:12px; padding:4px 9px; justify-self:end; }
@@ -4125,8 +4232,8 @@ body.gu .vglance .lotb{ font-size:13px; }
 .vpage .vfootw{ flex:0 0 auto; }
 body.gu .vpage{ font-size:19px; line-height:1.72; }
 /* Business overview and the two side-by-side score cards. */
-.vlead{ font-size:21px; line-height:1.5; color:var(--ink); margin-top:10px; }
-.vnote{ font-size:18px; line-height:1.5; color:var(--ink2); margin-top:8px;
+.vlead{ font-size:var(--vt-lead); line-height:1.5; color:var(--ink); margin-top:10px; }
+.vnote{ font-size:var(--vt-val); line-height:1.5; color:var(--ink2); margin-top:8px;
         border-left:4px solid var(--teal); background:#EEF5F3; padding:10px 14px; border-radius:0 6px 6px 0; }
 .vscores{ display:grid; grid-template-columns:1fr 1fr; gap:26px; margin-top:12px; align-items:start; }
 .vsc{ min-width:0; }
@@ -4153,7 +4260,7 @@ body.gu .vbar.sm .l{ font-size:16px; }
 .vmast{ display:flex; justify-content:space-between; align-items:flex-end;
         border-bottom:5px solid var(--navy); padding-bottom:14px; }
 .vmast h1{ font-size:40px; letter-spacing:-.02em; color:var(--navy); line-height:1.08; }
-.vmast .s{ font-size:19px; color:var(--ink3); margin-top:6px; }
+.vmast .s{ font-size:var(--vt-val); color:var(--ink3); margin-top:6px; }
 .vmast .r{ text-align:right; font-size:16px; color:var(--ink3); line-height:1.6; }
 .vsec{ font-size:var(--vt-sec); font-weight:800; letter-spacing:.14em; text-transform:uppercase; color:var(--navy);
        margin:22px 0 11px; display:flex; align-items:center; gap:12px; }
@@ -4165,7 +4272,7 @@ body.gu .vsec{ letter-spacing:.04em; }
 body.gu .vhero .h{ letter-spacing:.04em; }
 .vhero .c{ padding:14px 20px 15px; }
 .vhero .v{ font-size:37px; font-weight:800; letter-spacing:-.02em; color:var(--navy); line-height:1.2; }
-.vhero p{ font-size:20px; color:var(--ink2); margin-top:8px; line-height:1.45; }
+.vhero p{ font-size:var(--vt-lead); color:var(--ink2); margin-top:8px; line-height:1.45; }
 .vtiles{ display:grid; grid-template-columns:repeat(4,1fr); gap:13px; margin-top:18px; }
 .vtile{ border:2px solid var(--rule); border-top:7px solid var(--navy); border-radius:10px; padding:14px 16px;
         background:var(--panel2); }
@@ -4183,16 +4290,20 @@ body.gu .vinfo .k{ letter-spacing:.02em; font-size:15px; }
 .vobj{ border:2px solid var(--rule); border-left:8px solid var(--teal); border-radius:0 10px 10px 0;
        padding:13px 17px; margin-top:13px; background:var(--teal2); }
 .vobj .k{ font-size:var(--vt-key); font-weight:800; letter-spacing:.07em; text-transform:uppercase; color:var(--ink3); }
-.vobj .b{ font-size:19px; margin-top:5px; line-height:1.5; color:var(--ink); }
+.vobj .b{ font-size:var(--vt-val); margin-top:5px; line-height:1.5; color:var(--ink); }
 .vbar{ display:flex; align-items:center; gap:14px; margin:9px 0; font-size:19px; }
 .vbar .l{ flex:0 0 250px; color:var(--ink2); }
 .vbar .t{ flex:1; height:22px; background:var(--rule2); border-radius:6px; overflow:hidden; }
 .vbar .f{ height:100%; border-radius:0 6px 6px 0; }
 .vbar .v{ flex:0 0 104px; text-align:right; font-weight:800; font-variant-numeric:tabular-nums; }
-.vtab{ width:100%; border-collapse:collapse; font-size:18px; }
-.vtab th{ font-size:15px; text-transform:uppercase; letter-spacing:.07em; color:var(--ink3);
+.vtab{ width:100%; border-collapse:collapse; font-size:var(--vt-val); }
+.vtab th{ font-size:var(--vt-key); text-transform:uppercase; letter-spacing:.07em; color:var(--ink3);
           border-bottom:3px solid var(--navy); padding:9px 10px; text-align:left; font-weight:800; }
-body.gu .vtab th{ letter-spacing:.02em; font-size:16px; }
+/* The shared print stylesheet carries body.gu th rules sized in points for A4.
+   They have the same specificity as .vtab th and come later in the sheet, so
+   they win — the peer headings came out at 9px until this rule put them back
+   on the scale. */
+body.gu .vtab th{ letter-spacing:.02em; font-size:var(--vt-key); }
 .vtab td{ border-bottom:1.5px solid var(--rule2); padding:10px; vertical-align:top; }
 .vtab td.n, .vtab th.n{ text-align:right; font-variant-numeric:tabular-nums;
                         font-family:"Helvetica Neue",Helvetica,Arial,sans-serif; }
@@ -4295,7 +4406,9 @@ function buildVisual(p, lang){
           + arr(peers.columns).map(function(x, i){
               return '<th'+(i?' class="n"':'')+'>'+e(tr(p,lang,x))+'</th>'; }).join('')
           + '</tr></thead><tbody>'
-          + arr(peers.rows).map(function(r){
+          /* The Summary is the one-glance document: the subject and five peers
+             is the comparison, and the long reports carry the rest. */
+          + arr(peers.rows).slice(0,6).map(function(r){
               return '<tr'+(r.is_subject?' class="hi"':'')+'>'
                 + arr(r.cells).map(function(x, i){
                     return '<td'+(i?' class="n en"':'')+'>'+e(S(x))+'</td>'; }).join('')
@@ -4805,22 +4918,44 @@ function chartRadar(p, lang){
 }
 
 /* Simple horizontal gauge for a 0-100 score. */
+/* The total-score gauge.
+
+   It was an SVG drawn across the full width of its column while the seven
+   category bars underneath ran only between the label and the value columns —
+   so the total sat visibly narrower than the bars it totals. Insetting the SVG
+   fixed the alignment and broke the caption instead: the viewBox is 520 wide,
+   the inset column is under 200, and the type scaled down with it.
+
+   So it is not an SVG any more. It is a `.bar` row like the seven beneath it,
+   with the five bands painted into the track — same label column, same track,
+   same value column, aligned by construction rather than by arithmetic that
+   has to be kept in step by hand. */
 function chartGauge(value, lang){
-  var W = 520, H = 54, pad = 12, v = Math.max(0, Math.min(100, Number(value)||0));
+  var v = Math.max(0, Math.min(100, Number(value) || 0));
   var bands = [[0,35,PAL5_HEX[0]],[35,50,PAL5_HEX[1]],[50,65,PAL5_HEX[2]],
                [65,80,PAL5_HEX[3]],[80,100,PAL5_HEX[4]]];
-  var track = bands.map(function(b){
-    var x = pad + (W-pad*2)*b[0]/100, w = (W-pad*2)*(b[1]-b[0])/100;
-    return '<rect x="'+x.toFixed(1)+'" y="18" width="'+w.toFixed(1)+'" height="14" fill="'+b[2]+'" fill-opacity="0.30"/>';
+  /* The geometry is written inline as well as in the stylesheet. This is one of
+     the four charts the rasteriser test renders on its own, outside the
+     document, exactly as html2canvas sees it when a page is turned into a PNG —
+     and a shape that depends entirely on a class it cannot see comes out blank.
+     The values are the same as the rules; the rules keep the printed document
+     consistent, these keep the drawing self-contained. */
+  var track = bands.map(function(bd){
+    return '<i class="gb" style="position:absolute;top:0;bottom:0;opacity:.30;left:' + bd[0]
+      + '%;width:' + (bd[1]-bd[0]) + '%;background:' + bd[2] + '"></i>';
   }).join('');
-  var x = pad + (W-pad*2)*v/100;
-  return '<div class="ch"><svg viewBox="0 0 '+W+' '+H+'" width="100%" height="'+H+'" preserveAspectRatio="xMidYMid meet">'
-    + track
-    + '<rect x="'+pad+'" y="18" width="'+((W-pad*2)*v/100).toFixed(1)+'" height="14" fill="'+ragBarHex(v)+'"/>'
-    + '<polygon points="'+x.toFixed(1)+',14 '+(x-6).toFixed(1)+',4 '+(x+6).toFixed(1)+',4" fill="'+CH.ink+'"/>'
-    + '<text x="'+x.toFixed(1)+'" y="46" font-size="12" font-weight="700" fill="'+CH.ink
-    + '" text-anchor="middle">'+v.toFixed(1)+' / 100</text>'
-    + '</svg></div>';
+  return '<div class="bar gaugebar" style="display:flex;align-items:center;gap:2.5mm">'
+    /* `total_score` is already defined further down the label table —
+       "Total Score By Section" — and the later definition wins, so the
+       existing one is used rather than a second key of the same name. */
+    + '<div class="bl" style="flex:0 0 40mm">' + e(L(lang, 'total_score')) + '</div>'
+    + '<div class="bt" style="position:relative;flex:1;height:4.6mm;border-radius:.8mm">' + track
+      + '<div class="bf" style="position:absolute;top:0;bottom:0;left:0;border-radius:.8mm 0 0 .8mm;'
+        + 'width:' + v.toFixed(1) + '%;background:' + ragBarHex(v) + '"></div>'
+      + '<div class="gmark" style="left:' + v.toFixed(1) + '%"></div>'
+    + '</div>'
+    + '<div class="bv en" style="flex:0 0 16mm;text-align:right;font-weight:800">'
+      + v.toFixed(1) + ' / 100</div></div>';
 }
 function bandColourHex(v){ v=Number(v)||0;
   return v>=75?CH.green:v>=65?CH.teal:v>=55?CH.amber:v>=45?CH.gold:CH.red; }
@@ -5194,6 +5329,17 @@ function packDoc(p, lang, cfg){
     /* Move whatever will not fit on page i onto page i+1. A block taller than a
        whole page is divided at its own child boundaries rather than being left
        to spill, so a long table continues instead of losing its tail. */
+    /* Every table's column proportions, measured once while the document is
+       still whole. A table that is later divided has both halves set to
+       these, so the columns of a continued table run straight down the
+       page instead of each half choosing its own from its own rows. */
+    + 'document.querySelectorAll(".ir-box table").forEach(function(t){'
+      + 'var r=t.rows && t.rows[0]; if(!r) return;'
+      + 'var tw=t.getBoundingClientRect().width || 1, ws=[], i=0;'
+      + 'for(i=0;i<r.cells.length;i++)'
+        + 'ws.push((r.cells[i].getBoundingClientRect().width/tw*100).toFixed(3));'
+      + 't.setAttribute("data-cols", ws.join(","));'
+    + '});'
     + 'var CUT=0;'
     + 'function cut(only, i, A){'
         /* Descend to the deepest node that still has something to divide. A
@@ -5276,6 +5422,10 @@ function packDoc(p, lang, cfg){
         + 'for(qi=cands.length-1;qi>=0;qi--){'
           + 'if(cands[qi].children.length>=4 && !cur.contains(cands[qi])){ pick=cands[qi]; break; } }'
         + 'if(pick){'
+          /* measured before anything moves: once rows leave, the columns
+             the measurement preserves have already changed */
+          + 'var pinTbl=(pick.tagName==="TBODY") ? pick.parentNode : null;'
+          + 'var pinW=pinTbl ? colWidths(pinTbl) : null;'
           + 'var pth=[], nd=pick;'
           + 'while(nd && nd!==only){ pth.unshift(nd); nd=nd.parentNode; }'
           + 'var c2=null, ci2=0;'
@@ -5300,6 +5450,8 @@ function packDoc(p, lang, cfg){
         + 'while(cur.firstChild) host.appendChild(cur.firstChild);'
         + 'return false;'
       + '}'
+      + 'if(typeof pinTbl!=="undefined" && pinTbl && pinW){ pinCols(pinTbl, pinW);'
+        + 'if(cRun && cRun.parentNode) pinCols(cRun.parentNode, pinW); }'
       + 'boxes[i+1].insertBefore(carry, boxes[i+1].firstChild);'
         /* A table that loses rows re-lays out: its columns get narrower,
            its remaining rows wrap onto fewer lines, and the half left
@@ -5381,6 +5533,35 @@ function packDoc(p, lang, cfg){
         + 'boxes[s2+1].insertBefore(nb2, boxes[s2+1].firstChild); break;'
       + '}'
     + '}'
+    /* A table divided across a page break lays each half out on its own, so
+       the halves choose different column widths from their own contents:
+       "Products and services" put revenue share and margin profile in one
+       place for its first three rows and somewhere else for the other five.
+       Both halves get the widths the whole table had before it was cut. */
+    + 'function pinCols(tbl, ws){'
+      + 'if(!tbl || !ws || !ws.length) return;'
+      /* querySelector reaches into nested tables, and removing a colgroup that
+         belongs to one of those throws — which aborted the whole packer and
+         left twenty empty shells in the document. */
+      + 'var og=tbl.querySelector("colgroup");'
+      + 'if(og && og.parentNode===tbl) tbl.removeChild(og);'
+      + 'var cg=document.createElement("colgroup");'
+      /* proportions, not pixels: a continuation can sit inside a container of
+         a different width — a scaled page, for one — and a pixel width
+         pinned from the other half would not fit it */
+      + 'ws.forEach(function(w){ var c=document.createElement("col");'
+        + 'c.style.width=w.toFixed(3)+"%"; cg.appendChild(c); });'
+      + 'tbl.insertBefore(cg, tbl.firstChild);'
+      + 'tbl.style.tableLayout="fixed";'
+    + '}'
+    + 'function colWidths(tbl){'
+      + 'var r=tbl.rows && tbl.rows[0]; if(!r) return null;'
+      + 'var tw=tbl.getBoundingClientRect().width || 1;'
+      + 'var ws=[], i=0;'
+      + 'for(i=0;i<r.cells.length;i++)'
+        + 'ws.push(r.cells[i].getBoundingClientRect().width / tw * 100);'
+      + 'return ws;'
+    + '}'
     + 'function deep(el){ var h=el, d=0;'
       + 'while(h && h.children.length===1 && d++<6) h=h.children[0]; return h; }'
     + 'for(var s1=0;s1<boxes.length-1;s1++){'
@@ -5419,6 +5600,26 @@ function packDoc(p, lang, cfg){
       + '}'
       + 'if(!nh.children.length) boxes[s1+1].removeChild(next);'
     + '}'
+    /* Every table that ends up divided, however it was divided, is given one
+       set of column widths across both halves. A table lays itself out from
+       its own contents, so the five rows that carried over used to choose
+       different columns from the three left behind, and the section read as
+       two tables that had drifted apart. */
+    + 'document.querySelectorAll("[data-cont]").forEach(function(c){'
+      + 'var cid=c.getAttribute("data-cont");'
+      + 'var first=document.querySelector("[data-cutid=\\""+cid+"\\"]");'
+      + 'if(!first) return;'
+      /* the half above may hold several tables; the one that continues is
+         its last, and it continues into the first table below */
+      + 'var ts=first.querySelectorAll("table");'
+      + 'var t1=ts.length ? ts[ts.length-1] : null, t2=c.querySelector("table");'
+      + 'if(!t1 || !t2 || !t1.rows.length || !t2.rows.length) return;'
+      + 'if(t1.rows[0].cells.length!==t2.rows[0].cells.length) return;'
+      + 'var stored=t1.getAttribute("data-cols") || t2.getAttribute("data-cols");'
+      + 'var ws=stored ? stored.split(",").map(Number) : colWidths(t1);'
+      + 'if(!ws || !ws.length) return;'
+      + 'pinCols(t1, ws); pinCols(t2, ws);'
+    + '});'
     + 'for(var j=ps.length-1;j>=0;j--){'
       + 'if(!boxes[j].children.length) ps[j].parentNode.removeChild(ps[j]);'
     + '}'

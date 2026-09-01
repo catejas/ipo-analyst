@@ -372,7 +372,7 @@ poured into a PDF, because a chat model cannot control typography, colour or pag
 So the job has changed, and it is now much simpler for you:
 
 > **You do the research, the analysis and the judgement. You return it as one JSON block.
-> The IPO Analyst app turns that block into a designed 10-page PDF and a 450-DPI PNG.**
+> The IPO Analyst app turns that block into a designed 10-page PDF and a 600-DPI PNG.**
 
 This means:
 
@@ -1264,6 +1264,21 @@ Where the figures come from, in order of preference:
 | **Annual reports** | each peer's investor-relations page | Segment detail when the peer is only partly comparable |
 | **Portals** | moneycontrol.com, tickertape.in, trendlyne.com, marketsmojo | Market cap, EV, and consensus multiples |
 | **The RHP's own peer table** | the "Basis for Issue Price" chapter, or the aggregator summaries of it | The peer set the issuer itself chose — worth reporting even when you disagree with it, and worth saying that you disagree |
+
+**The RHP's own peer table is not the source for these figures.** It publishes
+diluted EPS, NAV, P/E, RoNW and P/BV and nothing else, so a table built only
+from it comes out as a column of P/Es and seven columns of dashes — which is
+what "not researched" looks like on the page. Every company in that peer set is
+a **listed** company: its revenue, EBITDA, PAT, growth and returns are published
+every quarter on the exchanges and are on one Screener page each. Going and
+getting them is four or five searches, and it is the difference between a peer
+table and a list of multiples.
+
+So: take the peer *names* from the RHP table, then source each peer's figures
+yourself from the exchanges, Screener, the portals or the peer's own results.
+A dash is for a figure that is genuinely unpublished — not for one you did not
+go and look up. If a run leaves more than half the cells as dashes, the table is
+not finished.
 
 Two rules that matter more than they look:
 

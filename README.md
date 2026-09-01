@@ -1,10 +1,76 @@
-# IPO Analyst — standalone web app  ·  v4.6  ·  build 2026.08.31.4
+# IPO Analyst — standalone web app  ·  v4.6  ·  build 2026.09.01.2
 
 A single-page web app that turns the institutional IPO research protocol into something you can
 run from an icon on your phone. It works on Android and iPhone/iPad, installs to the home screen,
 runs full-screen with no address bar, and works offline for everything except the AI call itself.
 
-## What changed in v4.6 build 2026.08.31.4
+## What changed in v4.6 build 2026.09.01.2
+
+**Gujarati words where Gujarati has the word.** "Industrial capex revival" was printing as "Industrial
+મૂડી ખર્ચ પુનરુત્થાન" — three words translated, the fourth left in English because `industrial` had
+no dictionary entry. Fifty-odd entries were added, all of them vocabulary these reports actually
+print: ઔદ્યોગિક for industrial, વીજ ઉપયોગિતાઓ for utilities, વિદ્યુતીકરણ for electrification,
+નવીનીકરણીય for renewable, પાણી for water, ટેન્ડર for tender, ચુકવણી for repayment, હિસ્સો for
+holding, બાકી for outstanding, સંબંધિત for related. Where the trade itself writes the English term in
+Gujarati script — a substation is a સબસ્ટેશન, a conductor a કંડક્ટર — that spelling is used rather
+than a coinage.
+
+**A participle now counts as prose.** Adding vocabulary has a cost: every word that becomes known
+makes the "too many unknowns" guard less likely to fire, and a phrase that used to be handed back
+whole starts getting substituted word for word. "Utilities upgrading existing corridors" came out as
+વીજ ઉપયોગિતાઓ અપગ્રેડ કરતી હાલના કોરિડોર — Gujarati vocabulary in English word order, which is worse
+than the English it replaced. A word ending in -ing or -ed is treated as a verb and makes the phrase
+a clause, so the sweep hands it back; the -ing and -ed words that name things (a rating, a holding, a
+listing, restated, consolidated) are listed as exceptions and still translate.
+
+`test/guwords.js` pins both ends: every word the documents print must come back in Gujarati script,
+every clause must come back untouched, and no line that is mostly Gujarati may carry an English word
+the dictionary could have translated.
+
+
+**Eight sections were arriving one level too deep and going straight in the bin.** A live payload
+nested the reverse DCF, the base rate, the sensitivity grid, management quality, both long cases,
+what would change our mind and the questions for management inside `deep.competition` instead of
+beside it. The JSON was valid and every field was correctly shaped; the app reported them missing and
+the reports left them out. Nothing was wrong with the research — one brace was in the wrong place.
+Import now moves a section found in the wrong parent to the right one and says so in the note. A key
+that arrived correctly is never overwritten.
+
+**The total-score gauge lines up with the bars it totals.** It was an SVG drawn across the full width
+of its column while the seven category bars ran only between the label and the value columns. It is a
+bar row now — same label column, same track, same value column — so it aligns by construction rather
+than by arithmetic kept in step by hand.
+
+**A divided table keeps one set of columns.** A table lays itself out from its own contents, so when
+"Products and services" crossed a page break the five rows that carried over chose different columns
+from the three left behind. Every table's proportions are measured once, while the document is still
+whole, and both halves are pinned to them.
+
+**The Investment Summary has one type scale.** Body prose was appearing at four sizes — 21px in the
+business overview, 20px in the one-liner, 19px in the objective box, 18px in the tables — and the
+Gujarati peer headings had quietly fallen to 9px, because the shared print stylesheet carries
+`body.gu th` rules at the same specificity that come later in the sheet. Five roles are named once
+and referenced everywhere.
+
+**A peer table is now measured by its cells, not its headings.** Eight columns of dashes and one of
+P/Es passed every check, because the columns were all present. The import note counts filled cells
+and names the shortfall. The framework says plainly what went wrong: the RHP's own peer table is not
+the source for peer operating figures — it publishes only EPS, NAV, P/E, RoNW and P/BV — and every
+company in that peer set is a listed company whose revenue, EBITDA, PAT and returns are on the
+exchanges and on one Screener page each. A dash is for a figure that is genuinely unpublished, not
+for one nobody looked up.
+
+**What the app says about its own output is true again.** The document list advertised 18–20, 10–12
+and 4 pages; the documents are 14–22, 11–12 and 6–7. The Investment Summary was labelled 600 DPI and
+the progress line said 450 — the pipeline has rendered at 4× (600 DPI at A4) since the scale was
+raised, so the message was the thing that was wrong.
+
+**A packer crash that hid behind its own symptom.** Removing a stale `colgroup` used a selector that
+reaches into nested tables, so it tried to remove a node from an element that was not its parent. The
+exception aborted the packer, leaving twenty empty pages in one document — which read as a pagination
+bug rather than a thrown error. `test/v46i.js` fails on any empty page or packer error, across three
+payloads and both languages.
+
 
 **"What happens next" now answers the question it asks.** The Investment Summary printed that heading
 over three dates and nothing else — allotment, listing, lock-in expiry. The catalysts were in the

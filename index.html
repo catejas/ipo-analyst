@@ -381,7 +381,7 @@ body.previewing{overflow:hidden;}
 .lg-row i{flex:0 0 auto;}
 .footer{font-size:11.5px;color:var(--ink3);text-align:center;padding:24px 8px;line-height:1.6;}
 </style>
-<script>window.APP_BUILD="2026.08.31.4";</script>
+<script>window.APP_BUILD="2026.09.01.2";</script>
 </head>
 <body>
 
@@ -540,17 +540,17 @@ body.previewing{overflow:hidden;}
         <button class="ico ico-sh" data-doc="all" data-act="share" title="Share all reports" aria-label="Share all reports">&#8682;</button>
       </div>
       <div class="doc-row">
-        <span class="doc-name">Institutional Research Report<small>18&ndash;20 pages &middot; A4 PDF &middot; full depth</small></span>
+        <span class="doc-name">Institutional Research Report<small>14&ndash;22 pages &middot; A4 PDF &middot; full depth</small></span>
         <button class="ico ico-pdf" data-doc="inst" data-act="make" title="Generate PDF" aria-label="Generate Institutional Research Report">PDF</button>
         <button class="ico ico-sh" data-doc="inst" data-act="share" title="Share PDF" aria-label="Share Institutional Research Report">&#8682;</button>
       </div>
       <div class="doc-row">
-        <span class="doc-name">Company Research Report<small>10&ndash;12 pages · A4 PDF</small></span>
+        <span class="doc-name">Company Research Report<small>11&ndash;12 pages · A4 PDF</small></span>
         <button class="ico ico-pdf" data-doc="report" data-act="make" title="Generate PDF" aria-label="Generate PDF">PDF</button>
         <button class="ico ico-sh" data-doc="report" data-act="share" title="Share PDF" aria-label="Share PDF">&#8682;</button>
       </div>
       <div class="doc-row">
-        <span class="doc-name">Executive Summary Report<small>4 pages · A4 PDF</small></span>
+        <span class="doc-name">Executive Summary Report<small>6&ndash;7 pages · A4 PDF</small></span>
         <button class="ico ico-pdf" data-doc="exec" data-act="make" title="Generate PDF" aria-label="Generate PDF">PDF</button>
         <button class="ico ico-sh" data-doc="exec" data-act="share" title="Share PDF" aria-label="Share PDF">&#8682;</button>
       </div>
@@ -1112,7 +1112,7 @@ poured into a PDF, because a chat model cannot control typography, colour or pag
 So the job has changed, and it is now much simpler for you:
 
 > **You do the research, the analysis and the judgement. You return it as one JSON block.
-> The IPO Analyst app turns that block into a designed 10-page PDF and a 450-DPI PNG.**
+> The IPO Analyst app turns that block into a designed 10-page PDF and a 600-DPI PNG.**
 
 This means:
 
@@ -2004,6 +2004,21 @@ Where the figures come from, in order of preference:
 | **Annual reports** | each peer's investor-relations page | Segment detail when the peer is only partly comparable |
 | **Portals** | moneycontrol.com, tickertape.in, trendlyne.com, marketsmojo | Market cap, EV, and consensus multiples |
 | **The RHP's own peer table** | the "Basis for Issue Price" chapter, or the aggregator summaries of it | The peer set the issuer itself chose — worth reporting even when you disagree with it, and worth saying that you disagree |
+
+**The RHP's own peer table is not the source for these figures.** It publishes
+diluted EPS, NAV, P/E, RoNW and P/BV and nothing else, so a table built only
+from it comes out as a column of P/Es and seven columns of dashes — which is
+what "not researched" looks like on the page. Every company in that peer set is
+a **listed** company: its revenue, EBITDA, PAT, growth and returns are published
+every quarter on the exchanges and are on one Screener page each. Going and
+getting them is four or five searches, and it is the difference between a peer
+table and a list of multiples.
+
+So: take the peer *names* from the RHP table, then source each peer's figures
+yourself from the exchanges, Screener, the portals or the peer's own results.
+A dash is for a figure that is genuinely unpublished — not for one you did not
+go and look up. If a run leaves more than half the cells as dashes, the table is
+not finished.
 
 Two rules that matter more than they look:
 
@@ -3530,8 +3545,54 @@ function readPayloadFrom(raw){
     extra++;
   }
   if(extra) fixes.push(extra + ' further block(s) in the same paste were merged in');
+  var moved = hoistMisnested(out);
+  if(moved.length) fixes.push('moved ' + moved.length + ' section(s) that arrived one level too deep ('
+    + moved.slice(0, 3).join(', ') + (moved.length > 3 ? ' and others' : '') + ')');
   LAST_REPAIRS = fixes;
   return out;
+}
+
+/* Sections that arrived nested one level too deep.
+
+   A live payload put eight `deep` keys — the reverse DCF, the base rate, the
+   sensitivity grid, management quality, both long cases, what would change our
+   mind and the questions for management — inside `deep.competition` rather than
+   beside it. The JSON was valid, every field was present and correctly shaped,
+   and the app reported the sections as missing while the reports simply left
+   them out. Nothing was wrong with the research; a single brace was in the
+   wrong place.
+
+   The names are unambiguous — nothing legitimately called `reverse_dcf` belongs
+   under `competition` — so a key found in the wrong parent is moved to the
+   right one rather than reported as absent. An existing key at the destination
+   always wins: repair never overwrites data that arrived correctly. */
+var DEEP_KEYS = ['unit_economics','operating_metrics','balance_sheet','working_capital',
+  'quarterly','capital_allocation','litigation','group_structure','credit',
+  'issue_structure','concentration','regulatory','competition','reverse_dcf',
+  'base_rate','sensitivity','management_quality','bear_case_detail','bull_case_detail',
+  'what_would_change_our_mind','key_questions_for_management'];
+
+function hoistMisnested(d){
+  var moved = [];
+  if(!d || typeof d !== 'object') return moved;
+  var deep = d.deep;
+  if(!deep || typeof deep !== 'object') return moved;
+  /* one pass over the containers that exist, looking for siblings of theirs
+     that should have been siblings of them */
+  Object.keys(deep).forEach(function(host){
+    var box = deep[host];
+    if(!box || typeof box !== 'object' || Array.isArray(box)) return;
+    DEEP_KEYS.forEach(function(k){
+      if(k === host) return;
+      if(!(k in box)) return;
+      if(box[k] == null) return;
+      if(deep[k] != null) return;          /* the right one is already there */
+      deep[k] = box[k];
+      delete box[k];
+      moved.push(k);
+    });
+  });
+  return moved;
 }
 
 
@@ -3631,6 +3692,26 @@ function docGaps(d){
   var cols = (pr.columns || []).length;
   if((pr.rows || []).length && cols < 5)
     g.push('peer comparison figures (' + cols + ' columns — revenue, EBITDA, PAT and growth are missing)');
+  /* The eight columns can all be there and still carry nothing. A table built
+     from the RHP's own peer table alone comes out as one column of P/Es and
+     seven of dashes, because that is all the RHP publishes — while every peer
+     in it is a listed company whose figures are on the exchanges. Count the
+     cells, not the headings. */
+  else if((pr.rows || []).length > 1 && cols >= 5){
+    var filled = 0, total = 0;
+    (pr.rows || []).forEach(function(r, i){
+      if(i === 0) return;                     /* the subject is our own working */
+      (r.cells || []).forEach(function(c, j){
+        if(j === 0) return;                   /* the name is not a figure */
+        total++;
+        var t = String(c == null ? '' : c).trim();
+        if(t && t !== '—' && t !== '-' && t !== 'n.a.') filled++;
+      });
+    });
+    if(total && filled / total < 0.5)
+      g.push('peer figures (' + filled + ' of ' + total
+        + ' cells filled — the peers are listed companies, so the rest are on the exchanges)');
+  }
 
   return g;
 }
