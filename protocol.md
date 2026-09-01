@@ -684,8 +684,11 @@ still carries the scoring.
                             "note": "max 130 chars — the arithmetic, and what a failure implies" } ],
       "discipline": [ { "question": "max 44 chars", "answer": "Yes | No | Partly",
                         "evidence": "max 110 chars" } ] },
-    "peers": { "columns": ["Company", "Revenue", "Margin", "ROE", "ROCE", "P/E", "P/B"],
+    "peers": { "columns": ["Company", "Revenue", "EBITDA %", "PAT", "Rev growth", "ROCE", "P/E", "EV/EBITDA"],
+               "_columns_note": "EXACTLY these eight, in this order, for every peer table. A table of names and P/E is not a peer comparison — see section 49CD. If a figure genuinely is not available for one peer, that one cell is the string '—' and the rest of the row is still filled.",
                "rows": [ { "cells": ["max 22 chars each"], "is_subject": true } ],
+               "fy": "FY26 — the year every column is stated for; use the same year for every peer or say why not",
+               "source": "max 60 chars — where the peer figures came from, e.g. 'screener.in, FY25 annual reports'",
                "note": "max 300 chars" },
     "scenarios": { "horizon": "FY2029",
       "cases": [ { "case": "Bear | Base | Bull", "value_per_share": 169,
@@ -791,7 +794,7 @@ the English keys and only the prose from here.
       "gmp": "…", "anchor_quality": "…", "subscription_demand": "…"
     },
     "text": {
-      "_comment_for_you": "THE SWEEP. After filling everything above, read back through the English part and find every remaining English sentence or phrase a reader would see that no key above covers — the note fields on moat sources, operating metrics, balance-sheet items, ratios, governance parameters, due-diligence checks, monitoring metrics, objects of the issue, segment names, scenario assumptions. Put each one here, keyed by the EXACT English string you wrote in the English keys, with the Gujarati as the value. The app looks up every string it renders in this dictionary, so anything you list here is translated and anything you leave out stays in English. This is what makes the Gujarati edition complete rather than half-English.",
+      "_comment_for_you": "THE SWEEP. After filling everything above, read back through the English part and find every remaining English sentence or phrase a reader would see that no key above covers — the note fields on moat sources, operating metrics, balance-sheet items, ratios, governance parameters, due-diligence checks, monitoring metrics, objects of the issue, segment names, scenario assumptions, catalyst names and their mechanisms, red-flag evidence, product descriptions, and the basis lines under the listing-gain components. The Executive Summary prints most of these on its own six pages, so anything you leave out here shows up as English inside a Gujarati report. Put each one here, keyed by the EXACT English string you wrote in the English keys, with the Gujarati as the value. The app looks up every string it renders in this dictionary, so anything you list here is translated and anything you leave out stays in English. This is what makes the Gujarati edition complete rather than half-English.",
       "Working-capital funding, not asset-building": "…",
       "Typical for jewellery retail": "…"
     },
@@ -858,6 +861,10 @@ If you genuinely cannot source a section, send the key with an empty array and s
     },
     "litigation": {
       "note": "max 320 chars — the shape of the legal exposure and how it was established",
+      "searched": [ { "source": "Indian Kanoon | e-Courts | NCLT | NCLAT | IBBI | SEBI orders | MCA | CESTAT | ITAT | GST appellate | Consumer | EPFO | Media",
+                      "query": "max 60 chars — what you actually searched for: the company name, a promoter name, a subsidiary",
+                      "result": "Hits found | Nothing found | Register unreachable",
+                      "note": "max 90 chars — what came back, or why the register would not answer" } ],
       "matters": [ { "forum": "ITAT | GST appellate | CESTAT | High Court | Supreme Court | NCLT | NCLAT | SEBI | CCI | ED | Other",
                      "against": "Company | Subsidiary | Promoter | Director | Group company",
                      "matter": "max 90 chars — what the dispute is about",
@@ -959,7 +966,8 @@ If you genuinely cannot source a section, send the key with an empty array and s
 | `deep.operating_metrics.rows` | 6–10 — **CAC, cash conversion cycle and customer concentration are compulsory**; add the ones that matter for this sector |
 | `deep.balance_sheet.assets` | 5–8 |
 | `deep.balance_sheet.borrowings` | 2–5, or one row saying the company is debt-free |
-| `deep.litigation.matters` | every matter you can establish; **an empty array is only acceptable if you searched Indian Kanoon, NCLT and SEBI orders and found nothing** |
+| `deep.litigation.matters` | every matter you can establish; **an empty array is only acceptable when `deep.litigation.searched` records the full battery in section 49C and every one of them came back clean** |
+| `deep.litigation.searched` | one entry per source in the section 49C battery — at minimum Indian Kanoon, e-Courts, NCLT, NCLAT, IBBI, SEBI, MCA, the tax tribunals and a dated media search — including the ones that found nothing |
 | `deep.credit.facilities` | every rated facility, or state that no rating was found |
 | `deep.credit.sensitivities` | the agency's own upgrade and downgrade triggers, both directions |
 | `deep.group_structure.entities` | every subsidiary, joint venture and associate that consolidates |
@@ -1001,7 +1009,7 @@ The app lays out a **10-page report**, so quantity matters. Aim for these counts
 | `financials.ratios` | 8 — the ones that decide the case |
 | `financials.valuation.multiples` | all applicable, 6–9 |
 | `financials.valuation.discipline` | exactly 5 |
-| `financials.peers.rows` | subject company first, then 3–5 peers |
+| `financials.peers.rows` | subject company first, then 3–5 peers, **each with all eight columns of section 49CD** — revenue, EBITDA %, PAT, revenue growth, ROCE, P/E and EV/EBITDA, not the multiple alone |
 | `financials.scenarios.cases` | exactly 3 |
 | `people.promoters` | all of them |
 | `people.due_diligence` | 5–7 checks |
@@ -1160,9 +1168,43 @@ explanation will be treated as work not done.
 A tax demand or a tribunal matter large enough to matter is the single most common thing an IPO
 analysis misses, and the one most likely to change a decision. It is also findable for free.
 
-**Search Indian Kanoon by name** — the company, every promoter individually, and any material
-subsidiary. Judgments name the amount and the forum. Then search SEBI orders, NCLT and NCLAT, and
-recent media, because a dispute raised this year will be in the press before it is in a judgment.
+### The search battery is compulsory, and you must record that you ran it
+
+This is not a check to run if convenient. Every source below is free, public and searchable, and
+each one is searched for **the company, every promoter individually, and every material
+subsidiary** — names, not just the issuer. Record one `deep.litigation.searched[]` entry per source
+saying what you searched and what came back, **including the ones that came back empty**. An empty
+`matters` array with an empty `searched` array is a failed research job, not a clean company, and
+the report prints that distinction on its face.
+
+| Source | Where | What it answers |
+|---|---|---|
+| **Indian Kanoon** | indiankanoon.org — the company name, each promoter name, each subsidiary | Judgments and orders across High Courts, the Supreme Court, tribunals and appellate benches, full text, with amounts and forums |
+| **e-Courts / NJDG** | ecourts.gov.in services portal, Case Status by party name | Pending district and High Court matters with no judgment yet, so they appear nowhere else |
+| **NCLT** | nclt.gov.in — orders and cause lists by party name | Insolvency petitions, oppression and mismanagement, scheme objections. An admitted petition against a promoter entity is decisive |
+| **NCLAT** | nclat.gov.in | Appeals from the above |
+| **IBBI** | ibbi.gov.in — public announcements and ongoing CIRPs | Whether the company, a promoter or a group entity is or has been in insolvency |
+| **SEBI** | sebi.gov.in, Enforcement orders and the settlement orders page | Orders and settlements against the company, its promoters or its directors. A settlement is disclosable and is routinely left out |
+| **MCA** | mca.gov.in, MCA21: View Company Master Data, Index of Charges, Signatory Details / DIN | Struck-off or dormant group entities, open charges, disqualified directors, and each promoter's other directorships |
+| **CESTAT / ITAT / GST appellate** | cestat.gov.in, itat.gov.in, and the state GST appellate portals | Indirect and direct tax demands under appeal — usually the largest single number in the whole exposure |
+| **Consumer / NCDRC** | ncdrc.nic.in by party name | Product and service disputes, which matter for anything consumer-facing |
+| **EPFO / labour** | the EPFO establishment search, and labour-court reporting | Provident-fund default, which is a governance signal as much as a legal one |
+| **Media** | a dated news search on the company and on each promoter, last three years | A dispute raised this year reaches the press long before it reaches a judgment |
+
+Reach each of them by **searching** — `indiankanoon.org <company name>`, `site:nclt.gov.in
+"<promoter name>"`, or the register's own search form, which you open first and then follow. Do not
+assemble an order or judgment URL from a case number and a date; those paths are opaque and the
+guess fails (section 49CE). A fetch that fails is not a search that came back clean: search again by
+name, and only then record `Register unreachable`.
+
+Judgments name the amount and the forum; use them. Where the RHP's litigation chapter is
+unreachable — which is the usual case — these registers are how that chapter gets reconstructed,
+and the aggregator write-ups at merchantbanker.in, Chittorgarh and IPOJI often summarise it as well.
+
+**Never write `matters: []` because you did not look.** If a register will not answer, name it and
+say why in that source's `searched[].note` and set its `result` to `Register unreachable`. A reader
+can weigh a search that failed. A silent empty array reads as "there is no litigation here", which
+is a different statement and may be a false one.
 
 For every matter record the forum, whether it is against the company, a subsidiary or a promoter
 personally, what it is about, the amount, the status and the year. Then total it and express the
@@ -1172,6 +1214,103 @@ headline.
 
 Anything above 10% of net worth must also appear in `decision.red_flags`. The app will add it if
 you do not, so it is better that you frame it properly.
+
+## 49CC. THE CREDIT PROFILE IS RECONSTRUCTED, NOT LOOKED UP IN ONE PLACE
+
+"No material information available" is almost never true of an Indian company that borrows. Bank
+limits are charged, charges are registered, and anything with sanctioned limits above a few crore is
+usually rated. The section comes back empty because one source was tried and it did not answer.
+
+Work the battery in this order and record what each one gave you in `deep.credit.note`:
+
+| Source | Where | What it gives |
+|---|---|---|
+| **MCA Index of Charges** | mca.gov.in → MCA21 → View Index of Charges, by CIN | Every registered charge: the charge holder (the bank), the amount secured, the date, and whether it is satisfied. This is the primary record and it answers even when no rating exists |
+| **Rating agency press releases** | crisilratings.com, icra.in, careratings.com / careedge.in, indiaratings.co.in, acuite.in, infomerics.com. **Search for the rationale — `site:crisilratings.com "<company>"` or a plain web search naming the company and the agency — and open the result. Never assemble a rating-document path out of the company name and a date; those ids are opaque and the guess 404s** (see section 49CE) | The rating, the outlook, the rated facility-wise limits, the rationale, and the upgrade/downgrade triggers. The rationale usually restates the financials and the bankers |
+| **The RHP's "Financial Indebtedness"** | the prospectus, or the aggregator summaries of it | Facility-wise limits, sanctioned versus utilised, the lending banks, and the security |
+| **The auditor's report and CARO annexure** | in the RHP's restated financials | Default in repayment, if any, is a CARO reporting item; so are undisclosed charges |
+| **Bank names in the RHP and on the company site** | | Who lends tells you the tier of the borrower |
+| **NSE/BSE filings of listed group entities** | | Cross-holdings and guarantees given for group companies |
+
+Then compute what the accounts already let you compute, and say so with `tag: "Derived"`:
+interest cover (EBIT / finance cost), debt to EBITDA, and working-capital intensity as net working
+capital over income. These need no external source at all and turn an empty section into a useful
+one.
+
+**If there really is no rating**, set `agency` to `None found` and say in the note **which agencies
+you searched** and that the company appears unrated — and still fill the charges, the facilities and
+the derived ratios. `"No material information available"` is not an acceptable value for this
+section: it describes the search, not the company.
+
+## 49CD. A PEER TABLE OF NAMES AND P/E IS NOT A PEER COMPARISON
+
+The point of the peer table is to show whether the issuer is being priced like a better business or
+merely like a more expensive one. A P/E column alone cannot answer that: a company on 35x is cheap
+against a peer on 30x if it grows twice as fast at twice the margin, and dear if it does not. So
+every peer row carries the operating figures next to the multiple, in the fixed column order:
+
+`Company · Revenue · EBITDA % · PAT · Rev growth · ROCE · P/E · EV/EBITDA`
+
+Subject company first, then three to five listed peers. State every column for the **same financial
+year** and name that year in `financials.peers.fy`; if one peer's latest year differs, say so in the
+note rather than mixing years silently.
+
+Where the figures come from, in order of preference:
+
+| Source | Where | What it gives |
+|---|---|---|
+| **Screener** | screener.in — search the peer's name, or `site:screener.in "<peer name>"`, and open the result rather than guessing the symbol in the path | Revenue, EBITDA, PAT, growth, ROCE, P/E and the ratio history for any listed Indian company, on one page |
+| **Exchange filings** | nseindia.com and bseindia.com, the quarterly and annual results of each peer | The authoritative figures where a screener and a portal disagree |
+| **Annual reports** | each peer's investor-relations page | Segment detail when the peer is only partly comparable |
+| **Portals** | moneycontrol.com, tickertape.in, trendlyne.com, marketsmojo | Market cap, EV, and consensus multiples |
+| **The RHP's own peer table** | the "Basis for Issue Price" chapter, or the aggregator summaries of it | The peer set the issuer itself chose — worth reporting even when you disagree with it, and worth saying that you disagree |
+
+Two rules that matter more than they look:
+
+**Do not drop a peer because one figure is missing.** Fill what you have and put `'—'` in the one
+cell you could not establish. A four-column table of five peers is far more useful than a
+two-column table.
+
+**Say when there is no true comparable.** Some issuers have none listed in India. That is itself a
+finding — it removes the anchor a valuation usually leans on — and it belongs in
+`financials.peers.note` and in the valuation section, not in an empty table.
+
+## 49CE. SEARCH FOR A DOCUMENT — NEVER CONSTRUCT ITS URL
+
+Two thirds of the failed fetches in live runs are the same mistake: a URL that was **assembled from
+a pattern** rather than found. A rating rationale guessed as
+
+`crisil.com/mnt/winshare/Ratings/RatingList/RatingDocs/<CompanyName>_July%2014_%202026_RR_397671.html`
+
+cannot work. The document id, the date in the filename and the directory are not derivable from the
+company name — they are looked up. The same applies to exchange circular PDFs, NCLT order files,
+SEBI order documents, IPOJI and ScanX article pages, and the RHP itself: **their paths are opaque.**
+
+**The rule.** Reach every document by searching for it and following the result you get back:
+
+- a plain web search naming the document — `Kwick Forensic Solutions CRISIL rating rationale 2026`
+- or a search restricted to the site — `site:crisilratings.com "Kwick Forensic"`
+- or the site's own search or listing page, which you fetch first, and then open the link it gives
+
+Fetch a bare URL directly only when it is one you were **given** — by the user, by a search result,
+or by a link on a page you have already opened. If you find yourself building a path out of a company
+name, a date and a number, stop: that is a guess wearing the costume of a source.
+
+**A failed fetch is not a finished search.** When a fetch fails — 404, timeout, block page, empty
+body — it tells you nothing about the company, only about that one address. Do not record the fact
+as an absence of information. Instead, in this order:
+
+1. Search for the same document by name rather than by address.
+2. Try the other sources that carry the same fact. Every fact in this framework has more than one:
+   a rating exists on the agency's site *and* in the RHP's financial-indebtedness chapter *and* in
+   the aggregator write-ups.
+3. Only when all of them fail, record it honestly — `sources.missing` for a fact, a
+   `deep.litigation.searched[].result` of `Register unreachable` for a register — naming what you
+   could not reach and why.
+
+"Failed to fetch" appearing in your working trace and nothing appearing in the payload is the
+signature of a research job that stopped at step one. The reports print what was searched and what
+was not, so this is visible to the reader either way; it is better that it is visible to you first.
 
 ## 49D. THE DUE-DILIGENCE STATUS MEANS WHAT IT SAYS
 

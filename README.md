@@ -1,8 +1,139 @@
-# IPO Analyst — standalone web app  ·  v4.6  ·  build 2026.08.30.1
+# IPO Analyst — standalone web app  ·  v4.6  ·  build 2026.08.31.4
 
 A single-page web app that turns the institutional IPO research protocol into something you can
 run from an icon on your phone. It works on Android and iPhone/iPad, installs to the home screen,
 runs full-screen with no address bar, and works offline for everything except the AI call itself.
+
+## What changed in v4.6 build 2026.08.31.4
+
+**"What happens next" now answers the question it asks.** The Investment Summary printed that heading
+over three dates and nothing else — allotment, listing, lock-in expiry. The catalysts were in the
+payload the whole time and the long reports printed them; this one never did. The block now leads
+with the dated catalysts, each with the mechanism that drives it and a severity pill, and keeps the
+three dates as the diary line beneath them. That also closes the blank band that used to sit under
+the score card on page 2.
+
+**The Investment Summary has a stated type scale.** The other three documents inherit one scale from
+the shared stylesheet; this page is drawn at roughly twice their size, so every role had been
+restated by hand — and the sizes had drifted. A box label was 14px in the tiles, 13px in the date
+rail and 13px in the lot table; a section heading was 17px in English and 19px in Gujarati. The five
+roles — section heading, box label, value, sub-line, headline tile — are now named once as CSS
+variables and referenced everywhere, so the same kind of thing is the same size across the document
+and the Gujarati edition differs by one deliberate step rather than by an accident per rule.
+
+**The verdict banner was eating its own last line.** The page is a flex column of fixed height and
+the fit routine wraps its contents in another one, so a full page squeezed its children instead of
+running long — and the banner, which hides its overflow to keep its rounded corner, silently cut the
+one-liner. Worse, the squeeze happened *before* the fit routine measured, so the scale that exists
+for exactly this case never ran. Nothing on the page shrinks now: it runs long, the fit routine sees
+it, and the content is scaled as designed.
+
+**An audit for text lost inside a box.** `test/clip.js` measures every box that hides its overflow,
+in all five documents, both languages, two payload shapes, and fails if any of them is holding more
+than it shows. Clipped text leaves no mark on the page — no scrollbar, no ellipsis, no gap — so
+nothing but a measurement finds it. It plants a clipped box first and confirms it is caught.
+
+**An objective with no amount** printed "General corporate purposes — — Balance-sheet repair": a dash
+for the missing figure, then the verdict's own dash. The amount is now simply left out when there is
+none. The fair-value range in the banner was also dark ink at 72% opacity on navy — near invisible
+in print — and is now white.
+
+
+**Search for a document; never construct its URL.** Two failed fetches in a live run had the same
+cause — an address assembled from a pattern rather than found. A CRISIL rating rationale guessed as
+`crisil.com/mnt/winshare/Ratings/RatingList/RatingDocs/<Company>_July%2014_%202026_RR_397671.html`
+cannot work: the document id, the date in the filename and the directory are looked up, not derived.
+The same is true of NCLT order files, SEBI order documents, exchange circulars and article pages. The
+framework now says so as a rule — reach every document by searching for it (`site:crisilratings.com
+"<company>"`, the register's own search form, a plain named search) and follow the result; fetch a
+bare URL only when it was given to you by a person, a search result, or a page you already opened.
+
+**A failed fetch is not a finished search.** A 404 or a timeout says something about one address and
+nothing about the company, so it must never be recorded as an absence of information. The order is
+now written down: search for the same document by name, then work the other sources that carry the
+same fact — a rating exists on the agency's site *and* in the RHP's indebtedness chapter *and* in the
+aggregator write-ups — and only when all of them fail, record it honestly, as `sources.missing` or as
+a `Register unreachable` result against that register.
+
+**The IPO search no longer stops at a dead page.** A tracker page timing out part-way through was
+truncating the calendar: the reply carried the IPOs found before the failure and nothing after. The
+prompt now says to carry on past a failed page, names the six calendars that each carry the same
+list, forbids assembling a URL there too, and asks for a cross-check against two sources before the
+list is returned.
+
+
+**A heading is never the last thing on a page.** The packer already refused to strand one; there is
+now an audit that proves it, page by page, for all five documents in both languages and across three
+payload shapes — and it checks its own eyesight first by planting an orphan and confirming it is
+caught. `test/orphan.js`.
+
+**Litigation is a battery of searches, and the report says which ones ran.** The framework named
+Indian Kanoon before and still got reports where nothing had been searched, so the section is now a
+compulsory checklist with the address of each register: Indian Kanoon, e-Courts/NJDG, NCLT, NCLAT,
+IBBI, SEBI enforcement and settlement orders, MCA (master data, index of charges, DIN), CESTAT, ITAT
+and the state GST appellate portals, NCDRC, EPFO, and a dated media search — each run against the
+company, every promoter individually and every material subsidiary. The payload carries
+`deep.litigation.searched[]`, one entry per register with what was searched and what came back,
+**including the ones that found nothing**. Both long reports print it as a *Registers searched*
+table, mark an unreachable register in red, and list by name the registers that were never searched.
+Where nothing at all was recorded, the section says so in place of the table: an empty list is not
+evidence that nothing exists.
+
+**The credit profile is reconstructed rather than looked up once.** A new section works the MCA
+index of charges (the charge holder, the amount, the date, whether satisfied — which answers even
+when no rating exists), the six rating agencies by name, the RHP's financial-indebtedness chapter,
+the CARO annexure, and the derived ratios that need no source at all: interest cover, debt/EBITDA,
+working-capital intensity. "No material information available" is ruled out by name — it describes
+the search, not the company.
+
+**A peer table of names and P/E is not a peer comparison.** The columns are fixed at eight —
+Company, Revenue, EBITDA %, PAT, revenue growth, ROCE, P/E, EV/EBITDA — stated for one named
+financial year, sourced from Screener, the exchanges, the annual reports and the portals, with the
+issuer's own RHP peer set reported even where we disagree with it. A peer is never dropped because
+one figure is missing; that one cell is a dash. The reports print the year and the source under the
+table.
+
+**The app names all three gaps at import.** A litigation section with no register recorded, a credit
+profile with no rating and no facilities and no derived cover, and a peer table under five columns
+are each called out by name in the import note — where before the payload was valid and nothing
+warned. `test/research.js`.
+
+
+**All three long reports are set the same way now.** The institutional report's block packer — the
+one that pours sections into a page, divides what will not fit and grows the document rather than
+squeezing it — now drives the Company Research Report and the Executive Summary as well. They were
+written page by page, so instead of rewriting thirty sections by hand, `blocksFromBody()` recovers
+the blocks from the markup they already emit and renumbers them in the order they survive. Same type,
+same sizes, same spacing, same rules in all three; no blank half-pages, and no section left behind on
+a page of its own.
+
+**The packer learned to divide properly.** It used to cut only when a single block was taller than a
+whole page; anything else was pushed forward whole, which is what left a third of a page empty under
+a section that was slightly too long. It now continues the longest run of like things — table rows,
+tile grids, bullet lists — and it refuses a cut that would leave a heading standing over nothing. A
+half left behind that turns out shorter than it measured (a table re-lays its columns once it loses
+rows) gets its rows handed back. The Institutional report went 23 → 21 pages, the Company report
+18 → 12, and the Executive Summary holds six pages in both languages.
+
+**The Gujarati edition no longer gets shrunk.** A contents list that ran a line or two past the
+opening page used to force a 0.91 scale on all twenty-odd pages, so the Gujarati type was smaller
+than the English throughout. An overlong contents now sets itself in three tighter columns instead,
+and the type matches the English edition page for page.
+
+**Contents.** The Company report gained one, with real page numbers, bookmarks and searchable text,
+like the institutional report. A group heading in the contents now takes at least two of its entries
+with it, so "Financials" stands at the top of a column over its own points rather than orphaned at
+the foot of the one before.
+
+**Cuts.** The institutional source audit was four pages of prose; it is one page of table now.
+The Company report drops the issue KPI table, corporate governance, the balance-sheet detail,
+quarterly monitoring, allocation and price levels, and what happens next — each of them stated in
+the section that owns it — and its Sources section is a single paragraph.
+
+**The Executive Summary was rebuilt** to the shape asked for: key anchors under the IPO snapshot,
+the four business sections from the Company report after it, three-year financials without the chart
+followed by Financial quality, no Allocation or Quarterly monitoring section, and the 100-point score
+with the listing-gain build-up beneath it. Six pages in English and in Gujarati.
 
 ## What changed in v4.6 build 2026.08.30.1
 
