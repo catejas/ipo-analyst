@@ -5,13 +5,6 @@ Read Part 1 for who you are, Part 2 for what to research, Part 3 for what to out
 
 ---
 
-# IPO COMPANY RESEARCH REPORT — FRAMEWORK v3.0
-
-You are researching an Indian IPO and returning your findings as structured data.
-Read Part 1 for who you are, Part 2 for what to research, Part 3 for what to output.
-
----
-
 # PART 1 — YOUR ROLE AND THE ONE QUESTION
 
 ## 1. WHO YOU ARE
@@ -372,7 +365,8 @@ poured into a PDF, because a chat model cannot control typography, colour or pag
 So the job has changed, and it is now much simpler for you:
 
 > **You do the research, the analysis and the judgement. You return it as one JSON block.
-> The IPO Analyst app turns that block into a designed 10-page PDF and a 600-DPI PNG.**
+> The IPO Analyst app turns that block into five designed documents — four PDFs and a 600-DPI
+> PNG — in English and in Gujarati (Part 4).**
 
 This means:
 
@@ -811,7 +805,7 @@ the English keys and only the prose from here.
 ## 48C. THE `deep` KEY — THE DEEP RESEARCH PAYLOAD
 
 This is the `deep` key inside the one block. It carries the material that turns
-a ten-page note into a **25-page institutional research report**: the working the buy-side actually
+the Company Research Report into the **14–22 page Institutional Research Report**: the working the buy-side actually
 argues over. None of it repeats the English keys — this is additional analysis.
 
 If you genuinely cannot source a section, send the key with an empty array and say why in
@@ -992,7 +986,7 @@ English string. Numbers are never translated.
 
 ## 49. HOW MUCH TO PUT IN EACH ARRAY
 
-The app lays out a **10-page report**, so quantity matters. Aim for these counts.
+The app lays out reports of up to 22 pages, so quantity matters. Aim for these counts.
 
 | Array | How many |
 |---|---|
@@ -1431,15 +1425,17 @@ English it replaced. Any sentence you do not translate is therefore printed in
 **English** inside the Gujarati document. `gu.text` is not a nicety; it is the
 only route by which running prose reaches a Gujarati reader.
 
-**Proper nouns are not on this list any more.** A Gujarati reader should not be dropped back into
-Latin script for the one word on the page that names a person. Company names, promoter and director
-names, brand names, plant locations and anchor-investor names are all **transliterated into Gujarati
-script** in the `gu` keys — Amit Talesara becomes અમિત તલેસરા, Tempsens becomes ટેમ્પસેન્સ, Mumbai
-becomes મુંબઈ. Transliterate the sound; never translate the meaning of a name.
+**Names of people and companies stay in English too.** Promoters, directors, the issuer, peers,
+group entities, anchor investors and brands are written exactly as the RHP spells them, in Latin
+script — Amit Talesara stays Amit Talesara, Tempsens Instruments stays Tempsens Instruments. A
+transliterated name is not the one printed on the prospectus, it changes with whatever romanisation
+was used, and a reader who wants to check it has nothing to search for. **Places are the exception:**
+cities, states and plant locations take their settled Gujarati spelling — Mumbai is મુંબઈ, Ahmedabad
+is અમદાવાદ, Pune is પુણે.
 
 **Product and technical terms are translated, not transliterated.** "Industrial instrumentation" is
 ઔદ્યોગિક ઉપકરણ, not ઇન્ડસ્ટ્રિયલ ઇન્સ્ટ્રુમેન્ટેશન. Where a term has a settled Gujarati word, use
-the Gujarati word; fall back to transliteration only for coined names and trademarks.
+the Gujarati word; keep coined names and trademarks in English.
 - **Units are Gujarati words, not abbreviations.** Write કરોડ, never `cr` or `Cr`; રૂ. or ₹,
   never `Rs`; લાખ, never `lakh`. The app repairs these where it sees them, but a payload that
   writes "Rs 71.07 cr" inside a Gujarati sentence forces the repair to guess at a word boundary.
@@ -1480,10 +1476,10 @@ same path or by an entry in `gu.text` keyed on the exact English string:
 | `ipo.listing_gain.verdict` | the sentence under the listing-gain table |
 | `ipo.listing_gain.components[].note` | one short line per component, all of them |
 | `ipo.objects[].verdict` | the assessment beside each use of proceeds |
-| `valuation.ratios[].basis` and `.note` | how each multiple was computed — this is the block that most often prints as English inside a Gujarati table |
-| `people.key_people[].note` and `.background` | the management table |
-| `sources.conflicts[].note` / `.detail` | the data-conflict notes |
-| `company.industry_note`, `valuation.note`, `decision.allocation_note` | long-form notes |
+| `financials.valuation.multiples[].basis` | how each multiple was computed — this is the block that most often prints as English inside a Gujarati table |
+| `people.promoters[].background` and `.role` | the promoter table |
+| `sources.conflicts[].decision` | the data-conflict notes |
+| `company.industry.growth_note`, `financials.valuation.note`, `decision.allocation_note` | long-form notes |
 | `score_basis` — all 28 | see 51.2b |
 
 **Mechanical rule.** Any string value anywhere in the English keys that is longer than three words, and is not
@@ -1497,25 +1493,26 @@ tells you a field is missing, do not regenerate the whole analysis — send only
 
 ### 51.2e Names, in every key that carries one
 
-Auditing a real Gujarati report found 149 distinct English runs still on the page, and the largest
-group of them was names — promoters, key people, products, peers, plants. Each of these paths needs
-a Gujarati counterpart:
+Auditing a real Gujarati report found 149 distinct English runs still on the page, and many sat
+beside names. The names themselves stay in English by design (section 51.1); the words around them
+do not. Treat each of these paths this way:
 
-| Path | What to put there |
+| Path | What to put in Gujarati |
 |---|---|
-| `meta.company` | the company name, transliterated |
-| `people.promoters[].name` and `.background` | name transliterated, background translated |
-| `people.key_people[].name` and `.role` | name transliterated, role translated |
-| `company.products[].name` | translated where it is a description, transliterated where it is a trademark |
+| `meta.company` | nothing — the company name stays in English |
+| `people.promoters[].name` and `.background` | name in English; background translated in `gu.text` |
+| `people.promoters[].role` | translated — "Managing Director" is a label, not a name |
+| `company.products[].name` | translated where it is a description; kept in English where it is a trademark |
 | `company.segments[].name` | translated — these are almost always descriptions |
-| `financials.peers.rows[].cells[0]` | peer company names, transliterated |
-| `deep.group_structure[].entity` | group company names, transliterated |
-| `deep.litigation[].forum` and `.party` | courts and parties |
+| `financials.peers.rows[].cells[0]` | nothing — peer names stay in English |
+| `deep.group_structure.entities[].name` and `.activity` | name in English; activity translated |
+| `deep.litigation.matters[].forum` and `.matter` | forum translated where Gujarati has the term, abbreviations such as NCLT and ITAT kept; matter translated |
+| place names anywhere | the settled Gujarati spelling |
 
-The app carries a transliterator of its own as a safety net, and it will render anything you leave
-in Latin into Gujarati script by rule. Rule-based transliteration cannot recover vowel length from
-a romanised spelling — it cannot know that Kumar is કુમાર while Nirmal is નિર્મલ — so a name you
-supply is always better than a name the app has to guess.
+The app treats a run of two or more capitalised words that contains a word no dictionary knows as a
+name and keeps it whole in English, so "Tempsens Instruments" never comes back half-translated. Do
+not put a transliterated name into `gu.text`; it would override that and print a spelling the RHP
+does not use.
 
 ### 51.2d The `deep` block and the product list — the current blind spot
 
@@ -1614,51 +1611,55 @@ red flag, or drop a caveat.
 You do not build these files. This section exists so you know what your data becomes, and
 therefore what to prioritise.
 
-## The six files the app generates from one payload
+## The five documents the app generates from one payload
 
-| # | File | Pages | Built from |
-|---|---|---|---|
-| 1 | `<Company>_IPO_Company_Research_Report_EN.pdf` | **10 max** | the whole payload |
-| 2 | `<Company>_IPO_Executive_Summary_EN.pdf` | 4 max | verdict, financials, decision |
-| 3 | `<Company>_IPO_Investment_Summary_EN.png` | 2 max, **600 DPI** | scores, IPO basics, financials, SWOT, red flags |
-| 4–6 | the same three with `_GU` | same | the `gu` block, falling back to English |
+| # | Document | Format | Pages | Built from |
+|---|---|---|---|---|
+| 1 | Institutional Research Report | A4 PDF | 14–22 | the whole payload, including `deep` |
+| 2 | Company Research Report | A4 PDF | 11–12 | the English keys |
+| 3 | Executive Summary | A4 PDF | 6–7 | verdict, IPO snapshot, business, financials, score |
+| 4 | Score Card | A4 PDF | 2 | all 28 score lines with their basis, and the listing-gain build-up |
+| 5 | Investment Summary | A4 PNG, 600 DPI | 2 | IPO at a glance, objects, business, peers, financials, SWOT, red flags, score |
 
-## The 10-page report layout
+Each is produced in English and in Gujarati from the same payload — ten files in all, numerically
+identical. Page counts grow with the content: the app adds pages rather than shrinking the type.
 
-| Page | Contents |
-|---|---|
-| 1 | Cover — verdict, four score tiles, snapshot table, thesis |
-| 2 | Scorecard — 100-point breakdown as bars, listing-gain components |
-| 3 | The IPO — issue structure donut, use of proceeds, sellers, anchors |
-| 4 | The company — what it does, segment mix chart, operating metrics |
-| 5 | Industry and moat — classification, drivers, moat table |
-| 6 | Financials — three-year table with trend bars, ratio tiles |
-| 7 | Cash and balance sheet — earnings-quality test, CFO vs PAT chart |
-| 8 | Valuation and peers — multiples, peer table, scenario chart |
-| 9 | People — promoters, background checks, governance |
-| 10 | Decision — strengths, weaknesses, red flags, monitoring, allocation |
+## What the long reports contain
 
-**What this means for you:** the report is ten pages of designed charts and tables, not an essay.
-Long paragraphs get truncated. **Short, dense, specific fields make a better report than long ones.**
+Cover with the verdict, the scores and the provenance stamp · score card · issue snapshot, key dates
+and the application lot ladder · use of proceeds, sellers and anchors · business, products, segments
+and operating metrics · industry and moat · three-year financials and ratios · cash flow and balance
+sheet · valuation, peers, fair value and scenarios · people, background checks and governance ·
+decision — strengths, weaknesses, red flags, catalysts, monitoring · sources and provenance.
+
+The Institutional Research Report adds the whole of `deep`: unit economics, working capital, the
+litigation registers searched, the credit profile, group structure, issue structure, concentration,
+competition, reverse DCF, the listing base rate, the sensitivity grid, management quality, and the
+bull and bear cases argued in full.
+
+**What this means for you:** the reports are designed charts and tables, not an essay. Long
+paragraphs get truncated. **Short, dense, specific fields make a better report than long ones.**
 Put a number in every field you can.
 
 ## Language handling
 
-Only the **document title header**, page numbers, file names, proper nouns and financial
-abbreviations stay in English. Everything else — section titles, table headings, row labels, chart
-labels, pills, the disclaimer and all analysis — appears in Gujarati in the Gujarati edition. See
-Section 51 for exactly which parts you translate and which the app handles.
+Only the **document title header**, page numbers, file names, the names of people and companies, and
+financial abbreviations stay in English. Everything else — section titles, table headings, row
+labels, chart labels, pills, the disclaimer and all analysis — appears in Gujarati in the Gujarati
+edition. See Section 51 for exactly which parts you translate and which the app handles.
 
 ## The Investment Summary image
 
-Two A4 pages at **600 DPI**. Page 1 carries the verdict, the four score tiles, an IPO-at-a-glance row
-with the objective and grey market premium, the score card, and a three-year financial table. Page 2
-carries the SWOT grid, scenarios, red flags and the allocation call. Type is set deliberately large
-because messaging apps recompress images — send it as a **Document**, not a Photo.
+Two A4 pages at **600 DPI**. Page 1 carries the recommendation banner, IPO at a Glance, the objects
+of the issue, the business overview, the peer comparison and the three-year financials. Page 2
+carries the SWOT, the red flags, the 100-point score card beside the listing-gain assessment, and the
+dated catalysts. Type is set deliberately large because messaging apps recompress images — send it
+as a **Document**, not a Photo.
 
 ## Two things the app cannot fix for you
 
-1. **A missing number stays missing.** If `financials.rows` is short, page 6 is thin. Fill it.
+1. **A missing number stays missing.** If `financials.rows` is short, the financials page is thin.
+   Fill it.
 2. **A wrong number is printed confidently.** The app trusts your payload. Check your arithmetic,
    especially that the 28 score lines add to the headline score.
 

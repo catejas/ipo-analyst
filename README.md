@@ -1,8 +1,34 @@
-# IPO Analyst — standalone web app  ·  v4.6  ·  build 2026.09.01.2
+# IPO Analyst — standalone web app  ·  v4.6  ·  build 2026.11.19.1
 
 A single-page web app that turns the institutional IPO research protocol into something you can
 run from an icon on your phone. It works on Android and iPhone/iPad, installs to the home screen,
 runs full-screen with no address bar, and works offline for everything except the AI call itself.
+
+## What changed in v4.6 build 2026.11.19.1
+
+**The framework and the app agree on names.** Section 51 of the framework still told the model to
+write people and company names in Gujarati script, while the app has kept them in English since
+build 2026.08.26.2. The framework now says what the app does: names of people and companies stay
+exactly as the RHP spells them, places take their settled Gujarati spelling. The names table in
+51.2e was rewritten to match, and four paths in 51.2c that do not exist in the contract
+(`people.key_people`, `valuation.ratios`, `company.industry_note`, `sources.conflicts[].note`) now
+point at the real ones.
+
+**Part 4 describes the documents the app actually makes.** It still promised a 10-page report and
+six files. It now lists the five documents — Institutional Research Report, Company Research Report,
+Executive Summary, Score Card and the 600-DPI Investment Summary — with their real page counts, in
+both languages. The stale duplicate "FRAMEWORK v3.0" heading under the title is gone. The changes are
+made identically in `protocol.md` and in the prompt embedded in `index.html`.
+
+**Private-link mode asked for the old contract.** The short pointer pasted in Private-link mode ended
+with "Produce all six files and the File 7 import block" — the v2.1 instruction. It now asks for the
+v4.6 data package (banner, completeness line, one minified fenced block) and states the languages.
+
+**Current Claude models.** The in-app model list now offers Claude Opus 5.5, Sonnet 5.5 (default) and
+Haiku 5.5. A model saved by an earlier build that is no longer in the list used to leave the picker
+blank and send every API call with an empty model; the app now falls back to the default.
+
+**This README** no longer describes the v2.1 tabs, the six-file contract or a `sw.js` bump by hand.
 
 ## What changed in v4.6 build 2026.09.01.2
 
@@ -965,36 +991,42 @@ a shortened version of it. Three things caused that. v2.1 fixes each one.
 Before finishing, the model must print a **delivery checklist** ticking off all six files, figure
 parity between the two languages, and that no CRITICAL or HIGH red flag was dropped.
 
-**What is inside**
-
-```
-index.html               the entire app (no build step, no dependencies)
-manifest.webmanifest     makes it installable with an icon and a name
-sw.js                    service worker — offline caching
-icons/                   app icons (192, 512, maskable, Apple touch)
-README.md                this file
-```
-
 ---
 
 ## What the app does
 
+**What is inside**
+
+```
+index.html               the app: UI, logic and the embedded research prompt
+render.js                the document renderer (reports, charts, Gujarati engine)
+docs.js                  PDF / PNG generation, preview and sharing
+protocol.md              the research framework (served for Private-link mode)
+manifest.webmanifest     makes it installable with an icon and a name
+sw.js                    service worker — offline caching
+icons/                   app icons (192, 512, maskable, Apple touch, favicon, logo)
+vendor/                  html2canvas and jsPDF
+README.md                this file
+```
+
 | Tab | Purpose |
 |---|---|
-| **Analyse** | Enter a company name, IPO type, horizon and investor type. The app fills the v2.1 research protocol with those inputs. There is no file or language selector — the six-file contract is fixed. |
-| **Report** | Where research lands — from an in-app run *or* imported from another AI tool. Holds the **Saved analyses** library, the result card, **Import result**, and the **Continue** button for resuming a paused run. |
-| **Scoring** | The 100-point worksheet. Fills itself from an imported analysis, or drag the sliders yourself. |
-| **Setup** | API key, model choice, install instructions, and a one-tap wipe of all local data. |
+| **Analyse** | Type a company to research it, or leave the box empty and tap **Find IPOs** for the live IPO calendar (Mainboard and SME, a 22-day window). Every research request covers both boards, listing gain and the long term, and Retail, HNI and UHNI investors. |
+| **Report** | Where research lands. **Import Data** takes the AI's reply (one block, several blocks, marker lines or an `ipo-payload.json` file), and **Add To This Analysis** merges a follow-up. Holds the saved-analysis library, the document list with ENG / GUJ switch, and the listing-outcome tracker. |
+| **Score Card** | The 100-point worksheet for a saved analysis, read-only, with its own company picker. |
+| **Setup** | In-app AI switch, API key, model, prompt delivery (full text or private link), install help and a wipe of all local data. |
+
+**Documents, each in English and Gujarati:** Institutional Research Report (14–22 pages), Company
+Research Report (11–12), Executive Summary (6–7), Score Card (2) — all A4 PDF — and the Investment
+Summary, a 2-page A4 PNG at 600 DPI. **All Reports** builds the set in one tap.
 
 **Three ways to run an analysis**
 
 1. **Run in-app** — needs your own Anthropic API key. The app calls the API directly from your
-   phone with live web search enabled, and streams the report into the Report tab. This is the
-   only mode that follows the research protocol end to end automatically.
+   phone with live web search enabled and streams the reply into the Report tab.
 2. **Select AI tool** — tap Claude, ChatGPT, Gemini or Perplexity. The prompt is copied and the tool
-   opens; paste and send. Free, no key needed. **Turn that tool's web search / browsing mode ON before
-   sending**, or the research protocol cannot be followed. Then bring the result back with
-   **Import result** on the Report tab.
+   opens; paste and send. Free, no key needed. **Turn that tool's web search on before sending.**
+   Then bring the reply back with **Import Data** on the Report tab.
 3. **Send to another app** — the system share sheet, for any tool not in the list.
 
 There is no backend. Your API key, saved analyses and scores never leave the device.
@@ -1021,11 +1053,12 @@ Pick whichever of these suits you. All three are free and take under five minute
    **Site settings → Change site name** you can rename it to something like `tejas-ipo`.
 6. Copy that address — you need it in Step 2.
 
-### Option B — GitHub Pages (permanent, version-controlled)
+### Option B — GitHub Pages (permanent, version-controlled) — the live setup
 
 1. Create a new **public** repository at https://github.com/new — name it `ipo-analyst`.
-2. Click **uploading an existing file**, drag in `index.html`, `manifest.webmanifest`, `sw.js`
-   and the `icons` folder, then commit.
+2. Click **uploading an existing file**, drag in **every file and folder** listed under *What is
+   inside* (`index.html`, `render.js`, `docs.js`, `protocol.md`, `manifest.webmanifest`, `sw.js`,
+   `icons/`, `vendor/`, `README.md`), then commit.
 3. Go to **Settings → Pages**. Under *Source* pick **Deploy from a branch**, branch `main`,
    folder `/ (root)`. Save.
 4. Wait two minutes. Your address is
@@ -1082,15 +1115,9 @@ You need an Anthropic API key. This is separate from a Claude subscription — i
 anything, which is exactly what the protocol demands. The Report tab shows a running count of
 searches and elapsed time. Do not close the app mid-run.
 
-**Rough cost per analysis:** ₹25–₹60 on Sonnet, ₹100–₹150 on Opus, under ₹15 on Haiku. Sonnet is
+**Rough cost per analysis:** roughly ₹25–₹60 on Sonnet, ₹100–₹150 on Opus, under ₹15 on Haiku (indicative; check current API pricing). Sonnet is
 the sensible default. Haiku is noticeably weaker at the sceptical, cross-checking parts of the
 protocol, which are the parts that matter most.
-
-**A full six-file run is long.** Expect several Continue taps and 15–30 minutes end to end, because the
-model writes six documents rather than one. Budget roughly ₹150–₹350 per complete run on Sonnet. If you
-only need the decision and not the paperwork, stop after file 2 — the executive summary is the document
-most people actually read — but do not edit the contract to remove files, or the substitution problem
-comes back.
 
 ### If you would rather not store an API key
 
@@ -1128,10 +1155,10 @@ upgrade an allegation to a fact, soften a red flag, or drop a caveat.
 
 Two practical consequences worth knowing:
 
-- **Gujarati runs 10–20% longer than English.** That is why the framework tells the model to re-verify
-  the 4-page executive summary limit *after* translating and to trim narrative if it overflows. If you
-  generate the documents yourself rather than in-app, build in an auto-fit or shrink step — the
-  reference implementation shrinks page 2 to about 86–90% to hold the limit.
+- **Gujarati runs 10–20% longer than English.** The app absorbs this by adding pages rather than
+  shrinking type, so a Gujarati document can run a page longer than its English twin.
+- **Names stay in English, places do not.** People and company names print exactly as the RHP
+  spells them; cities and plant locations take their Gujarati spelling (મુંબઈ, અમદાવાદ).
 - **Fonts matter.** Gujarati needs Noto Sans Gujarati or Noto Serif Gujarati and a line-height of at
   least 1.65; at the 1.42 leading used for Latin text the matras collide. The app sets this for you,
   but a device with no Gujarati font installed will fall back to boxes. Every modern Android and iOS
@@ -1139,20 +1166,16 @@ Two practical consequences worth knowing:
 
 ## Notes, limits and honest caveats
 
-**The contract is instruction, not enforcement.** The app asks for six files, a 4-page summary cap and
-an 8,000-word report floor. Nothing in a browser can force a model to comply. What v2.1 changes is that
-non-compliance is now *visible*: the delivery checklist and the per-file completion banners make a short
-or missing file obvious at a glance. If file 1 comes back thin, say **"File 1 is below the depth floor in
-Section 46.3 — rewrite it in full"** and it will.
+**The contract is instruction, not enforcement.** Nothing in a browser can force a model to fill
+every field. What the app does is make gaps visible: the completeness line the model prints, and the
+Import Data note, which names missing sections, untranslated Gujarati, unsearched litigation
+registers and thin peer tables. If a field is missing, ask the tool for just that key and merge it
+with **Add To This Analysis** rather than regenerating the whole analysis.
 
-**The HD image spec is likewise an instruction.** If you paste the prompt into a chat app that cannot
-render images, you will get a described layout rather than a PNG. To actually get the 3720 × 5262
-output, either render the model's HTML yourself at a 3× device scale factor, or use a tool that can.
-
-**Model names go stale.** Anthropic ships new model versions and retires old ones. If a run fails
-with "model not found", open `index.html` in any text editor, find the `<select id="model">` block
-near the bottom, and update the `value="..."` strings to current model IDs from
-`console.anthropic.com`. Re-upload the file. That is the only maintenance this app needs.
+**Model names go stale.** Anthropic ships new model versions and retires old ones. If an in-app run
+fails with "model not found", update the `value="..."` strings in the `<select id="model">` block of
+`index.html` to current model IDs from `docs.claude.com`. A saved model that is no longer listed
+falls back to the default automatically.
 
 **API key security.** The key sits in the browser's local storage. Anyone who can unlock your
 phone and open the app can read it through developer tools. Use a dedicated key with a low cap,
@@ -1175,7 +1198,13 @@ carries the risk of permanent capital loss.
 
 ## Updating the app later
 
-Change `index.html`, then re-upload it the same way you deployed it. The service worker cache is
-versioned — bump `var CACHE = 'ipo-analyst-v6'` in `sw.js` to `v5` whenever you change
-`index.html`, otherwise installed copies may keep serving the old version for a while. Users get
-the update the next time they open the app twice.
+Every change ships as a new **build**, stamped in three places that must agree:
+`window.APP_BUILD` in the head of `index.html`, the `CACHE` name in `sw.js`
+(`ipo-analyst-v4.6-<build>`), and the heading of this README. The service worker fetches pages
+network-first and discards every cache whose name is not the current one, so an installed app picks
+up a new build the next time it is opened; the Setup line says "serving an older cache, reload twice"
+if it has not yet.
+
+Any framework change must be made identically in `protocol.md` and in the prompt embedded in
+`index.html` (`<script type="text/plain" id="tpl">`), which differ only in the `{{COMPANY}}`-style
+placeholders of section 3.
