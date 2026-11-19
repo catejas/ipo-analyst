@@ -1,5 +1,5 @@
 /* IPO Analyst service worker — offline shell */
-var CACHE = 'ipo-analyst-v4.6-2026.09.01.2';
+var CACHE = 'ipo-analyst-v4.6-2026.11.19.1';
 var ASSETS = [
   './', './index.html', './manifest.webmanifest',
   './icons/icon-192.png', './icons/icon-512.png',
